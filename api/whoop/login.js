@@ -3,7 +3,7 @@
 
 export default function handler(req, res) {
   const clientId   = process.env.WHOOP_CLIENT_ID;
-  const appUrl     = process.env.VERCEL_URL ? 'https://'+process.env.VERCEL_URL : process.env.APP_URL;
+  const appUrl    = process.env.APP_URL || 'https://vital-puce-iota.vercel.app';
   const redirectUri = `${appUrl}/api/whoop/callback`;
 
   const scopes = [
