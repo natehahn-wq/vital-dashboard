@@ -18,7 +18,8 @@ export default async function handler(req, res) {
 
   const clientId     = process.env.WHOOP_CLIENT_ID;
   const clientSecret = process.env.WHOOP_CLIENT_SECRET;
-  const redirectUri  = `${process.env.VERCEL_URL ? 'https://'+process.env.VERCEL_URL : process.env.APP_URL}/api/whoop/callback`;
+    const appUrl     = process.env.APP_URL || 'https://vital-puce-iota.vercel.app';
+    const redirectUri = `${appUrl}/api/whoop/callback`;
 
   try {
     // Exchange auth code for tokens
