@@ -63,9 +63,10 @@
 
   <script>
     try {
-      if (typeof App === 'undefined') throw new Error('App not defined — build may have failed');
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(React.createElement(App));
+            const App = (typeof __vital__ !== 'undefined' && __vital__.default) || window.App;
+            if (!App) throw new Error('App not defined — build may have failed');
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(App));
     } catch(e) {
       const sub = document.getElementById('loading-sub');
       if (sub) sub.textContent = 'Mount error: ' + e.message;
