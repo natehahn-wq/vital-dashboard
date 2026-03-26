@@ -5206,19 +5206,19 @@ function CalendarPage(){
   const nextMonth = ()=>setViewMonth(p=>p.m===11?{y:p.y+1,m:0}:{y:p.y,m:p.m+1});
   const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
   const dateKey = d=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  const today = "2026-03-22";
+  const today = new Date().toLocaleDateString('en-CA');
 
   // Month-level stats
   const mKeys = Array.from({length:daysInMonth},(_,i)=>dateKey(i+1));
-  const mWorkouts = mKeys.filter(k=>CAL_DATA[k]?.w?.length).length;
+  const mWorkouts = mKeys.filter(k=>CAL_RICH[k]?.length).length;
   const mAlc      = mKeys.filter(k=>CAL_DATA[k]?.alc).length;
   const mRecDays  = mKeys.filter(k=>CAL_DATA[k]?.rec!=null);
   const mAvgRec   = mRecDays.length ? Math.round(mRecDays.reduce((s,k)=>s+(CAL_DATA[k].rec||0),0)/mRecDays.length) : null;
   const mSlpDays  = mKeys.filter(k=>CAL_DATA[k]?.slp!=null);
   const mAvgSlp   = mSlpDays.length ? Math.round(mSlpDays.reduce((s,k)=>s+(CAL_DATA[k].slp||0),0)/mSlpDays.length) : null;
-  const mStrain   = mKeys.reduce((s,k)=>{const d=CAL_DATA[k];return s+(d?.w?.reduce((a,w)=>a+w.strain,0)||0);},0);
+  const mStrain   = mKeys.reduce((s,k)=>{const r=CAL_RICH[k];return s+(r?.reduce((a,w)=>a+w.strain,0)||0);},0);
 
-  const sel = selected ? CAL_DATA[selected] : null;
+  const sel = selected ? {...CAL_DATA[selected], w:CAL_RICH[selected]} : null;
 
   return(<div style={S.col18}>
     <div style={S.rowsb}>
@@ -5287,8 +5287,8 @@ function CalendarPage(){
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,minWidth:280}}>
           {Array.from({length:firstDay},(_,i)=><div key={`e${i}`}/>)}
           {Array.from({length:daysInMonth},(_,i)=>{
-            const day=i+1, key=dateKey(day), d=CAL_DATA[key]||{};
-            const inRange=key>="2025-12-01"&&key<="2026-03-25"; // extended to today
+            const day=i+1, key=dateKey(day), d={...(CAL_DATA[key]||{}), w:CAL_RICH[key]};
+            const inRange=key>="2025-12-01"&&key<=today; // extended to today
             const isSel=selected===key, isToday=key===today;
             const dayStrain=d.w?.reduce((s,w)=>s+w.strain,0)||0;
             const acts=d.w||[];
@@ -5461,8 +5461,8 @@ function CalendarPage(){
       {(()=>{
         // Build combined 7-column heatmap for the viewed month
         const alcDays = mKeys.filter(k=>CAL_DATA[k]?.alc);
-        const wktDays = mKeys.filter(k=>CAL_DATA[k]?.w?.length);
-        const restDays = mKeys.filter(k=>!CAL_DATA[k]?.w?.length&&!CAL_DATA[k]?.alc&&CAL_DATA[k]?.rec!=null);
+        const wktDays = mKeys.filter(k=>CAL_RICH[k]?.length);
+        const restDays = mKeys.filter(k=>!CAL_RICH[k]?.length&&!CAL_DATA[k]?.alc&&CAL_DATA[k]?.rec!=null);
         const alcCount  = alcDays.length;
         const wktCount  = wktDays.length;
         const weeks     = daysInMonth / 7;
@@ -5491,7 +5491,7 @@ function CalendarPage(){
               <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:6,background:P.amberBg+"44",border:`1px solid ${P.amber}33`}}>
                 <span style={{fontFamily:FF.s,fontSize:9}}>🔀</span>
                 <span style={{fontFamily:FF.s,fontSize:9,color:P.amber}}>
-                  {mKeys.filter(k=>CAL_DATA[k]?.alc&&CAL_DATA[k]?.w?.length).length} both same day
+                  {mKeys.filter(k=>CAL_DATA[k]?.alc&&CAL_RICH[k]?.length).length} both same day
                 </span>
               </div>
             )}
@@ -5512,9 +5512,9 @@ function CalendarPage(){
                 <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
                   {week.map((key,di)=>{
                     if(!key) return <div key={di}/>;
-                    const d=CAL_DATA[key]||{};
+                    const d={...(CAL_DATA[key]||{}), w:CAL_RICH[key]};
                     const hasAlc=!!d.alc, hasWkt=!!d.w?.length;
-                    const inRange=key>="2025-12-01"&&key<="2026-03-25";
+                    const inRange=key>="2025-12-01"&&key<=today;
                     const rec=d.rec;
                     const bg = !inRange?"transparent":hasAlc&&hasWkt?"linear-gradient(135deg,#B8902A 40%,"+P.sage+" 40%)":hasAlc?"#B8902A":hasWkt?P.sage+"CC":rec!=null?P.panel:"transparent";
                     const isSelected = selected===key;
