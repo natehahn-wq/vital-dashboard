@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   const clientId     = process.env.WHOOP_CLIENT_ID;
   const clientSecret = process.env.WHOOP_CLIENT_SECRET;
-    const appUrl     = process.env.APP_URL || 'https://vital-puce-iota.vercel.app';
+    const appUrl     = process.env.APP_URL || 'https://vital-puce-iota.vercel.app'
     const redirectUri = `${appUrl}/api/whoop/callback`;
 
   try {
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 // ── Shared data fetch (also called from refresh.js) ──────────────────────
 export async function fetchAndStoreWhoopData(accessToken) {
   const headers = { Authorization: `Bearer ${accessToken}` };
-  const base    = 'https://api.prod.whoop.com/developer/v1';
+  const base    = 'https://api.prod.whoop.com/developer/v2';
 
   // Fetch all three endpoints in parallel
   const [recoveryRes, sleepRes, workoutRes, cycleRes] = await Promise.all([
