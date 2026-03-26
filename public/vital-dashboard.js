@@ -1649,7 +1649,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
 
  
   const doneTodayAll = [
-    {name:"Running",icon:"🏃",color:"#C47830",strain:10.1,dur:56,cal:485,timeH:8,time:"8:07 AM",avgHR:123,maxHR:136}, // Mar 22 WHOOP screenshot — 8:07–9:03am
+    {name:"Functional Fitness",icon:"🏋",color:"#3A5C48",strain:14.2,dur:66,cal:541,timeH:10,time:"10:12 AM",avgHR:121,maxHR:164}, // Mar 22 WHOOP screenshot — 8:07–9:03am
   ];
   const doneToday = doneTodayAll.filter(w => hour >= w.timeH);
   const strainSoFar     = doneToday.reduce((s,w)=>s+w.strain,0);
@@ -1661,7 +1661,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
     !doneToday.some(w=>w.name===todaySchedule.name);
 
   // Yesterday's training
-  const yesterday = [{name:"Functional Fitness",icon:"🏋",color:"#3A5C48",strain:15.6,dur:65,cal:715}]; // Mar 21 — WHOOP screenshot
+  const yesterday = [{name:"Running",icon:"🏃",color:"#C47830",strain:13.3,dur:81,cal:775}]; // Mar 21 — WHOOP screenshot
   const tomorrowDow = (dow + 1) % 7; // JS day of week
   const tomorrowIdx = tomorrowDow === 0 ? 6 : tomorrowDow - 1; // Mon=0 index
   const tomorrowSchedule = WEEKLY_SCHEDULE[tomorrowIdx];
@@ -1693,14 +1693,14 @@ function TodayPage({setPage, whoopStatus="loading"}){
   // Recovery trend (7-day)
   // 8-day recovery trend — real WHOOP values + Mar 22 screenshot
   const recTrend=[
-    {d:"Mar 15",rec:69, hrv:44},
-    {d:"Mar 16",rec:86, hrv:50},
-    {d:"Mar 17",rec:67, hrv:44},
-    {d:"Mar 18",rec:62, hrv:43},
-    {d:"Mar 19",rec:69, hrv:45},
+    {d:"Mar 19",rec:62, hrv:43},
     {d:"Mar 20",rec:69, hrv:45},
     {d:"Mar 21",rec:69, hrv:43},
-    {d:"Mar 22",rec:37, hrv:37}, // Today — WHOOP screenshot (post Sat FF)
+    {d:"Mar 22",rec:37, hrv:37},
+    {d:"Mar 23",rec:87, hrv:52},
+    {d:"Mar 24",rec:0,  hrv:0},
+    {d:"Mar 25",rec:54, hrv:39},
+    {d:"Mar 26",rec:54, hrv:39}, // Today
   ];
 
   const recColor = r => r>=80?"#3A5C48":r>=60?"#C47830":"#C4604A";
