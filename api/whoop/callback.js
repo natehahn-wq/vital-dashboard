@@ -139,6 +139,41 @@ export async function fetchAndStoreWhoopData(accessToken) {
   };
 
   await kv.set('whoop:latest', JSON.stringify(normalized));
+
+    // --- Also store daily entry for weekly fitness aggregation ---
+      try {
+          const dateKey = normalized.date; // YYYY-MM-DD
+              const dailyEntry = {
+                    date: dateKey,
+                          recovery: normalized.recovery,
+                                hrv: +normalized.hrv,
+                                      rhr: normalized.rhr,
+                                            strain: +normalized.strain,
+                                                  sleep: normalized.sleep?.score || 0,
+                                                        workouts: (normalized.workouts || []).map(w => ({
+                                                                sport: w.sport,
+                                                                        strain: +w.strain,
+                                                                                dur: w.dur,
+                                                                                        cal: w.cal,
+                                                                                                start: w.start,
+                                                                                                      })),
+                                                                                                          };
+                                                                                                              // Get existing history (last 30 days)
+                                                                                                                  let history = [];
+                                                                                                                      try {
+                                                                                                                            const raw = await kv.get('whoop:history');
+                                                                                                                                  if (raw) history = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                                                                                                                                      } catch(e) { history = []; }
+                                                                                                                                          // Remove any existing entry for today and append
+                                                                                                                                              history = history.filter(h => h.date !== dateKey);
+                                                                                                                                                  history.push(dailyEntry);
+                                                                                                                                                      // Keep only last 30 days
+                                                                                                                                                          history = history.slice(-30);
+                                                                                                                                                              await kv.set('whoop:history', JSON.stringify(history));
+                                                                                                                                                                  console.log('[VITAL] Daily history stored:', dateKey, 'total days:', history.length);
+                                                                                                                                                                    } catch(histErr) {
+                                                                                                                                                                        console.error('[VITAL] Failed to store daily history:', histErr);
+                                                                                                                                                                          }
   console.log('[VITAL] WHOOP data stored:', normalized.date,
     `rec=${normalized.recovery}% hrv=${normalized.hrv}ms`);
 
