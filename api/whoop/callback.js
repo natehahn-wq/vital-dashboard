@@ -80,6 +80,7 @@ export async function fetchAndStoreWhoopData(accessToken) {
     workoutRes.ok  ? workoutRes.json()  : null,
     cycleRes.ok    ? cycleRes.json()    : null,
   ]);
+    console.log('[VITAL] WHOOP API raw:', JSON.stringify({ recoveryRecords: recoveryData?.records?.length, sleepRecords: sleepData?.records?.length, workoutRecords: workoutData?.records?.length, cycleRecords: cycleData?.records?.length, recoveryStatus: recoveryRes.status, sleepStatus: sleepRes.status, workoutStatus: workoutRes.status, cycleStatus: cycleRes.status }));
 
   // Pick the first record that has a score (skip unscored current cycle)
     const rec     = (recoveryData?.records || []).find(r => r?.score) || recoveryData?.records?.[0];
