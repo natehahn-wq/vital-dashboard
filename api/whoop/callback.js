@@ -68,10 +68,10 @@ export async function fetchAndStoreWhoopData(accessToken) {
 
   // Fetch all three endpoints in parallel
   const [recoveryRes, sleepRes, workoutRes, cycleRes] = await Promise.all([
-    fetch(`${base}/recovery?limit=1`, { headers }),
-    fetch(`${base}/activity/sleep?limit=1`, { headers }),
+    fetch(`${base}/recovery?limit=3`, { headers }),
+    fetch(`${base}/activity/sleep?limit=3`, { headers }),
     fetch(`${base}/activity/workout?limit=5`, { headers }),
-    fetch(`${base}/cycle?limit=1`, { headers }),
+    fetch(`${base}/cycle?limit=3`, { headers }),
   ]);
 
   const [recoveryData, sleepData, workoutData, cycleData] = await Promise.all([
@@ -81,10 +81,11 @@ export async function fetchAndStoreWhoopData(accessToken) {
     cycleRes.ok    ? cycleRes.json()    : null,
   ]);
 
-  const rec     = recoveryData?.records?.[0];
-  const sleep   = sleepData?.records?.[0];
-  const workouts= workoutData?.records || [];
-  const cycle   = cycleData?.records?.[0];
+  // Pick the first record that has a score (skip unscored current cycle)
+    const rec     = (recoveryData?.records || []).find(r => r?.score) || recoveryData?.records?.[0];
+    const sleep   = (sleepData?.records || []).find(r => r?.score) || sleepData?.records?.[0];
+    const workouts= workoutData?.records || [];
+    const cycle   = (cycleData?.records || []).find(r => r?.score) || cycleData?.records?.[0];
 
   // ── Normalize into VITAL dashboard WHOOP shape ───────────────────────
   const stageSummary = sleep?.score?.stage_summary || {};
