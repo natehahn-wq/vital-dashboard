@@ -59,6 +59,21 @@
     };
   </script>
 
+      <!-- Fetch live WHOOP data before dashboard loads -->
+      <script>
+            (function(){
+                    try {
+                              var xhr = new XMLHttpRequest();
+                              xhr.open("GET", "/api/whoop/data", false);
+                              xhr.send();
+                              if (xhr.status === 200) {
+                                          window.__WHOOP_LIVE = JSON.parse(xhr.responseText);
+                                          console.log("VITAL: Live WHOOP data loaded");
+                              }
+                    } catch(e) { console.warn("VITAL: Using offline data", e); }
+            })();
+      </script>
+
   <!-- Pre-compiled dashboard (JSX → JS via esbuild at Vercel build time) -->
   <script src="./vital-compiled.js"></script>
 
