@@ -3997,6 +3997,7 @@ const WEEKLY_REAL=[
   {label:"3/2",strain:91.0,dur:476,cal:3919,count:8,z1m:81, z2m:162,z3m:78,z4m:36,z5m:7},
   {label:"3/9",strain:95.2,dur:484,cal:3731,count:8,z1m:102,z2m:161,z3m:43,z4m:33,z5m:10},
   {label:"3/16",strain:68.0,dur:337,cal:2688,count:6,z1m:77, z2m:76,z3m:46,z4m:36,z5m:7},
+  {label:"3/23",strain:53.8,dur:253,cal:2278,count:4,z1m:31,z2m:104,z3m:75,z4m:29,z5m:7},
 ];
 
 // Real WHOOP weekly physiological data — 53 weeks (Mar 2025 → Mar 2026)
@@ -4054,6 +4055,7 @@ const WEEKLY_PHYSIO=[
   {label:"3/2", hrv:51.9,rec:83.6,rhr:51.6,strain:12.8},
   {label:"3/9", hrv:42.1,rec:59.1,rhr:50.9,strain:13.1},
   {label:"3/16",hrv:45.5,rec:71.0,rhr:49.8,strain:14.3},
+  {label:"3/23",hrv:43.5,rec:65.0,rhr:51.7,strain:13.5},
 ];
 
 // Weekly sleep averages derived from 112 days CAL_DATA (Dec 2025 – Mar 2026)
@@ -4066,7 +4068,7 @@ const WEEKLY_SLEEP=[
   {label:"02/09",score:89.7,dur:8.87},{label:"02/16",score:89.9,dur:8.54},
   {label:"02/23",score:97.6,dur:8.76},{label:"03/02",score:93.7,dur:8.53},
   {label:"03/09",score:96.0,dur:8.93},{label:"03/16",score:95.9,dur:9.05},
-  {label:"03/23",score:100,dur:8.70},
+  {label:"03/23",score:97.8,dur:8.76},
 ];
 
 
@@ -4125,6 +4127,7 @@ const WEEKLY_ACTS=[
   {label:"3/2",  running:{c:2,s:24.7,d:141},fitness:{c:3,s:43.2,d:221},spin:{c:2,s:17.7,d:89},walking:{c:1,s:5.4,d:25}},
   {label:"3/9",  running:{c:3,s:36.2,d:157},fitness:{c:3,s:39.6,d:202},spin:{c:2,s:19.4,d:125}},
   {label:"3/16", running:{c:2,s:24.9,d:107},fitness:{c:2,s:28.6,d:156},spin:{c:2,s:14.5,d:74}},
+  {label:"3/23", running:{c:2,s:26.7,d:135},fitness:{c:2,s:27.1,d:118}},
 ];
 
 const ACT_META={
@@ -4144,8 +4147,8 @@ const ACT_META={
 
 // Activity totals for breakdown
 const ACT_TOTALS_REAL=[
-  {id:"running",  label:"Running",          icon:"🏃",color:"#C47830",count:37,avgStrain:12.1,totalDur:2090,totalCal:20890},
-  {id:"fitness",  label:"Functional Fitness",icon:"🏋",color:"#3A5C48",count:38,avgStrain:13.9,totalDur:2356,totalCal:23340},
+  {id:"running",  label:"Running",          icon:"🏃",color:"#C47830",count:39,avgStrain:12.2,totalDur:2225,totalCal:22278},
+  {id:"fitness",  label:"Functional Fitness",icon:"🏋",color:"#3A5C48",count:40,avgStrain:13.9,totalDur:2474,totalCal:24230},
   {id:"spin",     label:"Spin",             icon:"🚴",color:"#C4604A",count:6, avgStrain:8.3, totalDur:279, totalCal:2398 },
   {id:"walking",  label:"Walking",          icon:"🚶",color:"#7A5A80",count:9, avgStrain:4.8, totalDur:310, totalCal:1700 },
   {id:"other",    label:"Other",            icon:"⚡",color:"#4A6070",count:3, avgStrain:6.2, totalDur:115, totalCal:680  },
@@ -5028,6 +5031,9 @@ const CAL_DATA={
   "2026-03-21":{slp:97,sdur:9.2,rec:69,hrv:43,rhr:49},
   "2026-03-22":{slp:95,sdur:8.53,rec:37,hrv:37,rhr:53},
   "2026-03-23":{slp:100,sdur:8.70,rec:87,hrv:52,rhr:49},
+    "2026-03-24":{slp:95,sdur:8.5,rec:0,hrv:0,rhr:0},
+    "2026-03-25":{slp:96,sdur:8.8,rec:54,hrv:39.4,rhr:52},
+    "2026-03-26":{slp:100,sdur:9.03,rec:54,hrv:39.2,rhr:54},
 };
 
 const CAL_RICH={
@@ -5115,6 +5121,10 @@ const CAL_RICH={
   "2026-03-20":[{cat:"spin",name:"Spin",strain:6.6,dur:44,cal:242,avgHR:109,maxHR:157,start:"11:13 AM",z1p:46,z2p:0,z3p:0,z4p:0,z5p:0,z1m:20,z2m:0,z3m:0,z4m:0,z5m:0}],
   "2026-03-21":[{cat:"fitness",name:"Functional Fitness",strain:15.6,dur:66,cal:715,avgHR:134,maxHR:179,start:"7:18 AM",z1p:3,z2p:28,z3p:37,z4p:18,z5p:6,z1m:2,z2m:19,z3m:23,z4m:12,z5m:4}],
   "2026-03-22":[{cat:"running",name:"Running",strain:10.1,dur:56,cal:485,avgHR:123,maxHR:136,start:"8:07 AM",z0p:7,z1p:30,z2p:63,z3p:1,z4p:0,z5p:0,z0m:4,z1m:17,z2m:34,z3m:0,z4m:0,z5m:0}],
+    "2026-03-23":[{cat:"running",name:"Running",strain:13.4,dur:54,cal:613,avgHR:136,maxHR:177,start:"1:18 PM",z1p:5,z2p:40,z3p:35,z4p:15,z5p:2,z1m:3,z2m:22,z3m:19,z4m:8,z5m:1}],
+    "2026-03-24":[{cat:"fitness",name:"Functional Fitness",strain:12.9,dur:52,cal:349,avgHR:114,maxHR:171,start:"10:15 AM",z1p:20,z2p:35,z3p:25,z4p:12,z5p:3,z1m:10,z2m:18,z3m:13,z4m:6,z5m:2}],
+    "2026-03-25":[{cat:"running",name:"Running",strain:13.3,dur:81,cal:775,avgHR:126,maxHR:165,start:"12:43 PM",z1p:10,z2p:50,z3p:28,z4p:8,z5p:2,z1m:8,z2m:41,z3m:23,z4m:6,z5m:2}],
+    "2026-03-26":[{cat:"fitness",name:"Functional Fitness",strain:14.2,dur:66,cal:541,avgHR:121,maxHR:164,start:"10:12 AM",z1p:15,z2p:35,z3p:30,z4p:14,z5p:3,z1m:10,z2m:23,z3m:20,z4m:9,z5m:2}],
 };
 
 // RECENT_WORKOUTS — derived live from CAL_RICH (newest first)
