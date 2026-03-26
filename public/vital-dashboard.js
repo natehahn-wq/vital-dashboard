@@ -4178,6 +4178,33 @@ function FitnessPage(){
   const [activeAct,setActiveAct]=useState(null);
   const _todayKey = (()=>{ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })();
 
+  // --- Live history: fetch daily data from cron and extend static weekly arrays ---
+  const [historyDays, setHistoryDays] = useState([]);
+  useEffect(() => {
+    fetch('/api/whoop/history').then(r => r.ok ? r.json() : null)
+      .then(res => { if (res && res.days && res.days.length) setHistoryDays(res.days); })
+      .catch(() => {});
+  }, []);
+  const _wkLabel = (ds) => { const d=new Date(ds+'T12:00:00'),dy=d.getDay(),df=d.getDate()-dy+(dy===0?-6:1),m=new Date(d.getFullYear(),d.getMonth(),df); return (m.getMonth()+1)+'/'+m.getDate(); };
+  const {mergedReal,mergedPhysio,mergedLoad} = React.useMemo(() => {
+    if(!historyDays.length) return {mergedReal:WEEKLY_REAL,mergedPhysio:WEEKLY_PHYSIO,mergedLoad:FITNESS_LOAD};
+    const lastLbl = WEEKLY_REAL.length ? WEEKLY_REAL[WEEKLY_REAL.length-1].label : '';
+    const wkMap = {};
+    historyDays.forEach(day => { const wk=_wkLabel(day.date); if(!wkMap[wk]) wkMap[wk]=[]; wkMap[wk].push(day); });
+    const nR=[], nP=[];
+    Object.keys(wkMap).sort().forEach(wk => {
+      if(lastLbl){const[sm,sd]=lastLbl.split('/').map(Number),[wm,wd]=wk.split('/').map(Number);const sy=sm>6?2025:2026,wy=wm>6?2025:2026;if(new Date(wy,wm-1,wd)<=new Date(sy,sm-1,sd))return;}
+      const days=wkMap[wk]; let ts=0,td=0,tc=0,tn=0;
+      days.forEach(d=>{(d.workouts||[]).forEach(w=>{ts+=+(w.strain||0);td+=+(w.dur||0);tc+=+(w.cal||0);tn++;});});
+      nR.push({label:wk,strain:+ts.toFixed(1),dur:Math.round(td),cal:Math.round(tc),count:tn,z1m:0,z2m:0,z3m:0,z4m:0,z5m:0});
+      const vd=days.filter(d=>d.recovery>0);
+      if(vd.length){const av=(a,k)=>+(a.reduce((s,d)=>s+(+d[k]||0),0)/a.length).toFixed(1);nP.push({label:wk,hrv:av(vd,'hrv'),rec:av(vd,'recovery'),rhr:av(vd,'rhr'),strain:av(vd,'strain')});}
+    });
+    const mR=[...WEEKLY_REAL,...nR],mP=[...WEEKLY_PHYSIO,...nP];
+    const mL=mR.map((w,i)=>{const a=mR.slice(Math.max(0,i-3),i+1).reduce((s,x)=>s+x.strain,0)/Math.min(4,i+1),c=mR.slice(Math.max(0,i-11),i+1).reduce((s,x)=>s+x.strain,0)/Math.min(12,i+1);return{label:w.label,atl:+a.toFixed(1),ctl:+c.toFixed(1),tsb:+(c-a).toFixed(1)};});
+    return {mergedReal:mR,mergedPhysio:mP,mergedLoad:mL};
+  }, [historyDays]);
+
   // richDays = all days with workouts, sorted oldest→newest
   // allNavDays = union of richDays + today so today is always reachable
   const richDays   = Object.keys(CAL_RICH).sort();
@@ -4204,9 +4231,9 @@ function FitnessPage(){
   const viewDayShort  = viewDate.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
   const ax={tick:{fontFamily:FF.m,fontSize:9,fill:P.muted},axisLine:{stroke:P.border},tickLine:false};
 
-  const wkSlice   = WEEKLY_REAL.slice(-range);
-  const ldSlice   = FITNESS_LOAD.slice(-range);
-  const physSlice = WEEKLY_PHYSIO.slice(-range);
+  const wkSlice   = mergedReal.slice(-range);
+  const ldSlice   = mergedLoad.slice(-range);
+  const physSlice = mergedPhysio.slice(-range);
   const actSlice  = WEEKLY_ACTS.slice(-range);
 
  
@@ -9190,3 +9217,4 @@ export default function App(){
     </div>
   );
 }
+r
