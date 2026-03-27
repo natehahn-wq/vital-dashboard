@@ -6055,6 +6055,41 @@ function ImportPage(){
       const isImage = file.type.startsWith("image/");
       const isCSV   = file.name.endsWith(".csv") || file.type === "text/csv";
       const isXML   = file.name.endsWith(".xml");
+            // Peloton CSV — parse locally, no AI needed
+      const isPelotonFile = file.name.toLowerCase().includes("workout") && file.name.endsWith(".csv");
+      if(isPelotonFile){
+        updateProgress(entry.id, "Parsing Peloton CSV…", 30);
+        const peloText = await file.slice(0, 10000000).text();
+        const peloLines = peloText.trim().split("\n");
+        const peloHeader = peloLines[0].split(",").map(h=>h.replace(/"/g,"").trim().toLowerCase());
+        const isPelo = peloHeader.some(h=>h.includes("fitness discipline"))||peloHeader.some(h=>h.includes("total output"));
+        if(isPelo){
+          const pcol = (name) => peloHeader.findIndex(h=>h.includes(name));
+          const piDate=pcol("workout timestamp"),piDisc=pcol("fitness discipline"),piType=pcol("type"),piTitle=pcol("title");
+          const piOutput=pcol("total output"),piAvgW=pcol("avg. watts"),piMaxW=pcol("max watts");
+          const piAvgRes=pcol("avg. resistance"),piAvgCad=pcol("avg. cadence"),piAvgSpd=pcol("avg. speed");
+          const piDist=pcol("distance"),piCal=pcol("calories burned"),piAvgHR=pcol("avg. heartrate");
+          const piMaxHR=pcol("max heartrate"),piInst=pcol("instructor name");
+          const piDur=pcol("length")>=0?pcol("length"):pcol("duration");
+          const peloRows = [];
+          for(const pline of peloLines.slice(1).filter(l=>l.trim())){
+            const pcols=[];let pcur="",pinQ=false;
+            for(const ch of pline){if(ch==='"'){pinQ=!pinQ;}else if(ch===","&&!pinQ){pcols.push(pcur);pcur="";}else{pcur+=ch;}}
+            pcols.push(pcur);
+            const pget=(i)=>i>=0&&i<pcols.length?(pcols[i]||"").replace(/"/g,"").trim():"";
+            const dateRaw=pget(piDate);if(!dateRaw)continue;
+            const dm=dateRaw.match(/(\d{4})-(\d{2})-(\d{2})/);const dateKey=dm?`${dm[1]}-${dm[2]}-${dm[3]}`:"";if(!dateKey)continue;
+            peloRows.push({dateKey,discipline:pget(piDisc),type:pget(piType),title:pget(piTitle),output:parseFloat(pget(piOutput))||0,avgWatts:parseFloat(pget(piAvgW))||0,maxWatts:parseFloat(pget(piMaxW))||0,avgResistance:parseFloat(pget(piAvgRes))||0,avgCadence:parseFloat(pget(piAvgCad))||0,avgSpeed:parseFloat(pget(piAvgSpd))||0,distance:parseFloat(pget(piDist))||0,calories:parseInt(pget(piCal))||0,avgHR:parseInt(pget(piAvgHR))||0,maxHR:parseInt(pget(piMaxHR))||0,duration:parseFloat(pget(piDur))||0,instructor:pget(piInst),source:"peloton_csv"});
+          }
+          localStorage.setItem("vital_peloton_v1", JSON.stringify(peloRows));
+          updateProgress(entry.id, "Merging with WHOOP…", 70);
+          try{const calRichRaw=localStorage.getItem("vital_cal_rich")||localStorage.getItem("vital_whoop_cal_rich");if(calRichRaw){const calRich=JSON.parse(calRichRaw);const catMap={cycling:"spin",running:"running",walking:"walking",strength:"functional fitness",yoga:"yoga",meditation:"meditation",cardio:"cardio"};const overlay={};for(const r of peloRows){if(!r.dateKey)continue;const cat=catMap[r.discipline.toLowerCase()]||r.discipline.toLowerCase()||"other";const sessions=calRich[r.dateKey];if(sessions&&sessions.length){overlay[r.dateKey]=overlay[r.dateKey]||{};overlay[r.dateKey][cat]={distance:r.distance,avgPace:r.avgSpeed>0?(60/r.avgSpeed):0,avgSpeed:r.avgSpeed,output:r.output,avgWatts:r.avgWatts,maxWatts:r.maxWatts,avgCadence:r.avgCadence,avgResistance:r.avgResistance,peloTitle:r.title,peloInst:r.instructor,duration:r.duration,source:"peloton"};}}localStorage.setItem("vital_cal_rich_overlay",JSON.stringify(overlay));}}catch(e){console.warn("Peloton overlay merge error:",e);}
+          setUploads(u=>u.map(x=>x.id===entry.id?{...x,status:"done",progress:100,progressStep:"Complete",result:{summary:`Peloton: ${peloRows.length} workouts imported. ${peloRows.filter(r=>r.output>0).length} with power data.`,biomarkers:[],insights:[],recommendations:[]}}:x));
+          return;
+        }
+      }
+
+
 
       if (isPDF || isImage) {
         const b64 = await new Promise((res, rej) => {
