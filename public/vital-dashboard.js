@@ -6277,7 +6277,7 @@ function ImportPage(){
             const iCal    = col("calories burned");
             const iAvgHR  = col("avg. heartrate");
             const iMaxHR  = col("max heartrate");
-            const iDur    = col("duration");
+                            const iDur   = col("length")>=0 ? col("length") : col("duration");
             const iInst   = col("instructor name");
 
             const rows = [];
