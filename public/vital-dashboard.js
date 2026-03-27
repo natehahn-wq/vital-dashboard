@@ -5157,6 +5157,23 @@ const RECENT_WORKOUTS = (()=>{
     });
   });
   // Apply Peloton overlay to recent workouts
+      // Rebuild Peloton overlay from CAL_RICH + peloton data (ensures all dates matched)
+    try {
+      const peloRaw = localStorage.getItem("vital_peloton_v1");
+      if(peloRaw){
+        const peloAll = JSON.parse(peloRaw);
+        const catMap = {cycling:"spin",running:"running",walking:"walking",strength:"functional fitness",yoga:"yoga",meditation:"meditation",cardio:"cardio"};
+        const freshOv = {};
+        for(const r of peloAll){
+          if(!r.dateKey || !CAL_RICH[r.dateKey]) continue;
+          const cat = catMap[r.discipline.toLowerCase()]||r.discipline.toLowerCase()||"other";
+          freshOv[r.dateKey] = freshOv[r.dateKey]||{};
+          freshOv[r.dateKey][cat] = {distance:r.distance,avgPace:r.avgSpeed>0?(60/r.avgSpeed):0,avgSpeed:r.avgSpeed,output:r.output,avgWatts:r.avgWatts,maxWatts:r.maxWatts,avgCadence:r.avgCadence,avgResistance:r.avgResistance,peloTitle:r.title,peloInst:r.instructor,duration:r.duration,source:"peloton"};
+        }
+        localStorage.setItem("vital_cal_rich_overlay", JSON.stringify(freshOv));
+      }
+    } catch(e){ console.warn("Peloton overlay rebuild:", e); }
+
   try {
     const ov = JSON.parse(localStorage.getItem("vital_cal_rich_overlay")||"{}");
     return rows.map(w => {
