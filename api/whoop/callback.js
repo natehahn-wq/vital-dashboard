@@ -69,7 +69,7 @@ async function fetchWorkoutZones(workoutId, headers) {
                 );
           if (!res.ok) return null;
           const detail = await res.json();
-          return detail.score?.zone_duration || null;
+          console.log(`[VITAL] Workout ${workoutId} detail score keys:`, detail.score ? Object.keys(detail.score) : 'no score', 'zone_duration:', JSON.stringify(detail.score?.zone_duration)); return detail.score?.zone_duration || null;
     } catch (e) {
           console.error(`[VITAL] Failed to fetch zones for workout ${workoutId}:`, e.message);
           return null;
