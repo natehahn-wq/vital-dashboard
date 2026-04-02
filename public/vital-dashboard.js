@@ -786,7 +786,7 @@ const SCORES_NOW = {
     ]},
 
   recovery:     { score:61, prev:79, label:"Recovery & Sleep",   icon:"🌙", color:P.violet, weight:.10,
-    dataDate:"WHOOP 3-month avg · Dec 21 2025 – Mar 21 2026",
+    dataDate:"WHOOP 90-day rolling avg",
     drivers:[
       {name:"Recovery (3-mo avg)",  val:"63.9%",   note:"10-wk avg — below personal baseline 66.6%", score:64, trend:"flag"},
       {name:"HRV (3-mo avg)",       val:"43.2 ms", note:"Baseline zone — below personal mean 44.4",  score:45, trend:"flag"},
@@ -1128,7 +1128,7 @@ function ScorePage(){
           {SCORE_GRADE(SCORES_NOW.master.score)} · {SCORE_LABEL(SCORES_NOW.master.score)}
         </div>
         <div style={{fontFamily:FF.s,fontSize:12,color:P.sub,lineHeight:1.7,maxWidth:"100%",marginBottom:16}}>
-          Your score reflects 7 clinical domains anchored to the most recent source for each — <span style={{color:P.cyan,fontWeight:700}}>Recovery, Strength, and Cardiovascular use 3-month WHOOP averages</span> (Dec 21 2025 – Mar 21 2026) rather than single-day snapshots. Labs: Jan 15 '26 (lipids/metabolic) + May 23 '25 (hormones/CRP/HbA1c) — most recent per biomarker. Body comp: Jan 23 '26 DXA. Score is <span style={{color:P.cyan,fontWeight:700}}>+2 pts</span> since Feb '25 — lipid and longevity gains are partially offset by 3-month recovery averaging (63.9% avg vs 66.6% baseline) and a running-heavy training block with limited functional strength work.
+          Your score reflects 7 clinical domains anchored to the most recent source for each — <span style={{color:P.cyan,fontWeight:700}}>Recovery, Strength, and Cardiovascular use 90-day rolling WHOOP averages</span> ({window.__VITAL_90DAY_RANGE__ || "Jan 1 2026 \u2013 Apr 1 2026"}) rather than single-day snapshots. Labs: Jan 15 '26 (lipids/metabolic) + May 23 '25 (hormones/CRP/HbA1c) — most recent per biomarker. Body comp: Jan 23 '26 DXA. Score is <span style={{color:P.cyan,fontWeight:700}}>+2 pts</span> since Feb '25 — lipid and longevity gains are partially offset by 3-month recovery averaging (63.9% avg vs 66.6% baseline) and a running-heavy training block with limited functional strength work.
           Primary opportunities: Monitor testosterone decline (560→377), DHEA-S now elevated (needs recalibration), watch eGFR trend (97→77).
         </div>
         <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
@@ -5141,6 +5141,54 @@ const CAL_RICH={
 
 // RECENT_WORKOUTS — derived live from CAL_RICH (newest first)
 // No hardcoding: adding to CAL_RICH automatically appears here
+
+// ─── Dynamic 90-day Health Score computation ───
+;(function computeDynamic90DayScores() {
+  const today = new Date();
+  const d90 = new Date(today);
+  d90.setDate(d90.getDate() - 90);
+  const fmt = d => {
+    const mm = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return mm[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
+  };
+  const fmtISO = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  const rangeLabel = fmt(d90) + " \u2013 " + fmt(today);
+  const startISO = fmtISO(d90);
+  const endISO = fmtISO(today);
+  const dKeys = Object.keys(CAL_DATA).filter(k => k >= startISO && k <= endISO).sort();
+  const hrvArr = [], rhrArr = [], recArr = [], sleepArr = [];
+  dKeys.forEach(k => { const d = CAL_DATA[k]; if (d.hrv > 0) hrvArr.push(d.hrv); if (d.rhr > 0) rhrArr.push(d.rhr); if (d.rec > 0) recArr.push(d.rec); if (d.sdur > 0) sleepArr.push(d.sdur); });
+  const rKeys = Object.keys(CAL_RICH).filter(k => k >= startISO && k <= endISO);
+  let totalStrain = 0, gymCount = 0, sessionCount = 0;
+  rKeys.forEach(k => { const arr = CAL_RICH[k]; if (Array.isArray(arr)) { arr.forEach(w => { sessionCount++; if (w.strain) totalStrain += w.strain; if (w.cat && (w.cat.toLowerCase().includes("strength") || w.cat.toLowerCase().includes("weight") || w.cat.toLowerCase().includes("functional"))) gymCount++; }); } });
+  const weeksInRange = Math.max(1, dKeys.length / 7);
+  const weeklyStrain = totalStrain / weeksInRange;
+  const weeklyGym = gymCount / weeksInRange;
+  const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+  const avgHRV = avg(hrvArr), avgRHR = avg(rhrArr), avgRec = avg(recArr), avgSleep = avg(sleepArr);
+  const scoreRecovery = r => r >= 70 ? 90 : r >= 55 ? 75 : r >= 40 ? 60 : 45;
+  const scoreHRV = h => h >= 60 ? 90 : h >= 45 ? 78 : h >= 35 ? 65 : 50;
+  const scoreRHR = r => r <= 50 ? 90 : r <= 55 ? 80 : r <= 60 ? 70 : 55;
+  const scoreSleep = h => h >= 8 ? 90 : h >= 7 ? 80 : h >= 6 ? 65 : 50;
+  const scoreWeeklyStrain = s => s >= 80 ? 90 : s >= 60 ? 80 : s >= 40 ? 70 : 55;
+  const scoreGymSessions = g => g >= 4 ? 90 : g >= 3 ? 80 : g >= 2 ? 65 : 50;
+  const recScore = scoreRecovery(avgRec), hrvScore = scoreHRV(avgHRV), rhrScore = scoreRHR(avgRHR);
+  const sleepScore = scoreSleep(avgSleep), strainScore = scoreWeeklyStrain(weeklyStrain), gymScore = scoreGymSessions(weeklyGym);
+  const recoveryOverall = Math.round(recScore * 0.35 + hrvScore * 0.25 + sleepScore * 0.25 + rhrScore * 0.15);
+  SCORES_NOW.recovery.score = recoveryOverall;
+  SCORES_NOW.recovery.prev = SCORES_NOW.recovery.prev || 61;
+  SCORES_NOW.recovery.dataDate = "WHOOP 90-day avg \xB7 " + rangeLabel;
+  if (SCORES_NOW.recovery.drivers) { SCORES_NOW.recovery.drivers.forEach(dr => { if (dr.name?.includes("Recovery")) { dr.value = Math.round(avgRec) + "% avg"; dr.score = recScore; } if (dr.name?.includes("HRV")) { dr.value = avgHRV.toFixed(1) + " ms"; dr.score = hrvScore; } if (dr.name?.includes("RHR")) { dr.value = avgRHR.toFixed(1) + " bpm"; dr.score = rhrScore; } if (dr.name?.includes("Sleep")) { dr.value = avgSleep.toFixed(1) + " hrs avg"; dr.score = sleepScore; } }); }
+  if (SCORES_NOW.cardiovascular?.drivers) { SCORES_NOW.cardiovascular.drivers.forEach(dr => { if (dr.name?.includes("HRV")) { dr.value = avgHRV.toFixed(1) + " ms (90d)"; dr.score = hrvScore; } if (dr.name?.includes("RHR")) { dr.value = avgRHR.toFixed(1) + " bpm (90d)"; dr.score = rhrScore; } }); let cvT = 0, cvC = 0; SCORES_NOW.cardiovascular.drivers.forEach(dr => { if (dr.score != null) { cvT += dr.score; cvC++; } }); if (cvC > 0) SCORES_NOW.cardiovascular.score = Math.round(cvT / cvC); }
+  if (SCORES_NOW.strength?.drivers) { SCORES_NOW.strength.drivers.forEach(dr => { if (dr.name?.includes("Strain")) { dr.value = weeklyStrain.toFixed(1) + "/wk"; dr.score = strainScore; } if (dr.name?.includes("Gym") || dr.name?.includes("session")) { dr.value = weeklyGym.toFixed(1) + "/wk"; dr.score = gymScore; } }); let stT = 0, stC = 0; SCORES_NOW.strength.drivers.forEach(dr => { if (dr.score != null) { stT += dr.score; stC++; } }); if (stC > 0) SCORES_NOW.strength.score = Math.round(stT / stC); }
+  const weights = { cardiovascular: 0.2, metabolic: 0.15, bodyComp: 0.15, strength: 0.15, hormonal: 0.1, longevity: 0.15, recovery: 0.1 };
+  let total = 0, wSum = 0;
+  Object.keys(weights).forEach(k => { if (SCORES_NOW[k]?.score != null) { total += SCORES_NOW[k].score * weights[k]; wSum += weights[k]; } });
+  if (wSum > 0) SCORES_NOW.master.score = Math.round(total / wSum);
+  window.__VITAL_90DAY_RANGE__ = rangeLabel;
+  window.__VITAL_SCORE_DATE__ = fmt(today);
+})();
+
 const RECENT_WORKOUTS = (()=>{
   const ACT = ACT_META;
   const rows = [];
@@ -9262,7 +9310,7 @@ export default function App(){
                           };
                           if(!CAL_RICH[dt]) CAL_RICH[dt] = [];
                           // Avoid duplicates — skip if already present with same _liveId
-                          if(!CAL_RICH[dt].some(e => e._liveId === w.id)){
+                          if(!CAL_RICH[dt].some(e => e._liveId === w.id || (!e._liveId && e.cat === entry.cat && e.strain === entry.strain))){
                                       CAL_RICH[dt].push(entry);
                           }
                 });
