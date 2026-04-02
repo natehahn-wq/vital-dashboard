@@ -1648,9 +1648,21 @@ function TodayPage({setPage, whoopStatus="loading"}){
   const todaySchedule = WEEKLY_SCHEDULE[dowIdx];
 
  
-  const doneTodayAll = [
-    {name:"Functional Fitness",icon:"🏋",color:"#3A5C48",strain:14.2,dur:66,cal:541,timeH:10,time:"10:12 AM",avgHR:121,maxHR:164}, // Mar 22 WHOOP screenshot — 8:07–9:03am
-  ];
+    // Build doneTodayAll from CAL_RICH (populated by live WHOOP API) instead of hardcoded data
+      const iconMap = {running:"\u{1F3C3}",fitness:"\u{1F3CB}",walking:"\u{1F6B6}",cycling:"\u{1F6B4}",spin:"\u{1F6B4}",other:"\u{1F4AA}",sport:"\u26BD"};
+      const colorMap = {running:"#C47830",fitness:"#3A5C48",walking:"#7A5AB0",cycling:"#2D7D9A",spin:"#2D7D9A",other:"#666",sport:"#444"};
+      const doneTodayAll = (CAL_RICH[_todayKey] || []).map(w => ({
+              name: w.name || "Activity",
+              icon: iconMap[w.cat] || "\u{1F4AA}",
+              color: colorMap[w.cat] || "#666",
+              strain: w.strain || 0,
+              dur: w.dur || 0,
+              cal: w.cal || 0,
+              timeH: w.timeH != null ? w.timeH : 0,
+              time: w.start || "",
+              avgHR: w.avgHR || 0,
+              maxHR: w.maxHR || 0,
+      }));
   const doneToday = doneTodayAll.filter(w => hour >= w.timeH);
   const strainSoFar     = doneToday.reduce((s,w)=>s+w.strain,0);
   const calsBurned = doneToday.reduce((s,w)=>s+w.cal,0);
@@ -9219,6 +9231,42 @@ export default function App(){
     if(whoopLive.sleep){
       Object.assign(WHOOP.sleep, whoopLive.sleep);
     }
+        // Sync live workout data into CAL_RICH so Fitness page + Today page use it
+        if(whoopLive.workouts && whoopLive.workouts.length > 0){
+                const sportMap = {0:"Running",1:"Cycling",48:"Functional Fitness",52:"Walking",71:"Spin",82:"Other",84:"Sport",-1:"Activity"};
+                const catMap   = {0:"running",1:"cycling",48:"fitness",52:"walking",71:"spin",82:"other",84:"sport"};
+                whoopLive.workouts.forEach(w => {
+                          const dt = w.start ? w.start.slice(0,10) : null;
+                          if(!dt) return;
+                          const startDate = new Date(w.start);
+                          const hh = startDate.getHours();
+                          const mm = startDate.getMinutes();
+                          const ampm = hh >= 12 ? "PM" : "AM";
+                          const h12 = hh % 12 || 12;
+                          const timeStr = `${h12}:${String(mm).padStart(2,"0")} ${ampm}`;
+                          const entry = {
+                                      cat: catMap[w.sport] || "other",
+                                      name: sportMap[w.sport] || "Activity",
+                                      strain: w.strain || 0,
+                                      dur: w.dur || 0,
+                                      cal: w.cal || 0,
+                                      avgHR: w.avgHR || 0,
+                                      maxHR: w.maxHR || 0,
+                                      start: timeStr,
+                                      timeH: hh,
+                                      z0p: w.zones?.z0p || 0, z1p: w.zones?.z1p || 0, z2p: w.zones?.z2p || 0,
+                                      z3p: w.zones?.z3p || 0, z4p: w.zones?.z4p || 0, z5p: w.zones?.z5p || 0,
+                                      z0m: w.zones?.z0m || 0, z1m: w.zones?.z1m || 0, z2m: w.zones?.z2m || 0,
+                                      z3m: w.zones?.z3m || 0, z4m: w.zones?.z4m || 0, z5m: w.zones?.z5m || 0,
+                                      _liveId: w.id
+                          };
+                          if(!CAL_RICH[dt]) CAL_RICH[dt] = [];
+                          // Avoid duplicates — skip if already present with same _liveId
+                          if(!CAL_RICH[dt].some(e => e._liveId === w.id)){
+                                      CAL_RICH[dt].push(entry);
+                          }
+                });
+        }
   }, [whoopLive]);
   const [theme,setTheme]=useState(()=>{
     try{ return localStorage.getItem("vital_theme")||"warm"; } catch(e){ return "warm"; }
