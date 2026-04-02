@@ -9233,7 +9233,7 @@ export default function App(){
     }
         // Sync live workout data into CAL_RICH so Fitness page + Today page use it
         if(whoopLive.workouts && whoopLive.workouts.length > 0){
-                const sportMap = {0:"Running",1:"Cycling",48:"Functional Fitness",52:"Walking",71:"Spin",82:"Other",84:"Sport",-1:"Activity"};
+                const sportMap = {0:"Running",1:"Cycling",48:"Functional Fitness",52:"Walking",71:"Spin",82:"Other",84:"Sport","-1":"Activity"};
                 const catMap   = {0:"running",1:"cycling",48:"fitness",52:"walking",71:"spin",82:"other",84:"sport"};
                 whoopLive.workouts.forEach(w => {
                           const dt = w.start ? w.start.slice(0,10) : null;
