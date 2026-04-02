@@ -1651,7 +1651,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
     // Build doneTodayAll from CAL_RICH (populated by live WHOOP API) instead of hardcoded data
       const iconMap = {running:"\u{1F3C3}",fitness:"\u{1F3CB}",walking:"\u{1F6B6}",cycling:"\u{1F6B4}",spin:"\u{1F6B4}",other:"\u{1F4AA}",sport:"\u26BD"};
       const colorMap = {running:"#C47830",fitness:"#3A5C48",walking:"#7A5AB0",cycling:"#2D7D9A",spin:"#2D7D9A",other:"#666",sport:"#444"};
-      const doneTodayAll = (CAL_RICH[_todayKey] || []).map(w => ({
+      const doneTodayAll = (CAL_RICH[now.toLocaleDateString("en-CA")] || []).map(w => ({
               name: w.name || "Activity",
               icon: iconMap[w.cat] || "\u{1F4AA}",
               color: colorMap[w.cat] || "#666",
