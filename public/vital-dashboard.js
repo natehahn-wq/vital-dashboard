@@ -16,7 +16,7 @@ function useIsMobile(){
   return mob;
 }
 
-// Live WHOOP data hook — fetches from /api/whoop/data on mount
+// Live WHOOP data hook — fetches from /api/whoop/data on moun
 // Falls back to hardcoded constants if not connected / on localhost
 function useWhoopLive() {
   const [whoopLive, setWhoopLive] = useState(null);
@@ -5258,7 +5258,7 @@ const WEIGHT_LOG=[
 ];
 
 function CalendarPage(){
-  const [viewMonth, setViewMonth] = useState({y:2026,m:2}); // 0-indexed
+  const [viewMonth, setViewMonth] = useState({y:new Date().getFullYear(),m:new Date().getMonth()}); // 0-indexed
   const [selected,  setSelected]  = useState(null);
 
   // Category → icon + color
@@ -5319,7 +5319,7 @@ function CalendarPage(){
       ].map(({icon,label,val,unit,color,sub})=>(
         <div key={label} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:12,padding:"13px 14px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
           <div style={{width:26,height:26,borderRadius:6,background:color+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,marginBottom:8}}>{icon}</div>
-          <div style={{fontFamily:FF.r,fontSize:26,fontWeight:600,color,lineHeight:1,letterSpacing:"-0.01em",marginBottom:2}}>{val}<span style={{fontSize:11,color:P.muted,fontFamily:FF.s,fontWeight:400,marginLeft:2}}>{unit}</span></div>
+          <div style={{fontFamily:FF.r,fontSize:20,fontWeight:600,color,lineHeight:1,letterSpacing:"-0.01em",marginBottom:2}}>{val}<span style={{fontSize:11,color:P.muted,fontFamily:FF.s,fontWeight:400,marginLeft:2}}>{unit}</span></div>
           <div style={S.sub10}>{label}</div>
           <div style={S.mut9}>{sub}</div>
         </div>
@@ -5670,9 +5670,9 @@ function CalendarPage(){
                 </div>
               </div>
               <div style={{textAlign:"right"}}>
-                <div style={{fontFamily:FF.r,fontSize:26,fontWeight:600,
+                <div style={{fontFamily:FF.r,fontSize:20,fontWeight:600,
                   color:isLatest?P.sage:P.steel,letterSpacing:"-0.02em",lineHeight:1}}>
-                  {r.wt}
+                  {r.wt.toFixed(1)}
                 </div>
                 <div style={S.mut9t2}>lbs</div>
               </div>
