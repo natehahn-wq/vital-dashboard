@@ -58,16 +58,16 @@ function useGoogleFonts() {
     document.head.appendChild(l);
   }, []);
 }
-// Calls Anthropic API with gcal MCP server, parses multi-turn tool results
+// Fetches Google Calendar events directly via /api/calendar endpoint
 function useCalendarEvents(){
-  const [events, setEvents]   = useState(null);   // null=loading, []=empty, [...]=loaded
-  const [label,  setLabel]    = useState("today");  // "today" | "tomorrow"
-  const [error,  setError]    = useState(null);
+  const [events, setEvents]  = useState(null);   // null=loading, []=empty, [...]=loaded
+  const [label,  setLabel]   = useState("today"); // "today" | "tomorrow"
+  const [error,  setError]   = useState(null);
 
   useEffect(()=>{
     const run = async ()=>{
-      const now    = new Date();
-      const hour   = now.getHours();
+      const now   = new Date();
+      const hour  = now.getHours();
       const isAfter6 = hour >= 18;
 
       // Build date window
@@ -77,11 +77,11 @@ function useCalendarEvents(){
       const yyyy = targetDate.getFullYear();
       const mm   = String(targetDate.getMonth()+1).padStart(2,"0");
       const dd   = String(targetDate.getDate()).padStart(2,"0");
-      const dayStr   = `${yyyy}-${mm}-${dd}`;
+      const dayStart = `${yyyy}-${mm}-${dd}T00:00:00`;
+      const dayEnd   = `${yyyy}-${mm}-${dd}T23:59:59`;
       const dayLabel = isAfter6 ? "tomorrow" : "today";
       setLabel(dayLabel);
 
-     
       const CALS = [
         "natehahn@gmail.com",
         "nate@epidemic.agency",
@@ -90,37 +90,38 @@ function useCalendarEvents(){
         "family05212513149394648654@group.calendar.google.com",
       ];
 
-      const prompt = `For date ${dayStr}, call gcal_list_events once for EACH of these ${CALS.length} calendar IDs using timeMin="${dayStr}T00:00:00", timeMax="${dayStr}T23:59:59", timeZone="America/Los_Angeles". After all calls, output ONLY a JSON array of every event found across all calendars. Each item: {"summary":"title","start":"9:15 AM","end":"10:15 AM","calendar":"the_calendar_id","location":"address or empty","allDay":false}. Output [] if nothing found. No markdown.\nCalendars:\n${CALS.join("\n")}`;
-
       try {
-        const res = await fetch("/api/proxy",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            model:"claude-sonnet-4-6",
-            max_tokens:2000,
-            system:"You are a calendar assistant. Fetch the requested calendar events and respond with ONLY a raw JSON array. No markdown, no backticks, no explanation.",
-            mcp_servers:[{type:"url",url:"https://gcal.mcp.claude.com/mcp",name:"gcal"}],
-            messages:[{role:"user",content:prompt}],
-          }),
-        });
-        if(!res.ok){ setEvents([]); setError(`HTTP ${res.status}`); return; }
-        const data = await res.json();
-        if(data.error){ setEvents([]); setError(data.error.message||"API error"); return; }
+        // Fetch events from all calendars in parallel
+        const results = await Promise.all(
+          CALS.map(async (calId) => {
+            try {
+              const url = `/api/calendar?calendarId=${encodeURIComponent(calId)}&timeMin=${encodeURIComponent(dayStart)}&timeMax=${encodeURIComponent(dayEnd)}`;
+              const res = await fetch(url);
+              if (!res.ok) return [];
+              const data = await res.json();
+              return (data.items || []).map(ev => ({
+                summary: ev.summary || "(No title)",
+                start: ev.start && (ev.start.dateTime || ev.start.date) || "",
+                end: ev.end && (ev.end.dateTime || ev.end.date) || "",
+                location: ev.location || "",
+                calendar_id: calId,
+              }));
+            } catch { return []; }
+          })
+        );
 
-       
-        const allText = (data.content||[])
-          .filter(b=>b.type==="text")
-          .map(b=>b.text).join("");
-        const clean = allText.replace(/```json|```/g,"").trim();
-        const arrMatch = clean.match(/\[[\s\S]*\]/);
-        if(!arrMatch){ setEvents([]); return; }
-        let parsed;
-        try{ parsed = JSON.parse(arrMatch[0]); } catch{ setEvents([]); return; }
-        setEvents(Array.isArray(parsed) ? parsed.filter(e=>e&&e.summary) : []);
+        // Merge and sort by start time
+        const allEvents = results.flat().sort((a, b) => {
+          const ta = a.start ? new Date(a.start).getTime() : 0;
+          const tb = b.start ? new Date(b.start).getTime() : 0;
+          return ta - tb;
+        });
+
+        setEvents(allEvents);
+        setError(null);
       } catch(e) {
-        setError(e.message);
         setEvents([]);
+        setError(e.message);
       }
     };
     run();
