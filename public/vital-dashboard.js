@@ -93,7 +93,7 @@ function useCalendarEvents(){
       const prompt = `For date ${dayStr}, call gcal_list_events once for EACH of these ${CALS.length} calendar IDs using timeMin="${dayStr}T00:00:00", timeMax="${dayStr}T23:59:59", timeZone="America/Los_Angeles". After all calls, output ONLY a JSON array of every event found across all calendars. Each item: {"summary":"title","start":"9:15 AM","end":"10:15 AM","calendar":"the_calendar_id","location":"address or empty","allDay":false}. Output [] if nothing found. No markdown.\nCalendars:\n${CALS.join("\n")}`;
 
       try {
-        const res = await fetch("https://api.anthropic.com/v1/messages",{
+        const res = await fetch("/api/proxy",{
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
@@ -3906,7 +3906,7 @@ function Insights(){
       let content;
       if(file.type==="application/pdf"||file.type.startsWith("image/")){const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});content=[{type:file.type==="application/pdf"?"document":"image",source:{type:"base64",media_type:file.type,data:b64}},{type:"text",text:AI_P}];}
       else{const t=await file.text();content=[{type:"text",text:`${AI_P}\n\nFILE: ${file.name}\n\n${t}`}];}
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content}]})});
+      const res=await fetch("/api/proxy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content}]})});
       const data=await res.json();const raw=data.content?.find(b=>b.type==="text")?.text||"";
       let parsed;try{parsed=JSON.parse(raw.replace(/```json|```/g,"").trim());}catch{parsed={summary:raw,biomarkers:[],insights:[],recommendations:[]};}
       setDocs(d=>d.map(doc=>doc.id===entry.id?{...doc,status:"done",result:parsed}:doc));
