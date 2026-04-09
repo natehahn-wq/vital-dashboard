@@ -3,44 +3,72 @@
 
 export const config = { api: { bodyParser: { sizeLimit: '10mb' } } };
 
-export default async function handler(req, res) {
-    // CORS — allow your own domain
-  res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+// Exchange a Google OAuth refresh token for a fresh access token
+async function getGoogleAccessToken() {
+        const clientId = process.env.GOOGLE_CLIENT_ID;
+        const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+        const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    if (!clientId || !clientSecret || !refreshToken) return null;
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                                client_id: clientId,
+                                client_secret: clientSecret,
+                                refresh_token: refreshToken,
+                                grant_type: 'refresh_token',
+                }),
+    });
 
-  // Inject Google OAuth token into MCP server configs that need it
-  const body = { ...req.body };
-    const gcalToken = process.env.GOOGLE_OAUTH_TOKEN;
-    if (gcalToken && Array.isArray(body.mcp_servers)) {
-          body.mcp_servers = body.mcp_servers.map(srv =>
-                  srv.url && srv.url.includes('gcal.mcp.claude.com') && !srv.authorization_token
-                                                          ? { ...srv, authorization_token: `Bearer ${gcalToken}` }
-                    : srv
-                                                      );
+    if (!res.ok) {
+                console.error('Google token refresh failed:', await res.text());
+                return null;
     }
 
-  try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: {
-                          'Content-Type': 'application/json',
-                          'x-api-key': apiKey,
-                          'anthropic-version': '2023-06-01',
-                          'anthropic-beta': 'mcp-client-2025-04-04',
-                },
-                body: JSON.stringify(body),
-        });
+    const data = await res.json();
+        return data.access_token;
+}
 
-      const data = await response.json();
-        res.status(response.status).json(data);
-  } catch (err) {
-        res.status(500).json({ error: err.message });
-  }
+export default async function handler(req, res) {
+        // CORS — allow your own domain
+    res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
+        if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+        if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+
+    // Get a fresh Google access token via refresh token rotation
+    const body = { ...req.body };
+        const gcalToken = await getGoogleAccessToken();
+        if (gcalToken && Array.isArray(body.mcp_servers)) {
+                    body.mcp_servers = body.mcp_servers.map(srv =>
+                                    srv.url && srv.url.includes('gcal.mcp.claude.com') && !srv.authorization_token
+                                                                            ? { ...srv, authorization_token: `Bearer ${gcalToken}` }
+                                        : srv
+                                                                    );
+        }
+
+    try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                                method: 'POST',
+                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'x-api-key': apiKey,
+                                                    'anthropic-version': '2023-06-01',
+                                                    'anthropic-beta': 'mcp-client-2025-04-04',
+                                },
+                                body: JSON.stringify(body),
+                });
+
+            const data = await response.json();
+                res.status(response.status).json(data);
+    } catch (err) {
+                res.status(500).json({ error: err.message });
+    }
 }
