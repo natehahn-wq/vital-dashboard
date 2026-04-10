@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid,
@@ -5591,7 +5591,7 @@ function CalendarPage(){
             {weekRows.map((week,wi)=>{
               const wkAlc = week.filter(k=>k&&CAL_DATA[k]?.alc).length;
               const wkLbl = week.find(k=>k) ? week.find(k=>k).slice(5,10).replace("-","/") : "";
-              return(<React.Fragment key={wi}>
+              return(<Fragment key={wi}>
                 <div style={{fontFamily:FF.m,fontSize:8,color:P.muted,paddingTop:3,textAlign:"right",paddingRight:6}}>{wkLbl}</div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
                   {week.map((key,di)=>{
@@ -5626,7 +5626,7 @@ function CalendarPage(){
                 </div>
                 {/* Alcohol count for week */}
                 {false&&<div/>}
-              </React.Fragment>);
+              </Fragment>);
             })}
           </div>
         </>);
