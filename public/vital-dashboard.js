@@ -1543,7 +1543,7 @@ function Sidebar({active,set,peloConnected,theme,setTheme}){
       </div>
     </div>
     <div style={{padding:"12px 10px",flex:1,overflowY:"auto"}}>
-      {NAV_PRIMARY.map(n)=>{
+      {NAV_PRIMARY.map((n)=>{
       const on=active===n.id;
       const accent=n.id==="today"?P.amber:n.id==="score"?P.terra:n.id==="fitness"?P.sage:n.id==="labs"?P.terra:n.id==="body"?P.clay:n.id==="peloton"?P.terra:P.sage;
       const flagDot=n.id==="labs";
@@ -1555,7 +1555,7 @@ function Sidebar({active,set,peloConnected,theme,setTheme}){
           {flagDot&&<div style={{width:6,height:6,borderRadius:"50%",background:P.terra}}/>}
           {on&&!flagDot&&<div style={{width:5,height:5,borderRadius:"50%",background:accent}}/>}
         </div>);
-    }}
+    })}
       <div onClick={()=>setShowMore(!showMore)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:10,marginTop:6,marginBottom:1,cursor:"pointer",transition:"all .15s",opacity:.6}}
         onMouseEnter={e=>{e.currentTarget.style.background=P.panel}}
         onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
@@ -1563,7 +1563,7 @@ function Sidebar({active,set,peloConnected,theme,setTheme}){
         <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sub}}>More</span>
       </div>
       {showMore&&<div style={{marginTop:2}}>
-        {NAV_MORE.map(n)=>{
+        {NAV_MORE.map((n)=>{
       const on=active===n.id;
       const accent=n.id==="today"?P.amber:n.id==="score"?P.terra:n.id==="fitness"?P.sage:n.id==="labs"?P.terra:n.id==="body"?P.clay:n.id==="peloton"?P.terra:P.sage;
       const flagDot=n.id==="labs";
@@ -1575,7 +1575,7 @@ function Sidebar({active,set,peloConnected,theme,setTheme}){
           {flagDot&&<div style={{width:6,height:6,borderRadius:"50%",background:P.terra}}/>}
           {on&&!flagDot&&<div style={{width:5,height:5,borderRadius:"50%",background:accent}}/>}
         </div>);
-    }}
+    })}
       </div>}
     </div>
     <div style={{padding:"14px 16px",borderTop:`1px solid ${P.border}`}}>
