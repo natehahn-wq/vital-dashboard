@@ -131,7 +131,7 @@ export function PelotonPage(){
             return(
               <div key={disc}
                 onClick={()=>setFilter(f=>f===disc?"all":disc)}
-                style={{padding:"10px 12px",background:P.panel,borderRadius:10,cursor:"pointer",
+                style={{padding:"10px 12px",borderRadius:10,cursor:"pointer",
                   border:`1.5px solid ${isActive?meta.color:P.border}`,
                   background:isActive?meta.color+"08":P.panel,transition:"all .15s"}}>
                 <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}>

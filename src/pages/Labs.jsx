@@ -55,7 +55,7 @@ export function Labs(){
       </div>
     </div>
     <div style={{display:"flex",gap:6}}>
-      {panels.map(p=><button key={p.id} onClick={()=>setActivePanel(p.id)} style={{fontFamily:FF.s,fontSize:11,fontWeight:600,padding:"6px 14px",borderRadius:7,cursor:"pointer",transition:"all .15s",background:activePanel===p.id?P.cardDk:P.card,color:activePanel===p.id?P.textInv:P.sub,border:`1px solid ${activePanel===p.id?P.cardDk:P.border}`,fontWeight:activePanel===p.id?600:400}}>{p.label}</button>)}
+      {panels.map(p=><button key={p.id} onClick={()=>setActivePanel(p.id)} style={{fontFamily:FF.s,fontSize:11,padding:"6px 14px",borderRadius:7,cursor:"pointer",transition:"all .15s",background:activePanel===p.id?P.cardDk:P.card,color:activePanel===p.id?P.textInv:P.sub,border:`1px solid ${activePanel===p.id?P.cardDk:P.border}`,fontWeight:activePanel===p.id?600:400}}>{p.label}</button>)}
     </div>
     <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"16px"}}>
       <SLabel color={panels.find(p=>p.id===activePanel)?.color} right={`${data.length} markers · most recent per biomarker`}>{panels.find(p=>p.id===activePanel)?.label}</SLabel>

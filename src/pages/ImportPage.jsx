@@ -392,7 +392,7 @@ export function ImportPage(){
               // For each Peloton row, find matching WHOOP session by date + category
               // and attach Peloton-only fields: distance, pace, output, watts, cadence, resistance
               const PELO_TO_CAT = {
-                cycling:"spin", "cycling":"spin", running:"running",
+                cycling:"spin", running:"running",
                 walking:"walking", strength:"fitness", stretching:"fitness",
                 "boot camp":"fitness", cardio:"fitness",
               };
