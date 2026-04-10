@@ -21,7 +21,7 @@ export function ScorePage(){
 
   return(<div style={S.col18}>
     <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}>{(()=>{const mob=useIsMobile();return(
-      <div style={{display:"flex",gap:mob?14:32,alignItems:"center",flexWrap:mob?"wrap":"nowrap"}}>
+      <div style={{display:"flex",flexDirection:mob?"column":"row",gap:mob?18:32,alignItems:mob?"center":"center",flexWrap:"nowrap"}}>
       <div style={{flexShrink:0}}>
         <MasterRing score={SCORES_NOW.master.score}/>
       </div>

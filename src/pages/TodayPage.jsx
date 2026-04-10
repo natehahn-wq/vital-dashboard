@@ -12,8 +12,10 @@ import { WHOOP } from "../lib/data/whoop.js";
 import { SCORES_NOW } from "../lib/data/scores.js";
 import { CAL_RICH } from "../lib/data/calendar.js";
 import { useCalendarEvents } from "../hooks/useCalendarEvents.js";
+import { useIsMobile } from "../hooks/useIsMobile.js";
 
 export function TodayPage({setPage, whoopStatus="loading"}){
+  const mob = useIsMobile();
   const { events:calEvents, label:calLabel2, error:calError } = useCalendarEvents();
   const now = new Date();
   const hour = now.getHours();
@@ -334,7 +336,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
   return(
     <div style={S.col18}>
       <div style={{
-        background:heroBg, borderRadius:18, padding:"28px 32px",
+        background:heroBg, borderRadius:18, padding:mob?"20px 18px":"28px 32px",
         position:"relative", overflow:"hidden",
         boxShadow:"0 4px 24px rgba(0,0,0,0.14)",
       }}>
@@ -343,15 +345,15 @@ export function TodayPage({setPage, whoopStatus="loading"}){
         <div style={{position:"absolute",bottom:-50,left:-30,width:180,height:180,borderRadius:"50%",
           background:"radial-gradient(circle, rgba(58,92,72,0.12) 0%, transparent 70%)",pointerEvents:"none"}}/>
 
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",position:"relative"}}>
+        <div style={{display:"flex",flexDirection:mob?"column":"row",justifyContent:"space-between",alignItems:"flex-start",position:"relative",gap:mob?14:0}}>
           <div>
             <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
               <span style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.72)",letterSpacing:"0.12em",textTransform:"uppercase"}}>{dateLabel}</span>
               <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(255,255,255,0.2)"}}/>
               <span style={{fontFamily:FF.m,fontSize:10,color:"rgba(255,255,255,0.55)"}}>{timeLabel}</span>
             </div>
-            <div style={{fontFamily:FF.r,fontSize:46,fontWeight:600,color:P.textInv,letterSpacing:"-0.02em",lineHeight:1,marginBottom:8}}>
-              {greeting}<br/>Nate.
+            <div style={{fontFamily:FF.r,fontSize:mob?30:46,fontWeight:600,color:P.textInv,letterSpacing:"-0.02em",lineHeight:1.05,marginBottom:8}}>
+              {greeting} Nate.
             </div>
             <div style={{fontFamily:FF.s,fontSize:13,color:"rgba(255,255,255,0.80)",marginTop:8,maxWidth:380,lineHeight:1.6}}>
               {isMorning && `Recovery ${recLabel(REC).toLowerCase()} today · ${SLEEP.dur}h of quality sleep last night.`}
@@ -360,7 +362,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               {isEvening && `${strainSoFar>0?`${strainSoFar.toFixed(1)} strain today.`:"Rest day."} Wind-down and optimise tonight's sleep.`}
             </div>
           </div>
-          <div style={{textAlign:"right",flexShrink:0,minWidth:140}}>
+          {!mob&&<div style={{textAlign:"right",flexShrink:0,minWidth:140}}>
             <div style={{fontFamily:FF.r,fontSize:60,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{weather.temp}°</div>
             <div style={{fontFamily:FF.s,fontSize:13,color:"rgba(255,255,255,0.85)",marginTop:3}}>{wDesc.icon} {wDesc.label}</div>
             <div style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.62)",marginTop:4}}>
@@ -370,9 +372,9 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               {weather.rainPct}% chance of rain
             </div>
             <div style={{fontFamily:FF.s,fontSize:9,color:"rgba(255,255,255,0.52)",marginTop:3}}>Montecito · 93108</div>
-          </div>
+          </div>}
         </div>
-        <div style={{display:"flex",gap:2,flexWrap:"wrap",marginTop:22,paddingTop:18,borderTop:"1px solid rgba(255,255,255,0.18)"}}>
+        <div style={{display:"grid",gridTemplateColumns:mob?"repeat(3,1fr)":"repeat(5,1fr)",gap:mob?6:2,marginTop:mob?16:22,paddingTop:mob?14:18,borderTop:"1px solid rgba(255,255,255,0.18)"}}>
           {[
             {label:"Recovery",   val:`${REC}%`,        color:rc},
             {label:"HRV",        val:`${HRV} ms`,       color:"rgba(255,255,255,0.90)"},
@@ -380,26 +382,28 @@ export function TodayPage({setPage, whoopStatus="loading"}){
             {label:"Sleep",      val:`${SLEEP.perf}%`,  color:"#7AC49A"},
             {label:"Strain today",val:strainSoFar>0?strainSoFar.toFixed(1):"—", color:strainSoFar>15?"#C4604A":strainSoFar>8?"#C47830":"rgba(255,255,255,0.90)"},
           ].map(({label,val,color},i)=>(
-            <div key={i} style={{flex:1,padding:"12px 16px",background:"rgba(255,255,255,0.08)",borderRadius:10}}>
+            <div key={i} style={{padding:mob?"10px 12px":"12px 16px",background:"rgba(255,255,255,0.08)",borderRadius:10}}>
               <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.60)",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4}}>{label}</div>
-              <div style={{fontFamily:FF.r,fontSize:26,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
+              <div style={{fontFamily:FF.r,fontSize:mob?20:26,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
             </div>
           ))}
-          {/* WHOOP live status pill */}
+        </div>
+        {/* WHOOP live status pill (moved below the stat grid for mobile breathing room) */}
+        <div style={{display:"flex",justifyContent:"flex-end",marginTop:10}}>
           {whoopStatus==="connected"&&(
-            <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(58,156,104,0.12)",borderRadius:8,border:"1px solid rgba(58,156,104,0.25)",alignSelf:"center",flexShrink:0}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(58,156,104,0.12)",borderRadius:8,border:"1px solid rgba(58,156,104,0.25)"}}>
               <div style={{width:5,height:5,borderRadius:"50%",background:"#3A9C68",boxShadow:"0 0 5px #3A9C68"}}/>
               <span style={{fontFamily:FF.s,fontSize:8,color:"#7AC49A",fontWeight:600,letterSpacing:"0.08em"}}>LIVE</span>
             </div>
           )}
           {whoopStatus==="disconnected"&&(
-            <a href="/api/whoop/login" style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(255,255,255,0.06)",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",textDecoration:"none",alignSelf:"center",flexShrink:0}}>
+            <a href="/api/whoop/login" style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(255,255,255,0.06)",borderRadius:8,border:"1px solid rgba(255,255,255,0.12)",textDecoration:"none"}}>
               <span style={{fontSize:10}}>⌚</span>
               <span style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.45)",letterSpacing:"0.06em"}}>Connect WHOOP</span>
             </a>
           )}
           {whoopStatus==="stale"&&(
-            <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(196,120,48,0.10)",borderRadius:8,border:"1px solid rgba(196,120,48,0.22)",alignSelf:"center",flexShrink:0}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(196,120,48,0.10)",borderRadius:8,border:"1px solid rgba(196,120,48,0.22)"}}>
               <span style={{fontSize:10}}>⚠</span>
               <span style={{fontFamily:FF.s,fontSize:8,color:"#C47830",letterSpacing:"0.06em"}}>Stale data</span>
             </div>
