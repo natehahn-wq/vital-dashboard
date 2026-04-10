@@ -51,7 +51,7 @@ export function CalendarPage(){
   return(<div style={S.col18}>
     <div style={S.rowsb}>
       <div>
-        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Real Data · Dec 2025 – Mar 2026</div>
+        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Dec – Mar</div>
         <div style={S.h18}>Activity Calendar</div>
       </div>
       <div style={{display:"flex",gap:6,alignItems:"center"}}>

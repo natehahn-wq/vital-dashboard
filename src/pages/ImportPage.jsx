@@ -535,7 +535,7 @@ export function ImportPage(){
     <div style={S.rowsbe}>
       <div>
         <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>
-          Labs · WHOOP · DXA · Body Scans · Nutrition
+          Labs · WHOOP · DXA
         </div>
         <div style={S.h18}>Import Health Data</div>
       </div>

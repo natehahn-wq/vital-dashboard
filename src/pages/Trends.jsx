@@ -65,7 +65,7 @@ export function Trends(){
   return(<div style={S.col16}>
     <div style={S.rowsb}>
       <div>
-        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Weekly Averages · Mar 2025–Mar 2026</div>
+        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Weekly Averages</div>
         <div style={S.h18}>Performance Trends</div>
       </div>
       <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>

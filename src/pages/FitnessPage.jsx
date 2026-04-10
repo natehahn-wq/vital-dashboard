@@ -457,7 +457,7 @@ export function FitnessPage(){
     <div style={S.rowsb}>
       <div>
         <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>
-          WHOOP · {range===1?"1 Week":range===4?"4 Weeks":`${range} Weeks`} · Mar 2025–Mar 2026
+          WHOOP · {range===1?"1 Week":range===4?"4 Weeks":`${range} Weeks`}
         </div>
         <div style={S.h18}>Fitness Overview</div>
       </div>

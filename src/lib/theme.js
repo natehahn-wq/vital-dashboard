@@ -12,7 +12,7 @@ export const THEMES = {
     id:"warm", name:"Warm Clinical", preview:"#F4EFE8",
     accent:"#C47830", accentDk:"#C47830", dark:false,
     bg:"#F4EFE8", panel:"#EDE7DE", card:"#FFFFFF", cardDk:"#242220",
-    border:"#DDD6CC", borderDk:"#4A4642",
+    border:"rgba(221,214,204,0.55)", borderDk:"#4A4642",
     text:"#1C1A17", textInv:"#F4EFE8", sub:"#6B6057", muted:"#A8A09A", mutedDk:"#B0A89E",
   },
 

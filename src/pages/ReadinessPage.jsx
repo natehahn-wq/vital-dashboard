@@ -37,7 +37,7 @@ export function ReadinessPage(){
 
   return(<div style={S.col16}>
     <div>
-      <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · 55-week personal baseline · HRV mean 44.4 ms ± 5.0</div>
+      <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · 55-week baseline</div>
       <div style={S.h18}>HRV Zones & Recovery Debt</div>
     </div>
     <div style={{background:`linear-gradient(135deg,${todayZone.color}18 0%,${todayZone.color}08 100%)`,border:`1.5px solid ${todayZone.color}55`,borderRadius:18,padding:"22px 24px",boxShadow:`0 4px 24px ${todayZone.color}18`}}>

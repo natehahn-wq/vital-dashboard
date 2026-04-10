@@ -62,7 +62,7 @@ export function SleepPage(){
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:12}}>
       <div>
         <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>
-          WHOOP · {dailyData.length} nights · Dec 2025 – Mar 2026
+          WHOOP · {dailyData.length} nights
         </div>
         <div style={S.h18}>Sleep Trends</div>
       </div>
