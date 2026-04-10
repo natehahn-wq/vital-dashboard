@@ -7,20 +7,6 @@
   <meta name="theme-color" content="#F4EFE8"/>
   <title>VITAL · Health Intelligence</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
-
-  <!-- React 18 -->
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-
-  <!-- PropTypes (required by Recharts) -->
-  <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
-
-  <!-- Recharts -->
-  <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
-
-  <!-- Babel standalone (JSX transform) -->
-  
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { height: 100%; }
@@ -35,43 +21,6 @@
 </head>
 <body>
   <div id="root"></div>
-
-  <!-- Shim: expose libraries on window for the dashboard JSX -->
-  <script>
-    // React hooks shim
-    const { useState, useEffect, useRef, useCallback, useMemo } = React;
-
-    // Recharts shim
-    const {
-      AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-      ResponsiveContainer, RadarChart, Radar, PolarGrid,
-      PolarAngleAxis, PolarRadiusAxis, BarChart, Bar, Cell,
-      PieChart, Pie, LineChart, Line, ReferenceLine, ComposedChart,
-    } = Recharts;
-  </script>
-
-  <script>
-(function(){
-  try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/whoop/data", false);
-    xhr.send();
-    if (xhr.status === 200) {
-      window.__WHOOP_LIVE = JSON.parse(xhr.responseText);
-      console.log("VITAL: Live WHOOP data loaded");
-    }
-  } catch(e) { console.warn("VITAL: Using offline data", e); }
-})();
-</script>
-<!-- Dashboard source -->
-  <script src="vital-dashboard-compiled.js"></script>
-
-  <script>
-    // Mount after Babel compiles
-    window.addEventListener('load', () => {
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(React.createElement(App));
-    });
-  </script>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

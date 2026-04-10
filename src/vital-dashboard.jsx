@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid,
@@ -224,8 +224,16 @@ const THEMES = {
 let _activeTheme = "warm";
 try { _activeTheme = localStorage.getItem("vital_theme") || "warm"; } catch(e){}
 
-// P is the live palette — swapped when user changes theme
-let P_BASE = {...THEMES[_activeTheme] || THEMES.warm};
+// P is the live palette — properties are mutated in-place when user changes
+// theme (not reassigned), so importing P_BASE/P from another module remains
+// safe when we split this file in Stage 2 of the migration.
+const P_BASE = {...(THEMES[_activeTheme] || THEMES.warm)};
+function setActiveTheme(t){
+  const next = THEMES[t] || THEMES.warm;
+  // Wipe stale keys then copy fresh ones so theme switches are clean.
+  for (const k of Object.keys(P_BASE)) delete P_BASE[k];
+  Object.assign(P_BASE, next);
+}
 
 const P = {
   // Backgrounds — dynamic per theme
@@ -4236,7 +4244,7 @@ function FitnessPage(){
       .catch(() => {});
   }, []);
   const _wkLabel = (ds) => { const d=new Date(ds+'T12:00:00'),dy=d.getDay(),df=d.getDate()-dy+(dy===0?-6:1),m=new Date(d.getFullYear(),d.getMonth(),df); return (m.getMonth()+1)+'/'+m.getDate(); };
-  const {mergedReal,mergedPhysio,mergedLoad} = React.useMemo(() => {
+  const {mergedReal,mergedPhysio,mergedLoad} = useMemo(() => {
     if(!historyDays.length) return {mergedReal:WEEKLY_REAL,mergedPhysio:WEEKLY_PHYSIO,mergedLoad:FITNESS_LOAD};
     const lastLbl = WEEKLY_REAL.length ? WEEKLY_REAL[WEEKLY_REAL.length-1].label : '';
     const wkMap = {};
@@ -9319,13 +9327,13 @@ export default function App(){
   });
 
   useEffect(()=>{
-    P_BASE = {...(THEMES[theme]||THEMES.warm)};
+    setActiveTheme(theme);
   },[theme]);
 
   const setThemeAndSave = (t) => {
     try{ localStorage.setItem("vital_theme",t); }catch(e){}
     setTheme(t);
-    P_BASE = {...(THEMES[t]||THEMES.warm)};
+    setActiveTheme(t);
   };
 
   const mob = useIsMobile();
