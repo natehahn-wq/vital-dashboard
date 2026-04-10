@@ -95,11 +95,9 @@ export function Trends(){
       ))}
     </div>
     <CC title="Heart Rate Variability" dataKey="hrv" color={P.sage} domain={[25,75]} unit="ms" height={160} refLine={avg("hrv")}/>
-    <div style={S.g240}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
       <CC title="Recovery Score" dataKey="rec" color="#3A5C48" domain={[30,100]} unit="%" height={130} refLine={avg("rec")}/>
       <CC title="Resting Heart Rate" dataKey="rhr" color={P.coral} domain={[40,65]} unit="bpm" height={130} refLine={avg("rhr")}/>
-    </div>
-    <div style={S.g240}>
       <CC title="Sleep Duration" dataKey="slp" color={P.steel} domain={[5,11]} unit="h" height={130}/>
       <CC title="Weekly Training Strain" dataKey="strain" color={P.amber} domain={[20,120]} unit="" height={130}/>
     </div>

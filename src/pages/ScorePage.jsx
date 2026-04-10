@@ -98,7 +98,7 @@ export function ScorePage(){
           ))}
         </div>
       </div>
-<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
       {subKeys.map(k=><SubScoreCard key={k} data={SCORES_NOW[k]} active={activeDetail===k} onClick={()=>setActiveDetail(k)}/>)}
     </div>
     <div style={CS(14,"18px 20px","none")}>

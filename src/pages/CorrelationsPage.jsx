@@ -33,9 +33,11 @@ export function CorrelationsPage(){
       </div>
     </div>
 
-    {CORR_DATA.map((d,i)=>(
-      <Finding key={i} icon={d.icon} title={d.title} text={d.text} stat={d.stat} statColor={d.statColor}/>
-    ))}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))",gap:12}}>
+      {CORR_DATA.map((d,i)=>(
+        <Finding key={i} icon={d.icon} title={d.title} text={d.text} stat={d.stat} statColor={d.statColor}/>
+      ))}
+    </div>
 
     <div style={{background:P.cardDk,border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"18px 20px"}}>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:10}}>

@@ -122,7 +122,7 @@ export function SupplementsPage(){
     {view==="stack"&&(
       <div style={{display:"flex",flexDirection:"column",gap:12}}>
         {activeStack.length===0&&(
-          <div style={{background:P.card,border:`1px dashed ${P.border}`,borderRadius:14,padding:"32px",textAlign:"center"}}>
+          <div style={{background:P.card,border:`1px dashed ${P.border}`,borderRadius:14,padding:"32px",textAlign:"center",minHeight:"50vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
             <div style={{fontSize:36,marginBottom:10}}>💊</div>
             <div style={{fontFamily:FF.s,fontSize:13,color:P.sub,marginBottom:6}}>No supplements added yet</div>
             <div style={{fontFamily:FF.s,fontSize:11,color:P.muted,marginBottom:14}}>Add from our preset library or create your own</div>
