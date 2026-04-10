@@ -1,30 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { P, FF, setActiveTheme } from "./lib/theme.js";
 
 import { useIsMobile } from "./hooks/useIsMobile.js";
 import { useWhoopLive } from "./hooks/useWhoopLive.js";
 import { useGoogleFonts } from "./hooks/useGoogleFonts.js";
-import { CorrelationsPage } from "./pages/CorrelationsPage.jsx";
-import { Overview } from "./pages/Overview.jsx";
-import { ReadinessPage } from "./pages/ReadinessPage.jsx";
-import { FuelingPage } from "./pages/FuelingPage.jsx";
-import { ScorePage } from "./pages/ScorePage.jsx";
-import { TodayPage } from "./pages/TodayPage.jsx";
-import { Labs } from "./pages/Labs.jsx";
-import { BodyComp } from "./pages/BodyComp.jsx";
-import { Trends } from "./pages/Trends.jsx";
-import { FitnessPage } from "./pages/FitnessPage.jsx";
-import { CalendarPage } from "./pages/CalendarPage.jsx";
-import { ImportPage } from "./pages/ImportPage.jsx";
-import { PelotonPage } from "./pages/PelotonPage.jsx";
-import { SupplementsPage } from "./pages/SupplementsPage.jsx";
-import { ProgressPage } from "./pages/ProgressPage.jsx";
-import { SleepPage } from "./pages/SleepPage.jsx";
 import { Sidebar } from "./components/Sidebar.jsx";
 import { Topbar } from "./components/Topbar.jsx";
 import { MobileTopbar } from "./components/MobileTopbar.jsx";
 import { MobileNav } from "./components/MobileNav.jsx";
 import { UserModal } from "./components/UserModal.jsx";
+
+// Lazy-load all pages so each becomes its own chunk and recharts is only
+// pulled in when a chart-using page is first navigated to.
+const TodayPage        = lazy(()=> import("./pages/TodayPage.jsx").then(m=>({default:m.TodayPage})));
+const SleepPage        = lazy(()=> import("./pages/SleepPage.jsx").then(m=>({default:m.SleepPage})));
+const Overview         = lazy(()=> import("./pages/Overview.jsx").then(m=>({default:m.Overview})));
+const ScorePage        = lazy(()=> import("./pages/ScorePage.jsx").then(m=>({default:m.ScorePage})));
+const FitnessPage      = lazy(()=> import("./pages/FitnessPage.jsx").then(m=>({default:m.FitnessPage})));
+const CalendarPage     = lazy(()=> import("./pages/CalendarPage.jsx").then(m=>({default:m.CalendarPage})));
+const BodyComp         = lazy(()=> import("./pages/BodyComp.jsx").then(m=>({default:m.BodyComp})));
+const Labs             = lazy(()=> import("./pages/Labs.jsx").then(m=>({default:m.Labs})));
+const Trends           = lazy(()=> import("./pages/Trends.jsx").then(m=>({default:m.Trends})));
+const CorrelationsPage = lazy(()=> import("./pages/CorrelationsPage.jsx").then(m=>({default:m.CorrelationsPage})));
+const ProgressPage     = lazy(()=> import("./pages/ProgressPage.jsx").then(m=>({default:m.ProgressPage})));
+const ReadinessPage    = lazy(()=> import("./pages/ReadinessPage.jsx").then(m=>({default:m.ReadinessPage})));
+const FuelingPage      = lazy(()=> import("./pages/FuelingPage.jsx").then(m=>({default:m.FuelingPage})));
+const SupplementsPage  = lazy(()=> import("./pages/SupplementsPage.jsx").then(m=>({default:m.SupplementsPage})));
+const PelotonPage      = lazy(()=> import("./pages/PelotonPage.jsx").then(m=>({default:m.PelotonPage})));
+const ImportPage       = lazy(()=> import("./pages/ImportPage.jsx").then(m=>({default:m.ImportPage})));
 
 
 export default function App(){
@@ -49,23 +52,26 @@ export default function App(){
 
   const mob = useIsMobile();
 
-  const PAGES = {
-    today:        <TodayPage setPage={setPage} whoopStatus={whoopStatus}/>,
-      sleep:        <SleepPage/>,
-    overview:     <Overview setPage={setPage}/>,
-    score:        <ScorePage/>,
-    fitness:      <FitnessPage/>,
-    calendar:     <CalendarPage/>,
-    body:         <BodyComp/>,
-    labs:         <Labs/>,
-    trends:       <Trends/>,
-    correlations: <CorrelationsPage/>,
-    progress:     <ProgressPage setPage={setPage}/>,
-    readiness:    <ReadinessPage/>,
-    fueling:      <FuelingPage/>,
-    supps:        <SupplementsPage/>,
-    peloton:      <PelotonPage/>,
-    import:       <ImportPage/>,
+  const renderPage = () => {
+    switch(page){
+      case "today":        return <TodayPage setPage={setPage} whoopStatus={whoopStatus}/>;
+      case "sleep":        return <SleepPage/>;
+      case "overview":     return <Overview setPage={setPage}/>;
+      case "score":        return <ScorePage/>;
+      case "fitness":      return <FitnessPage/>;
+      case "calendar":     return <CalendarPage/>;
+      case "body":         return <BodyComp/>;
+      case "labs":         return <Labs/>;
+      case "trends":       return <Trends/>;
+      case "correlations": return <CorrelationsPage/>;
+      case "progress":     return <ProgressPage setPage={setPage}/>;
+      case "readiness":    return <ReadinessPage/>;
+      case "fueling":      return <FuelingPage/>;
+      case "supps":        return <SupplementsPage/>;
+      case "peloton":      return <PelotonPage/>;
+      case "import":       return <ImportPage/>;
+      default:             return <TodayPage setPage={setPage} whoopStatus={whoopStatus}/>;
+    }
   };
 
   return(
@@ -85,7 +91,9 @@ export default function App(){
           boxSizing:"border-box",
           margin:"0 auto",
         }}>
-          {PAGES[page] || <TodayPage setPage={setPage}/>}
+          <Suspense fallback={<div style={{padding:24,color:P.sub,fontFamily:FF.s,fontSize:13}}>Loading…</div>}>
+            {renderPage()}
+          </Suspense>
         </div>
         {mob&&<MobileNav active={page} set={setPage}/>}
       </div>
