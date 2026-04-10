@@ -1185,7 +1185,7 @@ function ScorePage(){
           <div style={{fontFamily:FF.s,fontSize:12,color:P.muted,marginBottom:8}}>Chronological: {METABOLIC_AGE.chronological}</div>
           <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 12px",borderRadius:99,background:"rgba(106,168,79,0.12)",alignSelf:"flex-start"}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:P.sage}}></div>
-            <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sage}}>{METABOLIC_AGE.chronological - METABOLIC_AGE.perceived} years younger</span>
+            <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sage}}>{Number(METABOLIC_AGE.chronological) - Number(METABOLIC_AGE.perceived)} years younger</span>
           </div>
         </div>
         {/* Right – Domain Contributions */}
