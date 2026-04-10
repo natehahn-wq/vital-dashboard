@@ -1058,7 +1058,7 @@ function MasterRing({score,size=200,stroke=10}){
 }
 
 function SubScoreCard({data,onClick,active}){
-  const {score,prev,label,icon,color,dataDate}=data;
+  const {score,prev,label,icon,color,dataDate,drivers,freshness}=data;
   const delta=score-prev;
   const col=SCORE_COLOR(score);
   const displayed=useCountUp(score);
@@ -1100,10 +1100,18 @@ function SubScoreCard({data,onClick,active}){
           <div style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color:col}}>{SCORE_LABEL(score)}</div>
         </div>
       </div>
-      <div style={{height:6,background:P.panel,borderRadius:3,overflow:"hidden",border:`1px solid ${P.border}`}}>
+      <div style={{height:5,borderRadius:3,overflow:"hidden",background:P.panel}}>
         <div style={{height:"100%",width:`${score}%`,background:`linear-gradient(to right,${col}cc,${col})`,
-          borderRadius:3,transition:"width 1s cubic-bezier(0.34,1.1,0.64,1)"}}/>
+          borderRadius:3,transition:"width 1s cubic-bezier(0.34,1.1,0.64,1)"}} />
       </div>
+      {drivers&&drivers.length>0&&<div style={{marginTop:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>Top driver</span>
+        <span style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color:P.text}}>{drivers[0].name}: {drivers[0].value}</span>
+      </div>}
+      {freshness&&<div style={{marginTop:5,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontFamily:FF.s,fontSize:8,color:P.muted}}>Data freshness</span>
+        <span style={{fontFamily:FF.s,fontSize:8,color:freshness.stale?P.terra:P.sage}}>{freshness.date}</span>
+      </div>}
       {active&&<div style={{marginTop:8,fontFamily:FF.s,fontSize:8,color:col,fontWeight:600,letterSpacing:"0.07em"}}>
         ▼ DETAILS BELOW
       </div>}
@@ -1155,15 +1163,48 @@ function ScorePage(){
             <YAxis {...ax} domain={[55,85]}/>
             <Tooltip content={<CTip/>}/>
             <ReferenceLine y={SCORES_NOW.master.prev} stroke={P.border} strokeDasharray="3 3" strokeWidth={1}/>
-            <Line type="monotone" dataKey="master" stroke={P.sage} strokeWidth={2.5} isAnimationActive={true} animationDuration={1200} animationEasing="ease-out"
+            <Line type="monotone" dataKey="master" stroke={P.sage} strokeWidth={3.5} isAnimationActive={true} animationDuration={1400} animationEasing="ease-out"
               dot={(p)=>p.index===3||p.index===6?<circle cx={p.cx} cy={p.cy} r={5} fill={P.sage} stroke={P.card} strokeWidth={2}/>:<span/>}
               name="VITAL Score"/>
-          </LineChart>
+          
+          <ReferenceLine y={SCORES_NOW.master.score} stroke={P.cyan} strokeDasharray="6 3" label={{value:"Now",position:"right",fill:P.cyan,fontSize:10}} /></LineChart>
         </ResponsiveContainer>
       </div>}
       </div>);})()}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+    
+      {/* ── Metabolic Age + Domain Contributions ── */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:18}}>
+        {/* Left – Perceived Metabolic Age card */}
+        <div style={{background:P.cardDk,borderRadius:16,padding:"28px 24px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+          <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:16}}>Perceived Metabolic Age</div>
+          <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:4}}>
+            <div style={{fontFamily:FF.r,fontSize:64,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{METABOLIC_AGE.perceived}</div>
+            <div style={{fontFamily:FF.s,fontSize:13,color:P.mutedDk}}>years</div>
+          </div>
+          <div style={{fontFamily:FF.s,fontSize:12,color:P.muted,marginBottom:8}}>Chronological: {METABOLIC_AGE.chronological}</div>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"4px 12px",borderRadius:99,background:"rgba(106,168,79,0.12)",alignSelf:"flex-start"}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:P.sage}}></div>
+            <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sage}}>{METABOLIC_AGE.chronological - METABOLIC_AGE.perceived} years younger</span>
+          </div>
+        </div>
+        {/* Right – Domain Contributions */}
+        <div style={{background:P.card,borderRadius:16,padding:"24px 22px"}}>
+          <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:18}}>Domain Contributions</div>
+          {METABOLIC_AGE.factors.map((f,i)=>(
+            <div key={i} style={{marginBottom:i<METABOLIC_AGE.factors.length-1?12:0}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontFamily:FF.s,fontSize:11,color:P.text}}>{f.name}</span>
+                <span style={{fontFamily:FF.s,fontSize:11,color:f.delta<0?P.sage:P.terra,fontWeight:600}}>{f.delta<0?"":"+"}{f.delta} yrs</span>
+              </div>
+              <div style={{height:5,borderRadius:3,background:P.border}}>
+                <div style={{height:5,borderRadius:3,width:Math.min(Math.abs(f.delta)/6*100,100)+"%",background:f.delta<0?P.sage:P.terra}}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
       {subKeys.map(k=><SubScoreCard key={k} data={SCORES_NOW[k]} active={activeDetail===k} onClick={()=>setActiveDetail(k)}/>)}
     </div>
     <div style={CS(14,"18px 20px","none")}>
@@ -1209,7 +1250,7 @@ function ScorePage(){
     </div>
     <div style={CS(14,"18px 20px","none")}>
       <SLabel color={P.cyan} right="Nov 2024 → May 2025">All Category Score Trends</SLabel>
-      <ResponsiveContainer width="100%" height={220}>
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={SCORE_HISTORY} margin={{top:8,right:16,left:-20,bottom:0}}>
           <CartesianGrid stroke={P.border} strokeDasharray="2 4" vertical={false}/>
           <XAxis dataKey="d" {...ax}/><YAxis {...ax} domain={[50,90]}/>
@@ -1241,17 +1282,14 @@ function ScorePage(){
       </div>
     </div>
     <div style={CS(14,"18px 20px","none")}>
-      <SLabel color={P.amber}>Priority Actions to Raise Your Score</SLabel>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+      <SLabel color={P.amber}>Top 3 Priority Actions</SLabel>
+      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10}}>
         {[
           {rank:1,cat:"Longevity",score:64,action:"Investigate elevated Ferritin (394.5)",detail:"Retest fasting ferritin + iron panel. Consider HFE gene test. Ferritin is your lowest single driver.",color:P.coral,impact:"+3–5 pts"},
           {rank:2,cat:"Hormonal",score:66,action:"Supplement Vitamin D3 + K2",detail:"At 26.5 ng/mL you're insufficient. Target 50–70 ng/mL with 5,000 IU/day D3. Impacts immunity, hormones, mood.",color:P.amber,impact:"+2–4 pts"},
           {rank:3,cat:"Hormonal",score:66,action:"Address low DHEA-S (119.1)",detail:"Below range for 47yo. Discuss 25–50mg DHEA supplementation with Dr. Greene. Supports testosterone and energy.",color:P.amber,impact:"+2–3 pts"},
-          {rank:4,cat:"Cardiovascular",score:72,action:"Reduce Triglycerides (183 → <100)",detail:"Zone 2 cardio, reduce refined carbs & alcohol, add omega-3s 3–4g EPA/DHA daily. TG/HDL ratio is key metabolic marker.",color:P.coral,impact:"+4–6 pts"},
-          {rank:5,cat:"Cardiovascular",score:72,action:"Raise HDL (38 → >50)",detail:"Increase aerobic exercise (Zone 2), add healthy fats, reduce refined carbs. HDL <40 significantly elevates cardiovascular risk.",color:P.coral,impact:"+3–4 pts"},
-          {rank:6,cat:"Body Comp",score:72,action:"Continue body recomp trajectory",detail:"You're on a strong path: -2.8% BF and +8.6 lbs lean in 99 days. Maintain protocol — goal is <18% BF for 'Fit' classification.",color:P.cyan,impact:"+3–5 pts"},
         ].map(({rank,cat,score,action,detail,color,impact})=>(
-          <div key={rank} style={{padding:"14px",background:P.card,borderRadius:12,border:`1px solid ${P.border}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+          <div key={rank} style={{padding:"16px 18px",background:P.card,borderRadius:12,border:`1px solid ${P.border}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
               <div style={{width:22,height:22,borderRadius:6,background:color+"22",border:`1px solid ${color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:FF.m,fontSize:11,fontWeight:700,color,flexShrink:0}}>{rank}</div>
               <div>
@@ -1265,7 +1303,42 @@ function ScorePage(){
         ))}
       </div>
     </div>
-  </div>);
+  
+
+      {/* ── Lab Integration Panel ── */}
+      <div style={{background:P.card,border:"1px solid "+P.border,borderRadius:16,padding:"22px 24px",marginTop:8}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div>
+            <div style={{fontFamily:FF.s,fontSize:13,fontWeight:600,color:P.text,marginBottom:2}}>Lab Integration</div>
+            <div style={{fontFamily:FF.s,fontSize:11,color:P.muted}}>What Would Move Your Score</div>
+          </div>
+          {LAB_OVERDUE&&LAB_OVERDUE.length>0&&<div style={{padding:"4px 10px",borderRadius:99,background:"rgba(194,84,56,0.12)",fontFamily:FF.s,fontSize:10,fontWeight:600,color:P.terra}}>{LAB_OVERDUE.length} overdue</div>}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {[
+            {domain:"Hormonal",color:P.pink,score:SCORES_NOW.hormonal.score,labs:["Testosterone","Estradiol","DHEA-S"],warn:["Testosterone"],impact:"+4"},
+            {domain:"Longevity",color:P.green,score:SCORES_NOW.recovery.score,labs:["IGF-1","hsCRP","HbA1c"],warn:["hsCRP"],impact:"+3"},
+            {domain:"Cardiovascular",color:P.coral,score:SCORES_NOW.cardiovascular.score,labs:["ApoB","Lp(a)","LP-PLA2"],warn:[],impact:"+2"},
+            {domain:"Metabolic",color:P.amber,score:SCORES_NOW.metabolic.score,labs:["Fasting Insulin","HOMA-IR","Triglycerides"],warn:["HOMA-IR"],impact:"+3"}
+          ].map((d,i)=>(
+            <div key={i} style={{background:P.panel,borderRadius:12,padding:"14px 16px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <span style={{fontFamily:FF.s,fontSize:11,fontWeight:600,color:d.color}}>{d.domain}</span>
+                <span style={{fontFamily:FF.r,fontSize:15,fontWeight:700,color:P.text}}>{d.score}</span>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:8}}>
+                {d.labs.map((lab,j)=>(
+                  <span key={j} style={{padding:"2px 8px",borderRadius:99,fontSize:9,fontFamily:FF.s,background:d.warn.includes(lab)?"rgba(194,84,56,0.12)":P.border,color:d.warn.includes(lab)?P.terra:P.muted}}>
+                    {d.warn.includes(lab)&&"⚠ "}{lab}
+                  </span>
+                ))}
+              </div>
+              <div style={{fontFamily:FF.s,fontSize:10,color:P.sage,fontWeight:600}}>Potential: {d.impact} pts</div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:12,fontFamily:FF.s,fontSize:9,color:P.muted,textAlign:"center"}}>Import lab results to unlock personalized score projections</div>
+      </div></div>);
 }
 
 const NAV=[
@@ -2419,7 +2492,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
           ))}
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:14,alignItems:"stretch"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:14,alignItems:"stretch"}}>
         <div onClick={()=>setPage("score")} style={{background:P.cardDk,borderRadius:16,padding:"18px 24px",cursor:"pointer",
           transition:"box-shadow .15s",boxShadow:"0 1px 4px rgba(0,0,0,0.08)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:130}}
           onMouseEnter={e=>e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,.15)"}
@@ -2528,71 +2601,9 @@ function Overview({setPage}){
           </div>
         </div>
       </div>
-      <div style={{background:P.cardDk,border:`1px solid ${P.borderDk}`,borderRadius:16,padding:"28px 28px",display:"flex",flexDirection:"column",justifyContent:"space-between",minWidth:240,boxShadow:"0 1px 4px rgba(0,0,0,0.10)"}}>
-        <div>
-          <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:16}}>Perceived Metabolic Age</div>
-          <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:4}}>
-            <div style={{fontFamily:FF.r,fontSize:64,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{METABOLIC_AGE.perceived}</div>
-            <div style={{fontFamily:FF.s,fontSize:13,color:P.mutedDk,marginBottom:4}}>yrs</div>
-          </div>
-          <div style={{fontFamily:FF.s,fontSize:11,color:P.mutedDk,marginBottom:18}}>
-            Chronological age: <span style={{color:P.textInv,fontWeight:500}}>{METABOLIC_AGE.chrono}</span>
-          </div>
-          <div style={{display:"inline-flex",alignItems:"center",gap:7,padding:"6px 14px",borderRadius:99,background:"rgba(58,92,72,0.35)",border:"1px solid rgba(58,92,72,0.5)"}}>
-            <div style={{width:6,height:6,borderRadius:"50%",background:"#7AC49A"}}/>
-            <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:"#A8D8B8"}}>
-              {METABOLIC_AGE.delta} years younger than age
-            </span>
-          </div>
-        </div>
-        <div style={{marginTop:14}}>
-          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>Trend</div>
-          <div style={{display:"flex",alignItems:"flex-end",gap:4,height:36}}>
-            {METABOLIC_AGE.history.map((h,i)=>{
-              const min=40,max=45,h_pct=(h.age-min)/(max-min);
-              const barH=Math.round(h_pct*30)+4;
-              const isLatest=i===METABOLIC_AGE.history.length-1;
-              return(<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
-                <div style={{width:"100%",height:barH,borderRadius:3,background:isLatest?"#7AC49A":"rgba(255,255,255,0.15)",transition:"height .6s ease"}}/>
-                <span style={{fontFamily:FF.s,fontSize:7,color:P.mutedDk,whiteSpace:"nowrap"}}>{h.d.split(" ")[0]}</span>
-              </div>);
-            })}
-          </div>
-        </div>
-      </div>
 
     </div>
-    <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px 22px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-        <div>
-          <SLabel color={P.sage}>Metabolic Age Breakdown</SLabel>
-          <div style={{fontFamily:FF.s,fontSize:11,color:P.muted,marginTop:-8}}>How each domain shifts your perceived age</div>
-        </div>
-        <div style={{padding:"4px 12px",borderRadius:99,background:P.sageBg,border:`1px solid ${P.sage}33`}}>
-          <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sage}}>Overall: {METABOLIC_AGE.delta} yrs younger</span>
-        </div>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))",gap:8}}>
-        {METABOLIC_AGE.factors.map((f,i)=>{
-          const isPos=f.delta<0; // negative delta = younger
-          const barColor=isPos?P.sage:P.terra;
-          const maxDelta=8;
-          const barPct=Math.abs(f.delta)/maxDelta*100;
-          return(<div key={i} style={{textAlign:"center"}}>
-            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,letterSpacing:"0.06em",textTransform:"uppercase",marginBottom:8,lineHeight:1.3,height:22,overflow:"hidden"}}>{f.label}</div>
-            <div style={{height:72,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative"}}>
-              <div style={{position:"absolute",top:"50%",left:"10%",right:"10%",height:1,background:P.border}}/>
-              <div style={{position:"absolute",top:isPos?`calc(50% - ${barPct*0.36}px)`:undefined,bottom:isPos?undefined:`calc(50% - ${barPct*0.36}px)`,width:36,height:`${barPct*0.36}px`,minHeight:2,borderRadius:4,background:barColor,left:"50%",transform:"translateX(-50%)",transition:`height 1s cubic-bezier(0.34,1.2,0.64,1) ${i*100}ms`}}/>
-            </div>
-            <div style={{fontFamily:FF.r,fontSize:15,fontWeight:600,color:barColor,letterSpacing:"-0.01em"}}>
-              {isPos?"-":"+"}{ Math.abs(f.delta)}
-              <span style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginLeft:2}}>yr</span>
-            </div>
-            <div style={S.mut9t2}>{isPos?"younger":"older"}</div>
-          </div>);
-        })}
-      </div>
-    </div>
+    
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:10}}>
       <StatCard icon="💚" label="Recovery"    value={WHOOP.recovery}   unit="/100" color={P.sage}   delta={null} sparkData={T.rec}/>
       <StatCard icon="💓" label="HRV"         value={WHOOP.hrv}        unit="ms"   color={P.steel}  delta={2.1}  sparkData={T.hrv}/>
