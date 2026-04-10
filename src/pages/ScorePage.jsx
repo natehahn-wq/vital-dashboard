@@ -21,7 +21,7 @@ export function ScorePage(){
 
   return(<div style={S.col18}>
     <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px",boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}>{(()=>{const mob=useIsMobile();return(
-      <div style={{display:"flex",gap:mob?14:32,alignItems:"center",flexWrap:mob?"wrap":"nowrap"}}>
+      <div style={{display:"flex",flexDirection:mob?"column":"row",gap:mob?18:32,alignItems:mob?"center":"center",flexWrap:"nowrap"}}>
       <div style={{flexShrink:0}}>
         <MasterRing score={SCORES_NOW.master.score}/>
       </div>
@@ -68,7 +68,8 @@ export function ScorePage(){
     </div>
 
       {/* ── Metabolic Age + Domain Contributions ── */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
+      {(()=>{const mob=useIsMobile();return(
+      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:16,marginBottom:18}}>
         {/* Left – Perceived Metabolic Age card */}
         <div style={{background:P.cardDk,borderRadius:16,padding:"28px 24px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:16}}>Perceived Metabolic Age</div>
@@ -98,7 +99,8 @@ export function ScorePage(){
           ))}
         </div>
       </div>
-<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+      );})()}
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
       {subKeys.map(k=><SubScoreCard key={k} data={SCORES_NOW[k]} active={activeDetail===k} onClick={()=>setActiveDetail(k)}/>)}
     </div>
     <div style={CS(14,"18px 20px","none")}>

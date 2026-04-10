@@ -425,7 +425,7 @@ export function PersonalBestsPage({setPage}) {
           WMA age-graded standards · M45-49
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
         {RUNNING_EVENTS.map(e=><EventCard key={e.key} event={e} isLifting={false}/>)}
       </div>
     </div>
@@ -440,7 +440,7 @@ export function PersonalBestsPage({setPage}) {
           ExRx age-adjusted standards · {bodyweight} lbs BW
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
         {LIFTING_EVENTS.map(e=><EventCard key={e.key} event={e} isLifting={true}/>)}
       </div>
     </div>

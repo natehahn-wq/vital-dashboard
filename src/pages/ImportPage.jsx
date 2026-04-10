@@ -604,7 +604,7 @@ export function ImportPage(){
       )}
       <div style={CS(14,"16px 18px")}>
         <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.sub,letterSpacing:"0.10em",textTransform:"uppercase",marginBottom:12}}>Supported Document Types</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12}}>
           {[
             {icon:"🧬",label:"Lab Reports",desc:"BioLab, Quest, LabCorp PDFs — extracts all biomarkers, flags out-of-range values"},
             {icon:"⌚",label:"WHOOP Exports",desc:"CSV physiological cycles or screenshot — updates recovery, HRV, RHR, strain"},

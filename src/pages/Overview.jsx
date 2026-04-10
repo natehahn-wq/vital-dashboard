@@ -14,8 +14,10 @@ import { WHOOP, T } from "../lib/data/whoop.js";
 import { LABS } from "../lib/data/labs.js";
 import { generateWeeklyReport } from "../lib/weekly-report.js";
 import { AnimRing, StatCard, SLabel, CTip } from "../components/shared.jsx";
+import { useIsMobile } from "../hooks/useIsMobile.js";
 
 export function Overview({setPage}){
+  const mob = useIsMobile();
   const ax={tick:{fontFamily:FF.m,fontSize:9,fill:P.muted},axisLine:{stroke:P.border},tickLine:false};
   const masterScore=SCORES_NOW.master.score;
   const masterPrev=SCORES_NOW.master.prev;
@@ -59,7 +61,7 @@ export function Overview({setPage}){
       </button>
     </div>
 
-    <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:16,alignItems:"stretch",flexWrap:"wrap"}}>
+    <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"auto 1fr",gap:16,alignItems:"stretch"}}>
       <div onClick={()=>setPage("score")} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"28px 32px",cursor:"pointer",transition:"box-shadow .2s",boxShadow:"0 1px 4px rgba(0,0,0,.06)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:220}}
         onMouseEnter={e=>e.currentTarget.style.boxShadow="0 6px 24px rgba(0,0,0,0.10)"}
         onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.06)"}>
@@ -91,15 +93,14 @@ export function Overview({setPage}){
         </div>
       </div>
 
-    </div>
-
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:12}}>
-      <StatCard icon="💚" label="Recovery"    value={WHOOP.recovery}   unit="/100" color={P.sage}   delta={null} sparkData={T.rec}/>
-      <StatCard icon="💓" label="HRV"         value={WHOOP.hrv}        unit="ms"   color={P.steel}  delta={2.1}  sparkData={T.hrv}/>
-      <StatCard icon="❤" label="Resting HR"  value={WHOOP.rhr}        unit="bpm"  color={P.terra}  delta={-1.4} sparkData={T.rhr}/>
-      <StatCard icon="⚖" label="Weight"      value={liveWeight}       unit="lbs"  color={P.steel}  delta={LATEST.weight7dDelta} sub={`Hume · ${liveWeightDate}`}/>
-      <StatCard icon="🫀" label="Body Fat"    value={LATEST.bodyFat}   unit="%"    color={P.clay}   delta={-11.6}/>
-      <StatCard icon="💪" label="Lean Mass"   value={LATEST.leanMass}  unit="lbs"  color={P.sage}   delta={5.7}/>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:12}}>
+        <StatCard icon="💚" label="Recovery"    value={WHOOP.recovery}   unit="/100" color={P.sage}   delta={null} sparkData={T.rec}/>
+        <StatCard icon="💓" label="HRV"         value={WHOOP.hrv}        unit="ms"   color={P.steel}  delta={2.1}  sparkData={T.hrv}/>
+        <StatCard icon="❤" label="Resting HR"  value={WHOOP.rhr}        unit="bpm"  color={P.terra}  delta={-1.4} sparkData={T.rhr}/>
+        <StatCard icon="⚖" label="Weight"      value={liveWeight}       unit="lbs"  color={P.steel}  delta={LATEST.weight7dDelta} sub={`Hume · ${liveWeightDate}`}/>
+        <StatCard icon="🫀" label="Body Fat"    value={LATEST.bodyFat}   unit="%"    color={P.clay}   delta={-11.6}/>
+        <StatCard icon="💪" label="Lean Mass"   value={LATEST.leanMass}  unit="lbs"  color={P.sage}   delta={5.7}/>
+      </div>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
       <div onClick={()=>setPage("labs")} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px",cursor:"pointer",transition:"box-shadow .2s",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}

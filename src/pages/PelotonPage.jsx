@@ -88,7 +88,7 @@ export function PelotonPage(){
     </div>
     {!hasData&&(
       <div style={{background:P.card,border:`1.5px dashed ${P.border}`,borderRadius:16,
-        padding:"48px 32px",textAlign:"center"}}>
+        padding:"48px 32px",textAlign:"center",minHeight:"55vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
         <div style={{fontSize:40,marginBottom:12}}>🚴</div>
         <div style={{fontFamily:FF.r,fontSize:16,fontWeight:600,color:P.text,marginBottom:6}}>No Peloton data yet</div>
         <div style={{fontFamily:FF.s,fontSize:11,color:P.muted,maxWidth:380,margin:"0 auto",lineHeight:1.8,marginBottom:16}}>
