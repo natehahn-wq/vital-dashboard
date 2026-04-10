@@ -11,7 +11,6 @@ import { SCORE_LABEL, calColor, calLabel, fmtEvtTime } from "../lib/utils.js";
 import { WHOOP } from "../lib/data/whoop.js";
 import { SCORES_NOW } from "../lib/data/scores.js";
 import { CAL_RICH } from "../lib/data/calendar.js";
-import { RMR } from "../lib/data/body.js";
 import { useCalendarEvents } from "../hooks/useCalendarEvents.js";
 
 export function TodayPage({setPage, whoopStatus="loading"}){
@@ -132,15 +131,8 @@ export function TodayPage({setPage, whoopStatus="loading"}){
   const tomorrowIdx = tomorrowDow === 0 ? 6 : tomorrowDow - 1; // Mon=0 index
   const tomorrowSchedule = WEEKLY_SCHEDULE[tomorrowIdx];
   const tomorrowDayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][tomorrowDow];
-  const RMR_DAILY      = RMR.measured;       // 1858 kcal measured (CardioCoach)
-  const NEAT_DAILY     = RMR.lifestyle;      // 1300 kcal lifestyle (CardioCoach)
-  const projectedExCal = canonicalAhead && todaySchedule
-    ? Math.round(todaySchedule.strain * 42)  // strain × 42 ≈ kcal for 47yo male
-    : 0;
-  const estimatedTDEE = RMR_DAILY + NEAT_DAILY + calsBurned + projectedExCal;
-  const confirmedTDEE = RMR_DAILY + NEAT_DAILY + calsBurned;
 
- 
+
   const planned = [];
   if(!isEvening && canonicalAhead && hour <= todaySchedule.timeH) {
     planned.push({
@@ -293,14 +285,6 @@ export function TodayPage({setPage, whoopStatus="loading"}){
       action:null,
     },
     {
-      icon:"📊",
-      title:"Today's training recap",
-      body: doneToday.length>0
-        ? `${doneToday.map(w=>w.name).join(" + ")} · ${strainSoFar.toFixed(1)} total strain · ${doneToday.reduce((s,w)=>s+w.cal,0)} kcal burned. ${strainSoFar>15?"High load day — recovery is the priority tonight.":"Moderate day — body should recover well overnight."}`
-        : "Rest day logged. Muscle protein synthesis peaks on rest days — sleep quality is the training tonight.",
-      action:"View Calendar", page:"calendar",
-    },
-    {
       icon:"💤",
       title:"Optimise tonight's sleep",
       body:`Last night: ${SLEEP.dur}h, ${SLEEP.perf}% performance. Target same or better tonight. HRV ${HRV}ms — ${HRV>=50?"nervous system recovered":"some residual fatigue present"}. No screens 30min before bed.`,
@@ -338,6 +322,14 @@ export function TodayPage({setPage, whoopStatus="loading"}){
     isMidday    ? "rgba(58,92,72,0.22)"   :
     isAfternoon ? "rgba(184,90,42,0.22)"  :
                   "rgba(74,96,112,0.22)";
+
+  const SectionDivider = ({label, icon}) => (
+    <div style={{display:"flex",alignItems:"center",gap:12,margin:"8px 0 4px"}}>
+      <span style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.muted,
+        letterSpacing:"0.14em",textTransform:"uppercase"}}>{icon} {label}</span>
+      <div style={{flex:1,height:1,background:P.border,opacity:0.6}}/>
+    </div>
+  );
 
   return(
     <div style={S.col18}>
@@ -415,98 +407,83 @@ export function TodayPage({setPage, whoopStatus="loading"}){
         </div>
 
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:16}}>
-        {!isEvening ? (
-          <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
-              <div>
-                <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:3}}>Last Night</div>
-                <div style={{fontFamily:FF.r,fontSize:16,fontWeight:600,color:P.text}}>Sleep Report</div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontFamily:FF.r,fontSize:30,fontWeight:600,color:"#3A5C48",letterSpacing:"-0.02em",lineHeight:1}}>{SLEEP.perf}%</div>
-                <div style={S.mut9}>performance</div>
-              </div>
-            </div>
-            <div style={{display:"flex",height:14,borderRadius:7,overflow:"hidden",marginBottom:10}}>
-              {[{v:SLEEP.light,c:"#4A6070"},{v:SLEEP.rem,c:"#7A5A80"},{v:SLEEP.deep,c:"#3A5C48"}].map(({v,c},i)=>(
-                <div key={i} style={{flex:v,background:c,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {v>=1.5&&<span style={{fontFamily:FF.s,fontSize:7,color:"rgba(255,255,255,0.75)",fontWeight:600}}>{v}h</span>}
-                </div>
-              ))}
-            </div>
-            <div style={{display:"flex",gap:12,marginBottom:14}}>
-              {[{label:"Light",v:SLEEP.light,c:"#4A6070"},{label:"REM",v:SLEEP.rem,c:"#7A5A80"},{label:"Deep",v:SLEEP.deep,c:"#3A5C48"}].map(({label,v,c})=>(
-                <div key={label} style={S.row4}>
-                  <div style={{width:7,height:7,borderRadius:2,background:c}}/>
-                  <span style={S.mut9}>{label}</span>
-                  <span style={{fontFamily:FF.m,fontSize:9,color:P.text,fontWeight:500}}>{v}h</span>
-                </div>
-              ))}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-              {[
-                {l:"Total",   v:`${SLEEP.dur}h`,        c:"#4A6070"},
-                {l:"Deep SWS",v:`${SLEEP.deep}h`,       c:"#3A5C48"},
-                {l:"Resp Rate",v:`${SLEEP.resp} rpm`,   c:SLEEP.resp>16?"#C4604A":P.muted},
-              ].map(({l,v,c})=>(
-                <div key={l} style={{padding:"8px 10px",background:P.panel,borderRadius:8}}>
-                  <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}}>{l}</div>
-                  <div style={{fontFamily:FF.r,fontSize:15,fontWeight:600,color:c,letterSpacing:"-0.01em"}}>{v}</div>
-                </div>
-              ))}
-            </div>
+      {!isEvening ? (
+          <>
+            <SectionDivider label="Morning Brief" icon="🌅"/>
+            {(()=>{
+              const hrv = WHOOP.hrv;
+              const rec = WHOOP.recovery;
+              const rhr = WHOOP.rhr;
+              const HRV_MEAN = 44.4;
+              const zone =
+                hrv >= HRV_MEAN+5  ? {label:"Peak",     color:"#5BC4F0", tip:"Push hard — nervous system primed."} :
+                hrv >= HRV_MEAN-3  ? {label:"Normal",   color:"#3A9C68", tip:"Train as planned."} :
+                hrv >= HRV_MEAN-10 ? {label:"Reduced",  color:"#C4604A", tip:"Moderate intensity only."} :
+                                     {label:"Low",      color:"#8B2020", tip:"Recovery day — skip hard efforts."};
+              return(
+                <div style={{background:`linear-gradient(135deg,${zone.color}12,${P.card})`,
+                  borderRadius:16,padding:"20px 24px",
+                  border:`1px solid ${zone.color}30`,
+                  boxShadow:`0 2px 16px ${zone.color}14`}}>
 
-            {/* Readiness Summary */}
-            <div style={{marginTop:14,paddingTop:12,borderTop:`1px solid ${P.border}`}}>
-              <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",
-                textTransform:"uppercase",marginBottom:10}}>Readiness</div>
-              {(()=>{
-                const hrv   = WHOOP.hrv;
-                const rec   = WHOOP.recovery;
-                const rhr   = WHOOP.rhr;
-                const HRV_MEAN = 44.4;
-                // Zone label
-                const zone = hrv >= HRV_MEAN+5 ? {label:"Peak",      color:"#3A9C68", icon:"🟢", tip:"Push hard — nervous system primed."}
-                           : hrv >= HRV_MEAN-3  ? {label:"Normal",    color:"#C47830", icon:"🟡", tip:"Train as planned, monitor fatigue."}
-                           : hrv >= HRV_MEAN-10 ? {label:"Reduced",   color:"#C4604A", icon:"🟠", tip:"Moderate intensity only. Prioritize sleep tonight."}
-                                                 : {label:"Low",       color:"#B84A38", icon:"🔴", tip:"Recovery day — no high-intensity work."};
-                const recLabel = rec>=76?"High":rec>=58?"Normal":rec>=33?"Low":"Very Low";
-                const rhrDelta = rhr - 51; // vs your avg 51 bpm
-                const metrics = [
-                  {label:"Recovery", val:`${rec}%`,    sub:recLabel,                       color:rec>=76?"#3A9C68":rec>=58?"#C47830":"#C4604A"},
-                  {label:"HRV",      val:`${hrv} ms`,  sub:`${hrv>=HRV_MEAN?"+":""}${(hrv-HRV_MEAN).toFixed(0)} vs avg`, color:zone.color},
-                  {label:"RHR",      val:`${rhr} bpm`, sub:`${rhrDelta>=0?"+":""}${rhrDelta} vs avg`,                     color:rhr<=48?"#3A9C68":rhr<=52?"#C47830":"#C4604A"},
-                ];
-                return(
-                  <div>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-                      <span style={{fontSize:16}}>{zone.icon}</span>
-                      <div>
-                        <span style={{fontFamily:FF.s,fontSize:12,fontWeight:700,color:zone.color}}>{zone.label} Zone</span>
-                        <span style={{fontFamily:FF.s,fontSize:10,color:P.sub,marginLeft:6}}>{zone.tip}</span>
+                  {/* Top row: zone + HRV gauge */}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18,flexWrap:"wrap",gap:10}}>
+                    <div>
+                      <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.10em",
+                        textTransform:"uppercase",marginBottom:6}}>Readiness Zone</div>
+                      <div style={{display:"flex",alignItems:"center",gap:10}}>
+                        <div style={{width:10,height:10,borderRadius:"50%",background:zone.color,
+                          boxShadow:`0 0 10px ${zone.color}88`,flexShrink:0}}/>
+                        <span style={{fontFamily:FF.r,fontSize:22,fontWeight:600,color:zone.color,
+                          letterSpacing:"-0.01em"}}>{zone.label}</span>
+                      </div>
+                      <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,marginTop:5,lineHeight:1.5}}>{zone.tip}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginBottom:4}}>HRV today vs baseline</div>
+                      <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end"}}>
+                        <span style={{fontFamily:FF.r,fontSize:36,fontWeight:600,color:zone.color,
+                          letterSpacing:"-0.02em",lineHeight:1}}>{hrv}</span>
+                        <span style={{fontFamily:FF.s,fontSize:10,color:P.muted}}>ms</span>
+                        <span style={{fontFamily:FF.s,fontSize:11,color:hrv>=HRV_MEAN?P.sage:P.terra,
+                          fontWeight:600,marginLeft:4}}>
+                          {hrv>=HRV_MEAN?"+":""}{(hrv-HRV_MEAN).toFixed(1)} vs avg
+                        </span>
                       </div>
                     </div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                      {metrics.map(({label,val,sub,color})=>(
-                        <div key={label} style={{padding:"8px 10px",background:P.panel,borderRadius:8,
-                          border:`1px solid ${color}22`}}>
-                          <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",
-                            letterSpacing:"0.06em",marginBottom:3}}>{label}</div>
-                          <div style={{fontFamily:FF.r,fontSize:15,fontWeight:600,color,
-                            letterSpacing:"-0.01em",marginBottom:1}}>{val}</div>
-                          <div style={{fontFamily:FF.s,fontSize:8,color:P.muted}}>{sub}</div>
-                        </div>
-                      ))}
-                    </div>
                   </div>
-                );
-              })()}
-            </div>
 
-          </div>
+                  {/* Three stat columns */}
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+                    {[
+                      {label:"Recovery",val:`${rec}%`,
+                        sub:rec>=76?"Above avg":rec>=58?"Normal":"Below avg",
+                        color:rec>=76?P.sage:rec>=58?P.amber:P.terra},
+                      {label:"Resting HR",val:`${rhr} bpm`,
+                        sub:rhr<=48?"Excellent":rhr<=52?"Normal":"Elevated",
+                        color:rhr<=48?P.sage:rhr<=52?P.amber:P.terra},
+                      {label:"Sleep last night",val:`${WHOOP.sleep.hours}h`,
+                        sub:`${WHOOP.sleep.score}% performance`,
+                        color:WHOOP.sleep.score>=90?P.sage:WHOOP.sleep.score>=80?P.steel:P.amber},
+                    ].map(({label,val,sub,color})=>(
+                      <div key={label} style={{padding:"12px 14px",background:"rgba(255,255,255,0.5)",
+                        backdropFilter:"blur(4px)",borderRadius:12}}>
+                        <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,
+                          letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:6}}>{label}</div>
+                        <div style={{fontFamily:FF.r,fontSize:22,fontWeight:600,color,
+                          letterSpacing:"-0.01em",lineHeight:1,marginBottom:3}}>{val}</div>
+                        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>{sub}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+          </>
         ) : (
           /* Evening: sleep + tomorrow preview */
+          <>
+          <SectionDivider label="Tonight" icon="🌙"/>
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
             <div style={{background:P.cardDk,border:`1px solid ${P.borderDk}`,borderRadius:16,padding:"18px",boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>
               <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:12}}>Tonight's Schedule</div>
@@ -530,7 +507,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
                   }]:[]),
                 ].map(({time,action,highlight})=>(
                   <div key={time} style={{display:"flex",gap:12,marginBottom:8,alignItems:"flex-start"}}>
-                    <span style={{fontFamily:FF.m,fontSize:9,color:highlight?"#7AC49A":"#C4A850",minWidth:55,marginTop:1,flexShrink:0}}>{time}</span>
+                    <span style={{fontFamily:FF.m,fontSize:9,color:highlight?"#7AC49A":P.amber,minWidth:55,marginTop:1,flexShrink:0}}>{time}</span>
                     <span style={{fontFamily:FF.s,fontSize:10,color:highlight?"#A8D8B8":P.sub,lineHeight:1.5,fontWeight:highlight?500:400}}>{action}</span>
                     {highlight&&<span style={{fontSize:10,flexShrink:0}}>{tomorrowSchedule?.icon}</span>}
                   </div>
@@ -615,8 +592,10 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               )}
             </div>
           </div>
+          </>
         )}
-        <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
+        <SectionDivider label="Training" icon="🏋"/>
+      <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:16}}>
             {isMorning?"Today's Training Plan":isEvening?"Today's Training Recap":"Training · Today"}
           </div>
@@ -681,55 +660,8 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               ))}
             </div>
           )}
-          <div style={{marginTop:12,background:`linear-gradient(135deg,${P.panel},${P.card})`,borderRadius:12,border:`1px solid ${P.border}`,padding:"12px 14px",overflow:"hidden",position:"relative"}}>
-            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>
-              Estimated Daily Calories
-            </div>
-            <div style={{display:"flex",alignItems:"baseline",gap:6,marginBottom:10}}>
-              <div style={{fontFamily:FF.r,fontSize:28,fontWeight:600,color:P.amber,letterSpacing:"-0.02em",lineHeight:1}}>
-                {canonicalAhead ? `~${estimatedTDEE.toLocaleString()}` : confirmedTDEE.toLocaleString()}
-              </div>
-              <div style={S.mut10}>kcal {canonicalAhead?"projected":"burned"}</div>
-            </div>
-            {[
-              {label:"RMR",      val:RMR_DAILY,    pct:RMR_DAILY/estimatedTDEE*100,      color:P.steel,   note:"Resting metabolic rate"},
-              {label:"NEAT",     val:NEAT_DAILY,   pct:NEAT_DAILY/estimatedTDEE*100,     color:P.clay,    note:"Lifestyle activity"},
-              {label:"Exercise", val:calsBurned,   pct:calsBurned/estimatedTDEE*100,     color:P.terra,   note:doneToday.map(w=>w.name).join(" + ")||"—",done:true},
-              ...(projectedExCal>0?[{label:"Expected",val:projectedExCal,pct:projectedExCal/estimatedTDEE*100,color:P.amber,note:`${todaySchedule?.name} ahead`,projected:true}]:[]),
-            ].map(({label,val,pct,color,note,done,projected})=>(
-              <div key={label} style={{marginBottom:6}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
-                  <div style={S.row6}>
-                    <div style={{width:6,height:6,borderRadius:2,background:color,flexShrink:0,opacity:projected?0.5:1}}/>
-                    <span style={{fontFamily:FF.s,fontSize:9,color:projected?P.muted:P.sub,fontStyle:projected?"italic":"normal"}}>{label}</span>
-                    <span style={{fontFamily:FF.s,fontSize:8,color:P.muted,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:120}}>{note}</span>
-                  </div>
-                  <span style={{fontFamily:FF.m,fontSize:10,fontWeight:500,color:projected?P.muted:color}}>
-                    {val.toLocaleString()}
-                  </span>
-                </div>
-                <div style={{height:3,background:P.border,borderRadius:2,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:`${Math.round(pct)}%`,background:color,borderRadius:2,opacity:projected?0.4:1,transition:"width 0.9s cubic-bezier(0.34,1.2,0.64,1)"}}/>
-                </div>
-              </div>
-            ))}
-            {canonicalAhead&&<div style={{marginTop:8,fontFamily:FF.s,fontSize:9,color:P.muted,lineHeight:1.5}}>
-              Projected total includes ~{projectedExCal} kcal from upcoming {todaySchedule?.name}.
-            </div>}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:6,marginTop:8}}>
-            <div style={{padding:"8px 12px",background:P.panel,borderRadius:8,border:`1px solid ${P.border}`}}>
-              <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginBottom:2}}>Week strain</div>
-              <div style={{fontFamily:FF.r,fontSize:16,fontWeight:600,color:P.amber,letterSpacing:"-0.01em"}}>
-                {(74.3+strainSoFar).toFixed(0)}
-              </div>
-            </div>
-            <div style={{padding:"8px 12px",background:P.panel,borderRadius:8,border:`1px solid ${P.border}`}}>
-              <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginBottom:2}}>Exercise cal today</div>
-              <div style={{fontFamily:FF.r,fontSize:16,fontWeight:600,color:P.terra,letterSpacing:"-0.01em"}}>{calsBurned.toLocaleString()}</div>
-            </div>
-          </div>
         </div>
+      <SectionDivider label="Your Day" icon="📅"/>
       <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
           <div>
@@ -797,17 +729,9 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           </div>
         )}
         {calEvents&&calEvents.length===0&&!calError&&(
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-            {[
-              {l:"Meetings",v:"0",c:P.steel},
-              {l:"Commitments",v:"0",c:P.muted},
-              {l:"Clear day",v:"✓",c:P.sage},
-            ].map(({l,v,c})=>(
-              <div key={l} style={{padding:"10px",background:P.panel,borderRadius:9}}>
-                <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}}>{l}</div>
-                <div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:c}}>{v}</div>
-              </div>
-            ))}
+          <div style={{padding:"16px",background:P.panel,borderRadius:10,textAlign:"center"}}>
+            <div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.sage,marginBottom:4}}>Clear day ✓</div>
+            <div style={{fontFamily:FF.s,fontSize:11,color:P.muted}}>No events scheduled. Good window for deep work or training.</div>
           </div>
         )}
         {calError&&(
@@ -817,8 +741,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           </div>
         )}
       </div>
-
-      </div>
+      <SectionDivider label="Numbers" icon="📊"/>
       <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"18px 20px",boxShadow:"0 1px 4px rgba(0,0,0,.05)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
           <div>
@@ -849,11 +772,13 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           </LineChart>
         </ResponsiveContainer>
       </div>
+      <SectionDivider label={
+        isMorning?"Morning Guidance":
+        isEvening?"Evening Guidance":
+        "Afternoon Guidance"
+      } icon={isMorning?"🌤":isEvening?"🌙":"☀"}/>
       <div>
-        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:12}}>
-          {isMorning?"Morning Guidance":isEvening?"Evening Guidance":"Afternoon Guidance"}
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:11}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:11}}>
           {guidance.map((g,i)=>(
             <div key={i} onClick={g.page?()=>setPage(g.page):undefined}
               style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"15px",cursor:g.page?"pointer":"default",
@@ -863,11 +788,11 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7}}>
                 <div style={{display:"flex",alignItems:"center",gap:7}}>
                   <span style={{fontSize:17,lineHeight:1}}>{g.icon}</span>
-                  <span style={{fontFamily:FF.s,fontWeight:600,fontSize:12,color:P.text}}>{g.title}</span>
+                  <span style={{fontFamily:FF.s,fontWeight:600,fontSize:13,color:P.text}}>{g.title}</span>
                 </div>
                 {g.action&&<span style={{fontFamily:FF.s,fontSize:9,color:P.steel,whiteSpace:"nowrap",marginLeft:8,flexShrink:0}}>{g.action} →</span>}
               </div>
-              <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,lineHeight:1.65}}>{g.body}</div>
+              <div style={{fontFamily:FF.s,fontSize:12,color:P.sub,lineHeight:1.70}}>{g.body}</div>
             </div>
           ))}
         </div>
@@ -877,10 +802,11 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           transition:"box-shadow .15s",boxShadow:"0 1px 4px rgba(0,0,0,0.08)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:130}}
           onMouseEnter={e=>e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,.15)"}
           onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.08)"}>
-          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>VITAL Score</div>
+          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>Today's Status</div>
+          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:6}}>VITAL Score</div>
           <div style={{fontFamily:FF.r,fontSize:58,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{SCORES_NOW.master.score}</div>
-          <div style={{fontFamily:FF.s,fontSize:10,color:"#C4A850",marginTop:6,fontWeight:500}}>{SCORE_LABEL(SCORES_NOW.master.score)}</div>
-          <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,marginTop:4}}>Full report →</div>
+          <div style={{fontFamily:FF.s,fontSize:10,color:P.amber,marginTop:6,fontWeight:500}}>{SCORE_LABEL(SCORES_NOW.master.score)}</div>
+          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,marginTop:8,opacity:0.6}}>Tap for full report →</div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {[
