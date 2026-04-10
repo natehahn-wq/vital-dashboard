@@ -208,7 +208,7 @@ const THEMES = {
     id:"lifeforce", name:"Lifeforce", preview:"#F7F0E6",
     accent:"#C89A5A", accentDk:"#8B6F4E", dark:false,
     bg:"#F7F0E6", panel:"#EDE4D6", card:"#FBF7F2", cardDk:"#1C1410",
-    border:"#D6C8B4", borderDk:"rgba(139,111,78,0.30)",
+    border:"rgba(214,200,180,0.55)", borderDk:"rgba(139,111,78,0.30)",
     text:"#1C1410", textInv:"#FBF7F2", sub:"#4A3728", muted:"#8C7B6A", mutedDk:"#A89880",
     terra:"#B5301A",   terracottaBg:"#FDDBD6",
     sage:"#2D6A4F",    sageBg:"#D8F3DC",
@@ -314,19 +314,19 @@ const S={
   sub10l:{fontFamily:FF.s,fontSize:10,color:P.sub,lineHeight:1.6},
   h18:   {fontFamily:FF.r,fontWeight:600,fontSize:18,color:P.text},
   divider:{flex:1,height:1,background:P.border},
-  col16: {display:"flex",flexDirection:"column",gap:16},
-  col18: {display:"flex",flexDirection:"column",gap:18},
+  col16: {display:"flex",flexDirection:"column",gap:18},
+  col18: {display:"flex",flexDirection:"column",gap:22},
   col7:  {display:"flex",flexDirection:"column",gap:7},
-  col10: {display:"flex",flexDirection:"column",gap:10},
-  row10: {display:"flex",alignItems:"center",gap:10},
+  col10: {display:"flex",flexDirection:"column",gap:12},
+  row10: {display:"flex",alignItems:"center",gap:12},
   row8:  {display:"flex",alignItems:"center",gap:8},
   row6:  {display:"flex",alignItems:"center",gap:6},
   row5:  {display:"flex",alignItems:"center",gap:5},
   row4:  {display:"flex",alignItems:"center",gap:4},
   rowsb: {display:"flex",justifyContent:"space-between",alignItems:"center"},
-  rowsbe:{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:10},
-  g240:  {display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:14},
-  g120:  {display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10},
+  rowsbe:{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:12},
+  g240:  {display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:16},
+  g120:  {display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:12},
 };
 // Card container style helper (82 uses × ~60 chars = ~5KB saved)
 const CS=(r=14,p="18px",sh="0 1px 3px rgba(0,0,0,.04)")=>({background:P.card,border:`1px solid ${P.border}`,borderRadius:r,padding:p,boxShadow:sh});
@@ -742,7 +742,7 @@ const SCORES_NOW = {
       {name:"VAT Area (DXA)",    val:"118 cm²",    note:"Borderline — target <100 cm²",                  score:62, trend:"flag"},
     ]},
 
-  bodyComp:     { score:58, prev:61, label:"Body Composition",   icon:"📐", color:P.violet, weight:.15,
+  bodyComp:     { score:58, prev:61, label:"Body Comp",   icon:"📐", color:P.violet, weight:.15,
     dataDate:"Jan 23, 2026 DXA",
     drivers:[
       {name:"Body Fat % (DXA)",  val:"26.4%",      note:"Overfat — DXA gold standard",     score:50, trend:"flag"},
@@ -828,7 +828,7 @@ const METABOLIC_AGE = (() => {
   const factors = [
     { label:"Cardiovascular",  delta:-7.2, note:"CRP <0.2, TG 66, HDL 60, RHR 52",       color:P.terra,  icon:"❤" },
     { label:"Metabolic",       delta:-3.4, note:"HbA1c 5.2%, glucose 84, BMR 1858",       color:P.amber,  icon:"⚗" },
-    { label:"Body Composition",delta:+1.8, note:"BF 21.1% — Average tier for 47yo",       color:P.clay,   icon:"📐" },
+    { label:"Body Comp",delta:+1.8, note:"BF 21.1% — Average tier for 47yo",       color:P.clay,   icon:"📐" },
     { label:"Musculoskeletal", delta:-2.6, note:"+8.6 lbs lean mass, skeletal 75.6%",     color:P.sage,   icon:"💪" },
     { label:"Hormonal",        delta:+1.2, note:"Testosterone 377 ng/dL — lower-mid",     color:P.violet, icon:"⚗" },
     { label:"Recovery/CNS",    delta:-3.8, note:"HRV 67ms, sleep eff 91%, RHR 52",        color:P.steel,  icon:"🌙" },
@@ -944,14 +944,14 @@ function StatCard({icon,label,value,unit,color,delta,sparkData,dark,sub}){
   const n=parseFloat(value)||0;const a=useAnimNum(n);const disp=Number.isInteger(n)?Math.round(a):a.toFixed(1);
   const bg=dark?P.cardDk:P.card;const bd=dark?P.borderDk:P.border;const txt=dark?P.textInv:P.text;const st=dark?P.mutedDk:P.sub;
   const dPos=delta>=0;const dCol=dPos?"#3A5C48":"#C4604A";const dBg=dPos?"#EBF0EC":"#FDF1EE";
-  return(<div style={{background:bg,border:`1px solid ${bd}`,borderRadius:14,padding:"16px 18px",position:"relative",overflow:"hidden",cursor:"default",transition:"all .25s",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}
+  return(<div style={{background:bg,border:"none",borderRadius:14,padding:"16px 18px",position:"relative",overflow:"hidden",cursor:"default",transition:"all .25s",boxShadow:"0 1px 4px rgba(0,0,0,.08)"}}
     onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.10)";}}
     onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.06)";}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
       <span style={{fontSize:18,lineHeight:1,opacity:.85}}>{icon}</span>
       {delta!=null&&<span style={{fontFamily:FF.s,fontSize:9,fontWeight:600,color:dCol,background:dBg,padding:"2px 7px",borderRadius:99,letterSpacing:"0.02em"}}>{dPos?"+":""}{delta}%</span>}
     </div>
-    <div style={{fontFamily:FF.r,fontSize:32,fontWeight:600,color:txt,lineHeight:1,marginBottom:1,letterSpacing:"-0.01em"}}>{disp}<span style={{fontSize:14,fontWeight:400,color:st,marginLeft:4,fontFamily:FF.s}}>{unit}</span></div>
+    <div style={{fontFamily:FF.r,fontSize:38,fontWeight:600,color:txt,lineHeight:1,marginBottom:1,letterSpacing:"-0.01em"}}>{disp}<span style={{fontSize:14,fontWeight:400,color:st,marginLeft:4,fontFamily:FF.s}}>{unit}</span></div>
     <div style={{fontFamily:FF.s,fontSize:11,fontWeight:400,color:st,letterSpacing:"0.01em"}}>{label}</div>
     {sub&&<div style={{fontFamily:FF.s,fontSize:9,color:st,opacity:0.7,marginBottom:sparkData?8:0}}>{sub}</div>}
     {sparkData&&<Spark data={sparkData.slice(-14)} color={color}/>}
@@ -1049,7 +1049,7 @@ function MasterRing({score,size=200,stroke=10}){
           style={{transition:"stroke-dasharray 1.2s cubic-bezier(0.34,1.56,0.64,1)"}}/>
       </svg>
       <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-        <div style={{fontFamily:FF.r,fontSize:60,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em"}}>{displayed}</div>
+        <div style={{fontFamily:FF.r,fontSize:72,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em"}}>{displayed}</div>
         <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginTop:4}}>out of 100</div>
         <div style={{marginTop:8,padding:"4px 14px",borderRadius:99,background:warmCol+"18",fontFamily:FF.s,fontSize:11,fontWeight:500,color:warmCol,letterSpacing:"0.02em"}}>{SCORE_LABEL(score)}</div>
       </div>
@@ -1092,7 +1092,7 @@ function SubScoreCard({data,onClick,active}){
         </div>
       </div>
       <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:10}}>
-        <div style={{fontFamily:FF.r,fontSize:36,fontWeight:600,color:col,lineHeight:1,letterSpacing:"-0.02em"}}>
+        <div style={{fontFamily:FF.r,fontSize:42,fontWeight:600,color:col,lineHeight:1,letterSpacing:"-0.02em"}}>
           {displayed}
         </div>
         <div>
@@ -1140,7 +1140,7 @@ function ScorePage(){
           Your score reflects 7 clinical domains anchored to the most recent source for each — <span style={{color:P.cyan,fontWeight:700}}>Recovery, Strength, and Cardiovascular use 90-day rolling WHOOP averages</span> ({window.__VITAL_90DAY_RANGE__ || "Jan 1 2026 \u2013 Apr 1 2026"}) rather than single-day snapshots. Labs: Jan 15 '26 (lipids/metabolic) + May 23 '25 (hormones/CRP/HbA1c) — most recent per biomarker. Body comp: Jan 23 '26 DXA. Score is <span style={{color:P.cyan,fontWeight:700}}>+2 pts</span> since Feb '25 — lipid and longevity gains are partially offset by 3-month recovery averaging (63.9% avg vs 66.6% baseline) and a running-heavy training block with limited functional strength work.
           Primary opportunities: Monitor testosterone decline (560→377), DHEA-S now elevated (needs recalibration), watch eGFR trend (97→77).
         </div>
-        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
           {[
             {label:"Feb 14 Score",val:68,color:P.amber},
             {label:"Current Score",val:SCORES_NOW.master.score,color:P.cyan},
@@ -1174,7 +1174,7 @@ function ScorePage(){
     </div>
     
       {/* ── Metabolic Age + Domain Contributions ── */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:18}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
         {/* Left – Perceived Metabolic Age card */}
         <div style={{background:P.cardDk,borderRadius:16,padding:"28px 24px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:16}}>Perceived Metabolic Age</div>
@@ -1208,11 +1208,11 @@ function ScorePage(){
       {subKeys.map(k=><SubScoreCard key={k} data={SCORES_NOW[k]} active={activeDetail===k} onClick={()=>setActiveDetail(k)}/>)}
     </div>
     <div style={CS(14,"18px 20px","none")}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:12}}>
         <div>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:5}}>{detail.icon} {detail.label} · {detail.dataDate||"Multiple sources"}</div>
           <div style={{display:"flex",alignItems:"baseline",gap:12}}>
-            <span style={{fontFamily:FF.m,fontSize:36,fontWeight:600,color:SCORE_COLOR(detail.score),lineHeight:1}}>{detail.score}</span>
+            <span style={{fontFamily:FF.m,fontSize:42,fontWeight:600,color:SCORE_COLOR(detail.score),lineHeight:1}}>{detail.score}</span>
             <span style={{fontFamily:FF.s,fontSize:12,color:P.sub}}>/100 · {SCORE_LABEL(detail.score)}</span>
             <span style={{fontFamily:FF.s,fontSize:11,fontWeight:700,color:detail.score>detail.prev?P.green:detail.score<detail.prev?P.coral:P.muted}}>
               {detail.score>detail.prev?`+${detail.score-detail.prev}`:detail.score<detail.prev?detail.score-detail.prev:"no change"} pts since Feb '25
@@ -1264,7 +1264,7 @@ function ScorePage(){
           <Line type="monotone" dataKey="recovery"       stroke={P.green}  strokeWidth={1.5} dot={false} name="Recovery" strokeDasharray="4 2"/>
         </LineChart>
       </ResponsiveContainer>
-      <div style={{display:"flex",gap:14,flexWrap:"wrap",marginTop:10}}>
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",marginTop:10}}>
         {[
           {label:"VITAL Score",color:P.cyan,w:3},
           {label:"Cardio",color:P.coral,w:1.5},
@@ -1283,7 +1283,7 @@ function ScorePage(){
     </div>
     <div style={CS(14,"18px 20px","none")}>
       <SLabel color={P.amber}>Top 3 Priority Actions</SLabel>
-      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:10}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:12}}>
         {[
           {rank:1,cat:"Longevity",score:64,action:"Investigate elevated Ferritin (394.5)",detail:"Retest fasting ferritin + iron panel. Consider HFE gene test. Ferritin is your lowest single driver.",color:P.coral,impact:"+3–5 pts"},
           {rank:2,cat:"Hormonal",score:66,action:"Supplement Vitamin D3 + K2",detail:"At 26.5 ng/mL you're insufficient. Target 50–70 ng/mL with 5,000 IU/day D3. Impacts immunity, hormones, mood.",color:P.amber,impact:"+2–4 pts"},
@@ -1341,24 +1341,27 @@ function ScorePage(){
       </div></div>);
 }
 
-const NAV=[
-  {id:"today",        icon:"☀",   label:"Today"},
-  {id:"overview",     icon:"⊞",   label:"Overview"},
-  {id:"readiness",    icon:"📡",   label:"Readiness"},
-  {id:"fueling",      icon:"🥗",   label:"Fueling"},
-  {id:"score",        icon:"⚡",   label:"Health Score"},
-  {id:"fitness",      icon:"🏃",   label:"Fitness"},
-  {id:"sleep",        icon:"🌙",   label:"Sleep"},
-  {id:"progress",     icon:"📈",   label:"Progress"},
-  {id:"calendar",     icon:"📅",   label:"Calendar"},
-  {id:"labs",         icon:"🧬",   label:"Labs"},
-  {id:"body",         icon:"📐",   label:"Body Comp"},
-  {id:"trends",       icon:"↗",    label:"Trends"},
-  {id:"correlations", icon:"🔗",   label:"Correlations"},
-  {id:"supps",        icon:"💊",   label:"Supplements"},
-  {id:"peloton",      icon:"🚴",   label:"Peloton"},
-  {id:"import",       icon:"⬆",    label:"Import Data"},
+const NAV_PRIMARY=[
+  {id:"today",    icon:"☀",   label:"Today"},
+  {id:"score",    icon:"⚡",   label:"Health Score"},
+  {id:"fitness",  icon:"🏃", label:"Fitness"},
+  {id:"calendar", icon:"📅",label:"Calendar"},
+  {id:"labs",     icon:"🧬",    label:"Labs"},
 ];
+const NAV_MORE=[
+  {id:"overview",     icon:"⊞",  label:"Overview"},
+  {id:"readiness",    icon:"📡", label:"Readiness"},
+  {id:"fueling",      icon:"🥗",   label:"Fueling"},
+  {id:"sleep",        icon:"🌙",     label:"Sleep"},
+  {id:"progress",     icon:"📈",  label:"Progress"},
+  {id:"body",         icon:"📐",      label:"Body Comp"},
+  {id:"trends",       icon:"↗",    label:"Trends"},
+  {id:"correlations", icon:"🔗",      label:"Correlations"},
+  {id:"supps",        icon:"💊",     label:"Supplements"},
+  {id:"peloton",      icon:"🚴",   label:"Peloton"},
+  {id:"import",       icon:"⬆",   label:"Import Data"},
+];
+const NAV=[...NAV_PRIMARY,...NAV_MORE];
 
 function UserModal({onClose,theme,setTheme}){
   const [form, setForm] = useState({
@@ -1450,7 +1453,7 @@ function UserModal({onClose,theme,setTheme}){
               {icon:"💓",label:"CardioCoach",status:"connected",  color:P.sage,   note:"RMR measured"},
               {icon:"🍎",label:"Apple Health",status:"available", color:P.steel,  note:"Coming soon"},
             ].map(({icon,label,status,color,note})=>(
-              <div key={label} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",
+              <div key={label} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 12px",
                 borderRadius:10,background:P.panel,border:`1px solid ${status==="import"?P.amber+"44":P.border}`,
                 cursor:status==="import"?"pointer":"default"}}
                 onClick={status==="import"?()=>alert("Export from Hume Health app → Settings → Export Data → JSON. Then drag the file into the Labs page AI Insights uploader."):undefined}>
@@ -1480,7 +1483,7 @@ function UserModal({onClose,theme,setTheme}){
                 return(
                   <div key={t.id} onClick={()=>setTheme&&setTheme(t.id)}
                     style={{
-                      display:"flex",alignItems:"center",gap:10,padding:"10px 12px",
+                      display:"flex",alignItems:"center",gap:12,padding:"10px 12px",
                       borderRadius:10,cursor:"pointer",transition:"all .15s",
                       border:`1.5px solid ${isActive?t.accent:(P.border)}`,
                       background:isActive?t.accent+"10":P.panel,
@@ -1506,7 +1509,7 @@ function UserModal({onClose,theme,setTheme}){
             </div>
           </div>
 
-          <div style={{display:"flex",gap:10}}>
+          <div style={{display:"flex",gap:12}}>
             <button onClick={onClose} style={{flex:1,padding:"11px",borderRadius:10,border:`1px solid ${P.border}`,
               background:P.panel,fontFamily:FF.s,fontSize:12,fontWeight:500,color:P.sub,cursor:"pointer"}}>
               Cancel
@@ -1524,34 +1527,56 @@ function UserModal({onClose,theme,setTheme}){
 
 function Sidebar({active,set,peloConnected,theme,setTheme}){
   const [showProfile, setShowProfile] = useState(false);
+  const [showMore,setShowMore]=useState(false);
   return(<>
     {showProfile&&<UserModal onClose={()=>setShowProfile(false)} theme={theme} setTheme={setTheme}/>}
-    <div style={{width:210,flexShrink:0,background:P.card,borderRight:`1px solid ${P.border}`,display:"flex",flexDirection:"column",height:"100vh",position:"sticky",top:0}}>
+    <div style={{width:200,flexShrink:0,background:P.card,borderRight:`1px solid ${P.border}`,display:"flex",flexDirection:"column",height:"100vh",position:"sticky",top:0}}>
     <div style={{padding:"22px 20px 18px",borderBottom:`1px solid ${P.border}`}}>
       <div style={S.row10}>
         <div style={{width:30,height:30,borderRadius:"50%",background:P.cardDk,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>
           <span style={{color:P.textInv}}>♥</span>
         </div>
         <div>
-          <div style={{fontFamily:FF.r,fontWeight:700,fontSize:16,color:P.text,letterSpacing:"0.02em",lineHeight:1}}>VITAL</div>
+          <div style={{fontFamily:FF.r,fontWeight:700,fontSize:15,color:P.text,letterSpacing:"0.06em",lineHeight:1}}>VITAL</div>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginTop:1}}>Health OS</div>
         </div>
       </div>
     </div>
     <div style={{padding:"12px 10px",flex:1,overflowY:"auto"}}>
-      {NAV.map(n=>{
-        const on=active===n.id;
-        const accent=n.id==="today"?P.amber:n.id==="score"?P.terra:n.id==="fitness"?P.sage:n.id==="labs"?P.terra:n.id==="body"?P.clay:n.id==="peloton"?P.terra:P.sage;
-        const flagDot=n.id==="labs";
-        return(<div key={n.id} onClick={()=>set(n.id)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:10,marginBottom:1,cursor:"pointer",transition:"all .15s",background:on?accent+"12":"transparent",}}
-          onMouseEnter={e=>{if(!on)e.currentTarget.style.background=P.panel;}}
-          onMouseLeave={e=>{if(!on)e.currentTarget.style.background="transparent";}}>
+      {NAV_PRIMARY.map(n)=>{
+      const on=active===n.id;
+      const accent=n.id==="today"?P.amber:n.id==="score"?P.terra:n.id==="fitness"?P.sage:n.id==="labs"?P.terra:n.id==="body"?P.clay:n.id==="peloton"?P.terra:P.sage;
+      const flagDot=n.id==="labs";
+      return(<div key={n.id} onClick={()=>set(n.id)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:10,marginBottom:1,cursor:"pointer",transition:"all .15s",background:on?`${accent}12`:"transparent"}}
+        onMouseEnter={e=>{if(!on)e.currentTarget.style.background=P.panel}}
+        onMouseLeave={e=>{if(!on)e.currentTarget.style.background="transparent"}}>
           <span style={{fontSize:13,lineHeight:1,opacity:on?1:.5}}>{n.icon}</span>
           <span style={{fontFamily:FF.s,fontSize:12,fontWeight:on?600:400,color:on?P.text:P.sub,flex:1}}>{n.label}</span>
           {flagDot&&<div style={{width:6,height:6,borderRadius:"50%",background:P.terra}}/>}
           {on&&!flagDot&&<div style={{width:5,height:5,borderRadius:"50%",background:accent}}/>}
         </div>);
-      })}
+    }}
+      <div onClick={()=>setShowMore(!showMore)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:10,marginTop:6,marginBottom:1,cursor:"pointer",transition:"all .15s",opacity:.6}}
+        onMouseEnter={e=>{e.currentTarget.style.background=P.panel}}
+        onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
+        <span style={{fontSize:13,lineHeight:1}}>{showMore?"▴":"▾"}</span>
+        <span style={{fontFamily:FF.s,fontSize:11,fontWeight:500,color:P.sub}}>More</span>
+      </div>
+      {showMore&&<div style={{marginTop:2}}>
+        {NAV_MORE.map(n)=>{
+      const on=active===n.id;
+      const accent=n.id==="today"?P.amber:n.id==="score"?P.terra:n.id==="fitness"?P.sage:n.id==="labs"?P.terra:n.id==="body"?P.clay:n.id==="peloton"?P.terra:P.sage;
+      const flagDot=n.id==="labs";
+      return(<div key={n.id} onClick={()=>set(n.id)} style={{display:"flex",alignItems:"center",gap:9,padding:"9px 10px",borderRadius:10,marginBottom:1,cursor:"pointer",transition:"all .15s",background:on?`${accent}12`:"transparent"}}
+        onMouseEnter={e=>{if(!on)e.currentTarget.style.background=P.panel}}
+        onMouseLeave={e=>{if(!on)e.currentTarget.style.background="transparent"}}>
+          <span style={{fontSize:13,lineHeight:1,opacity:on?1:.5}}>{n.icon}</span>
+          <span style={{fontFamily:FF.s,fontSize:12,fontWeight:on?600:400,color:on?P.text:P.sub,flex:1}}>{n.label}</span>
+          {flagDot&&<div style={{width:6,height:6,borderRadius:"50%",background:P.terra}}/>}
+          {on&&!flagDot&&<div style={{width:5,height:5,borderRadius:"50%",background:accent}}/>}
+        </div>);
+    }}
+      </div>}
     </div>
     <div style={{padding:"14px 16px",borderTop:`1px solid ${P.border}`}}>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:10}}>Data Sources</div>
@@ -1606,8 +1631,8 @@ function Topbar({page}){
     hour < 17 ? "Good afternoon, Nate" :
     hour < 21 ? "Good evening, Nate" :
                "Good night, Nate";
-  const labels={today:todGreet,import:"Import Data",peloton:"Peloton",supps:"Supplements",progress:"Progress",sleep:"Sleep",correlations:"Correlations",fueling:"Fueling",readiness:"Readiness",overview:"Dashboard",score:"Health Score",fitness:"Fitness & Training",calendar:"Activity Calendar",body:"Body Composition",labs:"Lab Results",trends:"Trends"};
-  const dates={score:"May 23, 2025",labs:"Latest: May 23, 2025 · BioLab",body:"Styku · Feb 14 & May 23, 2025",fitness:"WHOOP · Last 6 months"};
+  const labels={today:todGreet,import:"Import Data",peloton:"Peloton",supps:"Supplements",progress:"Progress",sleep:"Sleep",correlations:"Correlations",fueling:"Fueling",readiness:"Readiness",overview:"Dashboard",score:"Health Score",fitness:"Fitness & Training",calendar:"Calendar",body:"Body Composition",labs:"Labs",trends:"Trends"};
+  const dates={score:"May 23, 2025",labs:"May 23, 2025",body:"May 23, 2025",fitness:"Last 6 months"};
   return(<div style={{height:58,background:P.card,borderBottom:`1px solid ${P.border}`,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 26px",position:"sticky",top:0,zIndex:10}}>
     <div>
       <div style={{fontFamily:FF.r,fontWeight:600,fontSize:17,color:P.text,letterSpacing:"0.01em"}}>{labels[page]||page}</div>
@@ -1619,12 +1644,10 @@ function Topbar({page}){
         <span style={{fontFamily:FF.s,fontSize:10,fontWeight:500,color:P.terra}}>3 Flags · May 23</span>
       </div>}
       <div style={{display:"flex",gap:4}}>
-        {[{c:P.sage,l:"WHOOP"},{c:P.clay,l:"Styku"},{c:P.terra,l:"Labs"}].map(({c,l})=>(
-          <div key={l} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:99,background:P.panel,border:`1px solid ${P.border}`}}>
-            <div style={{width:5,height:5,borderRadius:"50%",background:c}}/>
-            <span style={S.sub9}>{l}</span>
+        <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:99,background:"rgba(255,255,255,0.6)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
+            <div style={{width:5,height:5,borderRadius:"50%",background:P.sage}}/>
+            <span style={S.sub9}>Recovery + HRV</span>
           </div>
-        ))}
       </div>
     </div>
   </div>);
@@ -1973,12 +1996,12 @@ function TodayPage({setPage, whoopStatus="loading"}){
 
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",position:"relative"}}>
           <div>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
               <span style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.72)",letterSpacing:"0.12em",textTransform:"uppercase"}}>{dateLabel}</span>
               <div style={{width:3,height:3,borderRadius:"50%",background:"rgba(255,255,255,0.2)"}}/>
               <span style={{fontFamily:FF.m,fontSize:10,color:"rgba(255,255,255,0.55)"}}>{timeLabel}</span>
             </div>
-            <div style={{fontFamily:FF.r,fontSize:38,fontWeight:600,color:P.textInv,letterSpacing:"-0.02em",lineHeight:1,marginBottom:8}}>
+            <div style={{fontFamily:FF.r,fontSize:46,fontWeight:600,color:P.textInv,letterSpacing:"-0.02em",lineHeight:1,marginBottom:8}}>
               {greeting}<br/>Nate.
             </div>
             <div style={{fontFamily:FF.s,fontSize:13,color:"rgba(255,255,255,0.80)",marginTop:8,maxWidth:380,lineHeight:1.6}}>
@@ -1989,7 +2012,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
             </div>
           </div>
           <div style={{textAlign:"right",flexShrink:0,minWidth:140}}>
-            <div style={{fontFamily:FF.r,fontSize:52,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{weather.temp}°</div>
+            <div style={{fontFamily:FF.r,fontSize:60,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{weather.temp}°</div>
             <div style={{fontFamily:FF.s,fontSize:13,color:"rgba(255,255,255,0.85)",marginTop:3}}>{wDesc.icon} {wDesc.label}</div>
             <div style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.62)",marginTop:4}}>
               Feels {weather.feels}° · H{weather.high}° · {weather.wind} mph
@@ -2008,9 +2031,9 @@ function TodayPage({setPage, whoopStatus="loading"}){
             {label:"Sleep",      val:`${SLEEP.perf}%`,  color:"#7AC49A"},
             {label:"Strain today",val:strainSoFar>0?strainSoFar.toFixed(1):"—", color:strainSoFar>15?"#C4604A":strainSoFar>8?"#C47830":"rgba(255,255,255,0.90)"},
           ].map(({label,val,color},i)=>(
-            <div key={i} style={{flex:1,padding:"10px 12px",background:"rgba(255,255,255,0.08)",borderRadius:10,border:"1px solid rgba(255,255,255,0.16)"}}>
+            <div key={i} style={{flex:1,padding:"12px 16px",background:"rgba(255,255,255,0.08)",borderRadius:10}}>
               <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.60)",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4}}>{label}</div>
-              <div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
+              <div style={{fontFamily:FF.r,fontSize:26,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
             </div>
           ))}
           {/* WHOOP live status pill */}
@@ -2035,7 +2058,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
         </div>
 
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:16}}>
         {!isEvening ? (
           <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
@@ -2055,7 +2078,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
                 </div>
               ))}
             </div>
-            <div style={{display:"flex",gap:10,marginBottom:14}}>
+            <div style={{display:"flex",gap:12,marginBottom:14}}>
               {[{label:"Light",v:SLEEP.light,c:"#4A6070"},{label:"REM",v:SLEEP.rem,c:"#7A5A80"},{label:"Deep",v:SLEEP.deep,c:"#3A5C48"}].map(({label,v,c})=>(
                 <div key={label} style={S.row4}>
                   <div style={{width:7,height:7,borderRadius:2,background:c}}/>
@@ -2149,7 +2172,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
                     highlight:true,
                   }]:[]),
                 ].map(({time,action,highlight})=>(
-                  <div key={time} style={{display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+                  <div key={time} style={{display:"flex",gap:12,marginBottom:8,alignItems:"flex-start"}}>
                     <span style={{fontFamily:FF.m,fontSize:9,color:highlight?"#7AC49A":"#C4A850",minWidth:55,marginTop:1,flexShrink:0}}>{time}</span>
                     <span style={{fontFamily:FF.s,fontSize:10,color:highlight?"#A8D8B8":P.sub,lineHeight:1.5,fontWeight:highlight?500:400}}>{action}</span>
                     {highlight&&<span style={{fontSize:10,flexShrink:0}}>{tomorrowSchedule?.icon}</span>}
@@ -2208,7 +2231,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
                     if(!plan) return <div style={S.mut10}>No workout pattern for {tomorrowDayName}.</div>;
                     const isCustom = !!tomorrowCustom;
                     return(
-                      <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:plan.color+"0D",borderRadius:10,border:`1px solid ${plan.color}22`}}>
+                      <div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",background:plan.color+"0D",borderRadius:10,border:`1px solid ${plan.color}22`}}>
                         <span style={{fontSize:22}}>{plan.icon}</span>
                         <div style={{flex:1}}>
                           <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
@@ -2244,7 +2267,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
             <div style={{marginBottom:12}}>
               <div style={{fontFamily:FF.s,fontSize:9,color:P.sage,fontWeight:600,marginBottom:6}}>✓ Completed</div>
               {doneToday.map((w,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 11px",background:w.color+"0D",borderRadius:10,border:`1px solid ${w.color}20`,marginBottom:6}}>
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 11px",background:w.color+"0D",borderRadius:10,border:`1px solid ${w.color}20`,marginBottom:6}}>
                   <span style={{fontSize:18,lineHeight:1}}>{w.icon}</span>
                   <div style={{flex:1}}>
                     <div style={{display:"flex",justifyContent:"space-between"}}>
@@ -2267,7 +2290,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
                 {planned[0].isCanonical ? `Expected · ${planned[0].time}` : "Alternative"}
               </div>
               {planned.map((w,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 11px",background:w.color+"08",borderRadius:10,border:`1px dashed ${w.color}44`,marginBottom:6}}>
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 11px",background:w.color+"08",borderRadius:10,border:`1px dashed ${w.color}44`,marginBottom:6}}>
                   <span style={{fontSize:18,lineHeight:1,opacity:.7}}>{w.icon}</span>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={S.rowsb}>
@@ -2291,7 +2314,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
             <div>
               <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginBottom:6}}>Yesterday</div>
               {yesterday.map((w,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 11px",background:P.panel,borderRadius:9,border:`1px solid ${P.border}`,marginBottom:4}}>
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 11px",background:P.panel,borderRadius:9,border:`1px solid ${P.border}`,marginBottom:4}}>
                   <span style={{fontSize:16,lineHeight:1}}>{w.icon}</span>
                   <div style={{flex:1}}>
                     <span style={S.sub10}>{w.name}</span>
@@ -2381,7 +2404,7 @@ function TodayPage({setPage, whoopStatus="loading"}){
             {calEvents.map((ev,i)=>{
               const col = calColor(ev.calendar);
               return(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:10,
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,
                   padding:"9px 11px",borderRadius:10,
                   background:P.panel,border:`1px solid ${P.border}`}}>
                   <div style={{width:3,alignSelf:"stretch",borderRadius:2,
@@ -2492,17 +2515,17 @@ function TodayPage({setPage, whoopStatus="loading"}){
           ))}
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:14,alignItems:"stretch"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:16,alignItems:"stretch"}}>
         <div onClick={()=>setPage("score")} style={{background:P.cardDk,borderRadius:16,padding:"18px 24px",cursor:"pointer",
           transition:"box-shadow .15s",boxShadow:"0 1px 4px rgba(0,0,0,0.08)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:130}}
           onMouseEnter={e=>e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,.15)"}
           onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.08)"}>
           <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:8}}>VITAL Score</div>
-          <div style={{fontFamily:FF.r,fontSize:48,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{SCORES_NOW.master.score}</div>
+          <div style={{fontFamily:FF.r,fontSize:58,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{SCORES_NOW.master.score}</div>
           <div style={{fontFamily:FF.s,fontSize:10,color:"#C4A850",marginTop:6,fontWeight:500}}>{SCORE_LABEL(SCORES_NOW.master.score)}</div>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,marginTop:4}}>Full report →</div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {[
             {icon:"⚡",label:"Health Score",sub:`${SCORES_NOW.master.score}/100`,    page:"score",   flag:false},
             {icon:"🏃",label:"Fitness",     sub:"8W · 95.2 peak", page:"fitness", flag:false},
@@ -2570,7 +2593,7 @@ function Overview({setPage}){
       </button>
     </div>
 
-    <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:14,alignItems:"stretch",flexWrap:"wrap"}}>
+    <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:16,alignItems:"stretch",flexWrap:"wrap"}}>
       <div onClick={()=>setPage("score")} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"28px 32px",cursor:"pointer",transition:"box-shadow .2s",boxShadow:"0 1px 4px rgba(0,0,0,.06)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minWidth:220}}
         onMouseEnter={e=>e.currentTarget.style.boxShadow="0 6px 24px rgba(0,0,0,0.10)"}
         onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,.06)"}>
@@ -2586,7 +2609,7 @@ function Overview({setPage}){
             })}
           </svg>
           <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-            <div style={{fontFamily:FF.r,fontSize:52,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em"}}>{masterScore}</div>
+            <div style={{fontFamily:FF.r,fontSize:64,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em"}}>{masterScore}</div>
             <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginTop:3}}>/ 100</div>
           </div>
         </div>
@@ -2604,7 +2627,7 @@ function Overview({setPage}){
 
     </div>
     
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:12}}>
       <StatCard icon="💚" label="Recovery"    value={WHOOP.recovery}   unit="/100" color={P.sage}   delta={null} sparkData={T.rec}/>
       <StatCard icon="💓" label="HRV"         value={WHOOP.hrv}        unit="ms"   color={P.steel}  delta={2.1}  sparkData={T.hrv}/>
       <StatCard icon="❤" label="Resting HR"  value={WHOOP.rhr}        unit="bpm"  color={P.terra}  delta={-1.4} sparkData={T.rhr}/>
@@ -2612,7 +2635,7 @@ function Overview({setPage}){
       <StatCard icon="🫀" label="Body Fat"    value={LATEST.bodyFat}   unit="%"    color={P.clay}   delta={-11.6}/>
       <StatCard icon="💪" label="Lean Mass"   value={LATEST.leanMass}  unit="lbs"  color={P.sage}   delta={5.7}/>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
       <div onClick={()=>setPage("labs")} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px",cursor:"pointer",transition:"box-shadow .2s",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}
         onMouseEnter={e=>e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.08)"}
         onMouseLeave={e=>e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,.04)"}>
@@ -2662,7 +2685,7 @@ function Overview({setPage}){
         </div>
         <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"16px 20px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
           <SLabel color={P.steel}>Sleep · WHOOP</SLabel>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12}}>
             {[
               {label:"Avg Night",  val:fmtH(WHOOP.sleep.hours), color:P.steel},
               {label:"Performance",val:`${WHOOP.sleep.score}%`,color:P.sage},
@@ -2771,8 +2794,8 @@ function Labs(){
     {id:"special",  label:"Special Chem",  color:P.coral},
   ];
   const data = (LABS_MERGED.panels[activePanel] || LABS.panels[activePanel] || []);
-  return(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-    <div style={{background:`linear-gradient(135deg,${P.coral}12,${P.card})`,border:`1px solid ${P.coral}44`,borderRadius:14,padding:"16px 18px",display:"flex",gap:14,alignItems:"flex-start"}}>
+  return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+    <div style={{background:`linear-gradient(135deg,${P.coral}12,${P.card})`,border:`1px solid ${P.coral}44`,borderRadius:14,padding:"16px 18px",display:"flex",gap:16,alignItems:"flex-start"}}>
       <div style={{width:36,height:36,borderRadius:9,background:P.terracottaBg,border:`1px solid ${"#C4604A33"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>🧬</div>
       <div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
@@ -2896,7 +2919,7 @@ function Labs(){
               </div>
             </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(keys.length,3)},1fr)`,gap:10}}>
+          <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(keys.length,3)},1fr)`,gap:12}}>
             {keys.map(k=><MiniTrend key={k} metricKey={k} historyData={histData}/>)}
           </div>
         </div>
@@ -3337,7 +3360,7 @@ function BodyComp(){
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"clamp(110px,20vw,160px) 1fr clamp(110px,20vw,160px)",gap:8,alignItems:"center"}}>
-        <div style={{display:"flex",flexDirection:"column",gap:10,alignItems:"flex-end"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,alignItems:"flex-end"}}>
           <RegionCard {...REGIONS.find(r=>r.id==="trunk")} onClick={()=>setActiveRegion(activeRegion==="trunk"?null:"trunk")} active={activeRegion==="trunk"}/>
           <RegionCard {...REGIONS.find(r=>r.id==="lArm")} onClick={()=>setActiveRegion(activeRegion==="lArm"?null:"lArm")} active={activeRegion==="lArm"}/>
         </div>
@@ -3409,8 +3432,8 @@ function BodyComp(){
     <div style={S.g240}>
       <div style={{background:P.cardDk,border:`1px solid ${P.borderDk}`,borderRadius:14,padding:"18px"}}>
         <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>Bone Mineral Density</div>
-        <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:12}}>
-          <div style={{fontFamily:FF.r,fontSize:32,fontWeight:600,color:P.steel,letterSpacing:"-0.02em"}}>1.331</div>
+        <div style={{display:"flex",alignItems:"baseline",gap:12,marginBottom:12}}>
+          <div style={{fontFamily:FF.r,fontSize:38,fontWeight:600,color:P.steel,letterSpacing:"-0.02em"}}>1.331</div>
           <div style={{fontFamily:FF.s,fontSize:11,color:P.mutedDk}}>g/cm²</div>
           <div style={{marginLeft:"auto",padding:"4px 10px",borderRadius:6,background:"#3A5C4844",border:"1px solid #3A5C4888"}}>
             <span style={{fontFamily:FF.m,fontSize:11,fontWeight:600,color:"#7AC49A"}}>T-score +1.3 · 111th %ile</span>
@@ -3428,7 +3451,7 @@ function BodyComp(){
       <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"18px",gridColumn:"1/-1"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
           <SLabel color={P.amber}>Body Composition Trend</SLabel>
-          <div style={{display:"flex",gap:10}}>
+          <div style={{display:"flex",gap:12}}>
             {[{c:P.steel,l:"DXA"},{c:P.clay,l:"Styku"},{c:"#60B090",l:"Hume BIA (daily)"}].map(({c,l})=>(
               <div key={l} style={S.row4}>
                 <div style={{width:8,height:8,borderRadius:2,background:c}}/>
@@ -3694,7 +3717,7 @@ function Trends(){
       <CC title="Sleep Duration" dataKey="slp" color={P.steel} domain={[5,11]} unit="h" height={130}/>
       <CC title="Weekly Training Strain" dataKey="strain" color={P.amber} domain={[20,120]} unit="" height={130}/>
     </div>
-    <div style={{display:"flex",alignItems:"center",gap:14,margin:"4px 0 2px"}}>
+    <div style={{display:"flex",alignItems:"center",gap:16,margin:"4px 0 2px"}}>
       <div style={S.divider}/>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",whiteSpace:"nowrap"}}>Weight</div>
       <div style={S.divider}/>
@@ -3742,7 +3765,7 @@ function Trends(){
         </AreaChart>
       </ResponsiveContainer>
     </div>
-    <div style={{display:"flex",alignItems:"center",gap:14,margin:"4px 0 2px"}}>
+    <div style={{display:"flex",alignItems:"center",gap:16,margin:"4px 0 2px"}}>
       <div style={S.divider}/>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",whiteSpace:"nowrap"}}>Daily Measurements · Hume Pod</div>
       <div style={S.divider}/>
@@ -3817,7 +3840,7 @@ function Trends(){
         </AreaChart>
       </ResponsiveContainer>
     </div>
-    <div style={{display:"flex",alignItems:"center",gap:14,margin:"4px 0 2px"}}>
+    <div style={{display:"flex",alignItems:"center",gap:16,margin:"4px 0 2px"}}>
       <div style={S.divider}/>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase",whiteSpace:"nowrap"}}>DXA Scan · Gold Standard</div>
       <div style={S.divider}/>
@@ -3835,7 +3858,7 @@ function Trends(){
           <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.35)",marginTop:1}}>Total Body Fat</div>
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:10,marginBottom:18}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:12,marginBottom:18}}>
         {[
           {label:"Fat Mass",   val:"56.5 lb",  color:"#E8816A"},
           {label:"Lean Mass",  val:"149.8 lb", color:"#7AC49A"},
@@ -3863,7 +3886,7 @@ function Trends(){
           const col = r.fatPct<22?"#7AC49A":r.fatPct<26?"#F0B85A":"#E8816A";
           const barW = Math.round(r.fatPct*3.2); // scale to ~100px max
           return(
-            <div key={r.name} style={{display:"grid",gridTemplateColumns:"72px 1fr 80px 80px",gap:10,alignItems:"center"}}>
+            <div key={r.name} style={{display:"grid",gridTemplateColumns:"72px 1fr 80px 80px",gap:12,alignItems:"center"}}>
               <div style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.70)"}}>{r.name}</div>
               <div style={S.row8}>
                 <div style={{height:6,borderRadius:3,background:"rgba(255,255,255,0.08)",flex:1,overflow:"hidden"}}>
@@ -3894,7 +3917,7 @@ function Trends(){
               name="Body Fat %"/>
           </LineChart>
         </ResponsiveContainer>
-        <div style={{display:"flex",gap:14,marginTop:8}}>
+        <div style={{display:"flex",gap:16,marginTop:8}}>
           {[{c:"#B06050",l:"Styku 3D optical"},{c:"#E8816A",l:"DXA (gold standard)"}].map(({c,l})=>(
             <div key={l} style={S.row5}>
               <div style={{width:8,height:8,borderRadius:"50%",background:c}}/>
@@ -4406,7 +4429,7 @@ function FitnessPage(){
 
 {(()=>{ const fitMob=useIsMobile(); return (
       todayWorkouts.length > 0 ? (
-        <div style={{display:"grid",gridTemplateColumns:fitMob?"1fr":`repeat(${Math.min(todayWorkouts.length,2)},1fr) ${todayWorkouts.length>0?"auto":""}`,gap:14,alignItems:"stretch"}}>
+        <div style={{display:"grid",gridTemplateColumns:fitMob?"1fr":`repeat(${Math.min(todayWorkouts.length,2)},1fr) ${todayWorkouts.length>0?"auto":""}`,gap:16,alignItems:"stretch"}}>
           {todayWorkouts.map((w,i)=>{
             const meta = catMeta(w.cat);
             const zones = [
@@ -4496,7 +4519,7 @@ function FitnessPage(){
               </div>
             );
           })}
-          <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:160}}>
+          <div style={{display:"flex",flexDirection:"column",gap:12,minWidth:160}}>
             {todayRec!=null&&(
               <div style={{background:P.cardDk,borderRadius:14,padding:"16px",border:`1px solid ${P.borderDk}`,flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
                 <div style={{position:"relative",marginBottom:8}}>
@@ -4541,7 +4564,7 @@ function FitnessPage(){
           </div>
         </div>
       ) : (
-        <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"20px",boxShadow:"0 1px 3px rgba(0,0,0,.04)",display:"flex",alignItems:"center",gap:14}}>
+        <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"20px",boxShadow:"0 1px 3px rgba(0,0,0,.04)",display:"flex",alignItems:"center",gap:16}}>
           <div style={{fontSize:28}}>😴</div>
           <div>
             <div style={{fontFamily:FF.s,fontWeight:600,fontSize:13,color:P.text,marginBottom:3}}>Rest day</div>
@@ -4638,7 +4661,7 @@ function FitnessPage(){
         </div>
       )}
     </div>
-    <div style={{display:"flex",alignItems:"center",gap:14}}>
+    <div style={{display:"flex",alignItems:"center",gap:16}}>
       <div style={S.divider}/>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",whiteSpace:"nowrap"}}>Training History</div>
       <div style={S.divider}/>
@@ -4732,7 +4755,7 @@ function FitnessPage(){
           const pct=Math.round((a.count/Math.max(1,actTotal))*100);
           const isActive=activeAct===a.id;
           return(<div key={a.id} onClick={()=>setActiveAct(isActive?null:a.id)}
-            style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",borderRadius:9,marginBottom:6,cursor:"pointer",
+            style={{display:"flex",alignItems:"center",gap:12,padding:"9px 10px",borderRadius:9,marginBottom:6,cursor:"pointer",
               background:isActive?a.color+"10":P.panel,border:`1px solid ${isActive?a.color+"44":P.border}`,transition:"all .15s"}}
             onMouseEnter={e=>{if(!isActive)e.currentTarget.style.background=P.bg;}}
             onMouseLeave={e=>{if(!isActive)e.currentTarget.style.background=P.panel;}}>
@@ -4760,7 +4783,7 @@ function FitnessPage(){
     <div style={CS()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
         <SLabel color={P.amber} right="zone minutes + strain">Weekly Training Load</SLabel>
-        <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
           {ZONE_CFG.map(z=>(
             <div key={z.label} style={S.row4}>
               <div style={{width:7,height:7,borderRadius:1,background:z.color}}/>
@@ -4781,8 +4804,8 @@ function FitnessPage(){
           <YAxis yAxisId="str" orientation="right" {...ax} domain={[0,120]}/>
           <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"10px 14px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}>
             <div style={{color:P.muted,marginBottom:5,fontWeight:600,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em"}}>{label}</div>
-            {ZONE_CFG.map((z,i)=>{const p=payload.find(x=>x.dataKey===`z${i+1}`);return p&&p.value>0?<div key={i} style={{display:"flex",gap:10,marginBottom:2}}><span style={{color:z.color,minWidth:55}}>{z.full}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}m</span></div>:null;})}
-            {payload.find(x=>x.dataKey==="strain")&&<div style={{display:"flex",gap:10,marginTop:4,paddingTop:4,borderTop:`1px solid ${P.border}`}}><span style={{color:P.amber}}>Strain</span><span style={{fontFamily:FF.m,color:P.text}}>{payload.find(x=>x.dataKey==="strain").value}</span></div>}
+            {ZONE_CFG.map((z,i)=>{const p=payload.find(x=>x.dataKey===`z${i+1}`);return p&&p.value>0?<div key={i} style={{display:"flex",gap:12,marginBottom:2}}><span style={{color:z.color,minWidth:55}}>{z.full}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}m</span></div>:null;})}
+            {payload.find(x=>x.dataKey==="strain")&&<div style={{display:"flex",gap:12,marginTop:4,paddingTop:4,borderTop:`1px solid ${P.border}`}}><span style={{color:P.amber}}>Strain</span><span style={{fontFamily:FF.m,color:P.text}}>{payload.find(x=>x.dataKey==="strain").value}</span></div>}
           </div>):null}/>
           <Bar yAxisId="min" dataKey="z1" stackId="a" fill={ZONE_CFG[0].color} isAnimationActive={true} animationBegin={100} animationDuration={800} animationEasing="ease-out"/>
           <Bar yAxisId="min" dataKey="z2" stackId="a" fill={ZONE_CFG[1].color} isAnimationActive={true} animationBegin={100} animationDuration={800} animationEasing="ease-out"/>
@@ -4801,7 +4824,7 @@ function FitnessPage(){
             <span style={{color:P.terra,fontWeight:500}}>ATL</span> = 4-wk fatigue · <span style={{color:P.steel,fontWeight:500}}>CTL</span> = 12-wk fitness base · <span style={{color:P.sage,fontWeight:500}}>TSB</span> = Form
           </div>
         </div>
-        <div style={{display:"flex",gap:10}}>
+        <div style={{display:"flex",gap:12}}>
           {[{c:P.terra,l:"ATL"},{c:P.steel,l:"CTL"},{c:P.sage,l:"TSB"}].map(({c,l})=>(
             <div key={l} style={S.row4}>
               <div style={{width:10,height:2,background:c,borderRadius:1}}/><span style={S.mut9}>{l}</span>
@@ -4814,7 +4837,7 @@ function FitnessPage(){
           <CartesianGrid stroke={P.border} strokeDasharray="2 4" vertical={false}/>
           <XAxis dataKey="label" {...ax} interval={range<=16?0:range<=26?1:3} angle={range>=26?-45:0} textAnchor={range>=26?"end":"middle"} height={range>=26?36:20}/>
           <YAxis {...ax} domain={[-12,"auto"]}/>
-          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"8px 12px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}><div style={{color:P.muted,marginBottom:4,fontWeight:600,fontSize:9,textTransform:"uppercase"}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",gap:10,marginBottom:2}}><span style={{color:p.color,minWidth:40}}>{p.name}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}</span></div>)}</div>):null}/>
+          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"8px 12px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}><div style={{color:P.muted,marginBottom:4,fontWeight:600,fontSize:9,textTransform:"uppercase"}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",gap:12,marginBottom:2}}><span style={{color:p.color,minWidth:40}}>{p.name}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}</span></div>)}</div>):null}/>
           <ReferenceLine y={0} stroke={P.border} strokeDasharray="3 3"/>
           <Line type="monotone" dataKey="atl" stroke={P.terra}  strokeWidth={1.5} dot={false} name="ATL"/>
           <Line type="monotone" dataKey="ctl" stroke={P.steel}  strokeWidth={2}   dot={false} name="CTL"/>
@@ -4823,7 +4846,7 @@ function FitnessPage(){
             name="TSB"/>
         </LineChart>
       </ResponsiveContainer>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginTop:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginTop:12}}>
         {[
           {label:"ATL (Fatigue)", val:ldSlice[ldSlice.length-1]?.atl, color:P.terra, note:"4-wk acute load"},
           {label:"CTL (Fitness)", val:ldSlice[ldSlice.length-1]?.ctl, color:P.steel, note:"12-wk fitness base"},
@@ -4845,52 +4868,16 @@ function FitnessPage(){
           <XAxis dataKey="label" {...ax} interval={range<=16?0:range<=26?1:3} angle={range>=26?-45:0} textAnchor={range>=26?"end":"middle"} height={range>=26?36:20}/>
           <YAxis yAxisId="rec" {...ax} domain={[0,100]}/>
           <YAxis yAxisId="hrv" orientation="right" {...ax} domain={[20,80]}/>
-          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"8px 12px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}><div style={{color:P.muted,marginBottom:4,fontWeight:600,fontSize:9,textTransform:"uppercase"}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",gap:10,marginBottom:2}}><span style={{color:p.color,minWidth:50}}>{p.name}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}</span></div>)}</div>):null}/>
+          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"8px 12px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}><div style={{color:P.muted,marginBottom:4,fontWeight:600,fontSize:9,textTransform:"uppercase"}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",gap:12,marginBottom:2}}><span style={{color:p.color,minWidth:50}}>{p.name}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}</span></div>)}</div>):null}/>
           <Line yAxisId="rec" type="monotone" dataKey="rec" stroke={P.sage}  strokeWidth={2} dot={(p)=><circle key={p.index} cx={p.cx} cy={p.cy} r={3} fill={P.sage} stroke={P.card} strokeWidth={1}/>} name="Recovery %"/>
           <Line yAxisId="hrv" type="monotone" dataKey="hrv" stroke={P.steel} strokeWidth={1.5} dot={false} name="HRV ms" strokeDasharray="4 2"/>
         </LineChart>
       </ResponsiveContainer>
-      <div style={{display:"flex",gap:14,marginTop:8}}>
+      <div style={{display:"flex",gap:16,marginTop:8}}>
         {[{c:P.sage,l:"Recovery %",w:2},{c:P.steel,l:"HRV (ms)",w:1.5,dash:"4 2"}].map(({c,l,w,dash})=>(
           <div key={l} style={S.row5}>
             <svg width={16} height={2}><line x1={0} y1={1} x2={16} y2={1} stroke={c} strokeWidth={w} strokeDasharray={dash}/></svg>
             <span style={S.mut10}>{l}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    <div style={CS()}>
-      <SLabel color={P.clay}>How Your Activities Build Fitness</SLabel>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
-        {[
-          {icon:"🏃",label:"Running",      color:"#C47830",zones:"Z2–Z4 by pace", cadence:"Primary sport · 37 sessions this period",
-            benefits:["Cardiovascular efficiency & VO₂ max","Weight-bearing bone density","Mental health & cortisol regulation","High caloric burn — most efficient for body recomp"]},
-          {icon:"🏋",label:"Functional Fitness",color:"#3A5C48",zones:"Z2–Z4",    cadence:"38 sessions · Your highest volume activity",
-            benefits:["Lean mass preservation & growth (critical at 47)","Multi-planar strength & injury prevention","Hormone stimulus — testosterone, IGF-1, GH","RMR elevation — burns calories at rest"]},
-          {icon:"🚴",label:"Spin/Cycling", color:"#C4604A",zones:"Z2–Z3 targeted", cadence:"Low impact alternative · 6 sessions",
-            benefits:["Non-impact — joint recovery days","Aerobic base with controlled HR","Leg power & muscular endurance","Excellent Z2 training tool"]},
-          {icon:"🚶",label:"Walking",       color:"#7A5A80",zones:"Z1–Z2",         cadence:"Active recovery · 9 sessions",
-            benefits:["Parasympathetic nervous system activation","Z1 recovery improves next-day HRV","Insulin sensitivity — post-meal walks","Cumulative steps contribute to longevity"]},
-          {icon:"❤",label:"Zone 2 Target", color:"#3A5C48",zones:"108–126 bpm",   cadence:"35–45% of total training time",
-            benefits:["Mitochondrial biogenesis — #1 longevity adaptation","Fat oxidation efficiency at rest","Aerobic base supports all other intensities","Current Z2: " + Math.round((ZONE_TOTALS[1]/Math.max(1,ZONE_TOTAL_MIN))*100) + "% of total time"]},
-          {icon:"⚡",label:"HIIT / High Intensity",color:"#B84A38",zones:"Z4–Z5",cadence:"Limit to 1–2x/week with recovery",
-            benefits:["Peak VO₂ max gains in minimal time","Fast-twitch fiber recruitment","EPOC — elevated caloric burn post-workout","Insulin sensitivity improvement"]},
-        ].map(({icon,label,color,zones,cadence,benefits})=>(
-          <div key={label} style={{padding:"14px",background:P.panel,borderRadius:10,border:`1px solid ${P.border}`}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:9}}>
-              <div style={{width:28,height:28,borderRadius:6,background:color+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{icon}</div>
-              <div>
-                <div style={{fontFamily:FF.s,fontWeight:600,fontSize:12,color:P.text}}>{label}</div>
-                <div style={{fontFamily:FF.s,fontSize:9,color,fontWeight:500}}>{zones}</div>
-              </div>
-            </div>
-            {benefits.map((b,i)=>(
-              <div key={i} style={{display:"flex",gap:7,marginBottom:5}}>
-                <div style={{width:3,height:3,borderRadius:"50%",background:color,marginTop:6,flexShrink:0}}/>
-                <span style={{fontFamily:FF.s,fontSize:10,color:P.sub,lineHeight:1.5}}>{b}</span>
-              </div>
-            ))}
-            <div style={{marginTop:8,padding:"5px 9px",background:P.card,borderRadius:5,border:`1px solid ${P.border}`,fontFamily:FF.s,fontSize:9,color:P.muted}}>📅 {cadence}</div>
           </div>
         ))}
       </div>
@@ -5366,7 +5353,7 @@ function CalendarPage(){
       </div>
       <span style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginLeft:"auto"}}>Click any day for detail</span>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:selected?"1fr 300px":"1fr",gap:16,alignItems:"start"}}>
+    <div style={{display:"grid",gridTemplateColumns:selected?"1fr 300px":"1fr",gap:18,alignItems:"start"}}>
       <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"16px",boxShadow:"0 1px 4px rgba(0,0,0,.06)",overflowX:"auto"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",marginBottom:8,minWidth:280}}>
           {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>(
@@ -5534,7 +5521,7 @@ function CalendarPage(){
         <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,letterSpacing:"0.12em",textTransform:"uppercase",color:P.muted}}>
           Activity & Alcohol · {MONTHS[m]} {y}
         </div>
-        <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
           {[
             {c:"#B8902A",l:"🍷 Alcohol"},
             {c:P.sage,l:"🏋 Workout"},
@@ -5565,7 +5552,7 @@ function CalendarPage(){
         for(let i=0;i<allDays.length;i+=7) weekRows.push(allDays.slice(i,i+7));
 
         return(<>
-          <div style={{display:"flex",gap:14,marginBottom:14,flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:16,marginBottom:14,flexWrap:"wrap"}}>
             <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:6,background:"#B8902A14",border:"1px solid #B8902A33"}}>
               <span>🍷</span>
               <span style={{fontFamily:FF.m,fontSize:12,fontWeight:700,color:"#B8902A"}}>{alcCount}</span>
@@ -5797,7 +5784,7 @@ function ReadinessPage(){
           </div>
           <div style={{fontFamily:FF.s,fontSize:12,color:P.sub,lineHeight:1.6,maxWidth:360}}>{todayZone.desc}</div>
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:160}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,minWidth:160}}>
           {[
             {label:"Recovery", val:`${todayRec}%`,  note:todayRec>=76?"Above avg":todayRec>=58?"Normal":"Below avg", color:todayRec>=76?P.sage:todayRec>=58?P.amber:P.terra},
             {label:"RHR",      val:`${todayRHR} bpm`,note:todayRHR<=48?"Excellent":todayRHR<=52?"Normal":"Elevated",color:todayRHR<=48?P.sage:todayRHR<=52?P.amber:P.terra},
@@ -5814,7 +5801,7 @@ function ReadinessPage(){
         </div>
       </div>
       <div style={{marginTop:16,paddingTop:14,borderTop:`1px solid ${todayZone.color}33`}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
           <div>
             <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Training Prescription</div>
             <div style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.text}}>{todayZone.training}</div>
@@ -5834,7 +5821,7 @@ function ReadinessPage(){
         </div>
       </div>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12}}>
       {HRV_ZONES.slice().reverse().map(z=>(
         <div key={z.id} style={{padding:"12px 14px",borderRadius:12,background:z.id===todayZone.id?z.bg:P.panel,border:`1px solid ${z.id===todayZone.id?z.color+"66":P.border}`,boxShadow:z.id===todayZone.id?`0 2px 12px ${z.color}22`:"none"}}>
           <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:6}}>
@@ -5848,7 +5835,7 @@ function ReadinessPage(){
       ))}
     </div>
     <div style={CS(16,"20px","0 1px 4px rgba(0,0,0,.05)")}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:12}}>
         <div>
           <SLabel color={P.steel}>Recovery Debt Tracker</SLabel>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:-10}}>Distance from your personal recovery baseline (66.6%). Positive = surplus, negative = deficit.</div>
@@ -5872,14 +5859,14 @@ function ReadinessPage(){
           <ReferenceLine y={0} stroke={P.muted} strokeWidth={1.5}/>
           <ReferenceLine y={9}  stroke={P.sage}  strokeDasharray="4 3" strokeOpacity={0.4} strokeWidth={1}/>
           <ReferenceLine y={-9} stroke={P.terra} strokeDasharray="4 3" strokeOpacity={0.4} strokeWidth={1}/>
-          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:10,padding:"10px 14px",fontFamily:FF.s,fontSize:10,boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}><div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginBottom:6}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",justifyContent:"space-between",gap:16,marginBottom:3}}><span style={{color:P.muted}}>{p.name}</span><span style={{fontFamily:FF.m,fontWeight:600,color:p.name==="Debt"?(p.value>=0?P.sage:P.terra):P.steel}}>{p.name==="Debt"?(p.value>0?"+":"")+p.value+"%":p.value+" ms"}</span></div>)}</div>):null}/>
+          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:10,padding:"10px 14px",fontFamily:FF.s,fontSize:10,boxShadow:"0 4px 16px rgba(0,0,0,0.10)"}}><div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginBottom:6}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",justifyContent:"space-between",gap:18,marginBottom:3}}><span style={{color:P.muted}}>{p.name}</span><span style={{fontFamily:FF.m,fontWeight:600,color:p.name==="Debt"?(p.value>=0?P.sage:P.terra):P.steel}}>{p.name==="Debt"?(p.value>0?"+":"")+p.value+"%":p.value+" ms"}</span></div>)}</div>):null}/>
           <Bar dataKey="debt" name="Debt" radius={[2,2,0,0]} isAnimationActive={true} animationDuration={900} maxBarSize={20}>
             {chartData.map((d,i)=><Cell key={i} fill={d.debt>=0?P.sage:P.terra} opacity={0.65}/>)}
           </Bar>
           <Line type="monotone" dataKey="hrv" name="HRV" stroke={P.steel} strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={900}/>
         </ComposedChart>
       </ResponsiveContainer>
-      <div style={{display:"flex",gap:14,marginTop:8,flexWrap:"wrap"}}>
+      <div style={{display:"flex",gap:16,marginTop:8,flexWrap:"wrap"}}>
         {[{c:P.sage,l:"Recovery surplus"},{c:P.terra,l:"Recovery deficit"},{c:P.steel,l:"HRV (ms)"}].map(({c,l})=>(<div key={l} style={S.row5}><div style={{width:10,height:10,borderRadius:2,background:c,opacity:0.7}}/><span style={{fontFamily:FF.s,fontSize:8.5,color:P.muted}}>{l}</span></div>))}
       </div>
     </div>
@@ -5896,7 +5883,7 @@ function ReadinessPage(){
             <ReferenceLine key={y} y={y} stroke={c} strokeDasharray={y===44.4?"6 3":"3 3"} strokeOpacity={0.45} strokeWidth={y===44.4?1.5:1}
               label={{value:l,position:"right",fontFamily:FF.s,fontSize:7.5,fill:c,opacity:0.7}}/>
           ))}
-          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:10,padding:"10px 14px",fontFamily:FF.s,fontSize:10}}><div style={{color:P.muted,fontSize:9,marginBottom:6}}>{label}</div>{payload.map(p=>{const z=getZone(p.value);return(<div key={p.name} style={{display:"flex",justifyContent:"space-between",gap:14}}><span style={{color:P.muted}}>HRV</span><span style={{fontFamily:FF.m,fontWeight:700,color:z.color}}>{p.value} ms — {z.label}</span></div>);})}</div>):null}/>
+          <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:10,padding:"10px 14px",fontFamily:FF.s,fontSize:10}}><div style={{color:P.muted,fontSize:9,marginBottom:6}}>{label}</div>{payload.map(p=>{const z=getZone(p.value);return(<div key={p.name} style={{display:"flex",justifyContent:"space-between",gap:16}}><span style={{color:P.muted}}>HRV</span><span style={{fontFamily:FF.m,fontWeight:700,color:z.color}}>{p.value} ms — {z.label}</span></div>);})}</div>):null}/>
           <Area type="monotone" dataKey="hrv" stroke={P.sage} strokeWidth={2} fill="url(#gHRVLine)"
             dot={(p)=>p.index%4===0?<circle key={p.index} cx={p.cx} cy={p.cy} r={3} fill={getZone(p.value).color} stroke={P.card} strokeWidth={1.5}/>:<g key={p.index}/>}
             isAnimationActive={true} animationDuration={1000} name="HRV (4wk rolling)"/>
@@ -5912,7 +5899,7 @@ function ReadinessPage(){
           {icon:"⚠",text:"Jan–Feb 2026 was your longest Low Zone stretch (8 consecutive weeks). Watch for this pattern repeating next winter."},
           {icon:"💡",text:`Current zone (${todayZone.label}) recommends: ${todayZone.training}. Your personal 'go hard' threshold is HRV ≥ 47ms. Today at ${todayHRV}ms you're ${todayHRV>=47?"above":"below"} that threshold.`},
         ].map(({icon,text})=>(
-          <div key={text.slice(0,20)} style={{display:"flex",gap:10,padding:"10px 12px",background:"rgba(255,255,255,0.04)",borderRadius:10,border:"1px solid rgba(255,255,255,0.07)"}}>
+          <div key={text.slice(0,20)} style={{display:"flex",gap:12,padding:"10px 12px",background:"rgba(255,255,255,0.04)",borderRadius:10,border:"1px solid rgba(255,255,255,0.07)"}}>
             <span style={{fontSize:16,flexShrink:0}}>{icon}</span>
             <div style={{fontFamily:FF.s,fontSize:10,color:P.mutedDk,lineHeight:1.7}}>{text}</div>
           </div>
@@ -5958,7 +5945,7 @@ function FuelingPage(){
   const preFuel=PRE_FUEL[sched.type];const durFuel=DURING_FUEL[sched.type];const postFuel=POST_FUEL[sched.type];
   const macroData=[{name:"Protein",g:protein_g,kcal:protein_cal,color:P.sage},{name:"Carbs",g:carb_g,kcal:carb_cal,color:P.amber},{name:"Fat",g:fat_g,kcal:fat_cal,color:P.terra}];
   const Section=({title,emoji,active})=>(<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderRadius:8,background:active?"rgba(196,120,48,0.12)":P.panel,border:`1px solid ${active?P.amber:P.border}`,marginBottom:2}}><span style={{fontSize:14}}>{emoji}</span><span style={{fontFamily:FF.s,fontSize:11,fontWeight:active?700:400,color:active?P.amber:P.sub}}>{title}</span>{active&&<div style={{marginLeft:"auto",fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.amber,background:P.amber+"20",padding:"2px 7px",borderRadius:4,letterSpacing:"0.06em"}}>NOW</div>}</div>);
-  const MealOption=({meal,idx})=>(<div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{width:22,height:22,borderRadius:"50%",background:P.card,border:`1px solid ${P.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:FF.m,fontSize:9,fontWeight:700,color:P.muted,flexShrink:0}}>{idx+1}</div><div style={{fontFamily:FF.s,fontSize:11,color:P.text,flex:1,lineHeight:1.5}}>{meal}</div></div>);
+  const MealOption=({meal,idx})=>(<div style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{width:22,height:22,borderRadius:"50%",background:P.card,border:`1px solid ${P.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:FF.m,fontSize:9,fontWeight:700,color:P.muted,flexShrink:0}}>{idx+1}</div><div style={{fontFamily:FF.s,fontSize:11,color:P.text,flex:1,lineHeight:1.5}}>{meal}</div></div>);
 
   return(<div style={S.col16}>
     <div style={S.rowsbe}>
@@ -5998,7 +5985,7 @@ function FuelingPage(){
           <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.1em",textTransform:"uppercase"}}>Daily Calorie Target</div>
           <div style={{padding:"3px 8px",borderRadius:5,background:deficit?"rgba(196,96,74,0.10)":"rgba(58,92,72,0.10)",border:`1px solid ${deficit?P.terra:P.sage}44`}}><span style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:deficit?P.terra:P.sage}}>{deficit?"DEFICIT":"MAINTENANCE"}</span></div>
         </div>
-        <div style={{fontFamily:FF.r,fontSize:36,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em",marginBottom:4}}>{targetCals.toLocaleString()}<span style={{fontFamily:FF.s,fontSize:12,color:P.muted,fontWeight:400,marginLeft:4}}>kcal</span></div>
+        <div style={{fontFamily:FF.r,fontSize:42,fontWeight:600,color:P.text,lineHeight:1,letterSpacing:"-0.02em",marginBottom:4}}>{targetCals.toLocaleString()}<span style={{fontFamily:FF.s,fontSize:12,color:P.muted,fontWeight:400,marginLeft:4}}>kcal</span></div>
         {deficit&&<div style={{fontFamily:FF.s,fontSize:9,color:P.terra,marginBottom:10}}>Maintenance is {maintenanceTDEE.toLocaleString()} kcal · deficit −{deficitSize}</div>}
         <div style={{display:"flex",flexDirection:"column",gap:5,marginTop:12}}>
           {[{label:"RMR (measured)",val:RMR_KCAL,color:P.sage},{label:"NEAT / lifestyle",val:NEAT_KCAL,color:P.steel},{label:"Exercise",val:exCal,color:P.amber},...(deficit?[{label:"Deficit",val:-deficitSize,color:P.terra}]:[])].map(({label,val,color})=>(<div key={label} style={S.rowsb}><div style={S.row6}><div style={{width:6,height:6,borderRadius:"50%",background:color}}/><span style={S.sub10}>{label}</span></div><span style={{fontFamily:FF.m,fontSize:10,fontWeight:500,color:val<0?P.terra:P.text}}>{val>0?"+":""}{val} kcal</span></div>))}
@@ -6021,7 +6008,7 @@ function FuelingPage(){
         <SLabel color={P.amber}>⚡ Pre-Workout · {preFuel.timing}</SLabel>
         {preWorkout&&<div style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.amber,background:"rgba(196,120,48,0.12)",padding:"3px 8px",borderRadius:5,border:`1px solid ${P.amber}44`}}>UPCOMING NOW</div>}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10,marginBottom:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12,marginBottom:12}}>
         <div style={{padding:"8px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Target Carbs</div><div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.amber}}>{preFuel.carbs_g}</div></div>
         <div style={{padding:"8px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Target Protein</div><div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.sage}}>{preFuel.protein_g_pre}</div></div>
       </div>
@@ -6030,7 +6017,7 @@ function FuelingPage(){
     </div>
     <div style={{background:P.card,border:`1px solid ${duringWindow?P.steel:P.border}`,borderRadius:14,padding:"18px"}}>
       <SLabel color={P.steel}>💧 During Workout</SLabel>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:12}}>
         {[{label:"Hydration",val:durFuel.hydration,color:P.steel},{label:"Electrolytes",val:durFuel.electrolytes.split(" ").slice(0,3).join(" "),color:P.sage},{label:"Carbs",val:durFuel.carbs,color:P.amber}].map(({label,val,color})=>(<div key={label} style={{padding:"9px 11px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div><div style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color,lineHeight:1.5}}>{val}</div></div>))}
       </div>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,padding:"8px 12px",background:P.panel,borderRadius:7,lineHeight:1.6}}>💡 {durFuel.note}</div>
@@ -6040,7 +6027,7 @@ function FuelingPage(){
         <SLabel color={P.sage}>🔄 Post-Workout · {postFuel.timing}</SLabel>
         {postWorkout&&<div style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.sage,background:"rgba(58,92,72,0.12)",padding:"3px 8px",borderRadius:5,border:`1px solid ${P.sage}44`}}>WINDOW OPEN</div>}
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10,marginBottom:12}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12,marginBottom:12}}>
         <div style={{padding:"8px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Protein Target</div><div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.sage}}>{postFuel.protein_g}</div></div>
         <div style={{padding:"8px 12px",borderRadius:9,background:P.panel,border:`1px solid ${P.border}`}}><div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Carbs Target</div><div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.amber}}>{postFuel.carbs_g}</div></div>
       </div>
@@ -6579,7 +6566,7 @@ function ImportPage(){
   return(<div style={S.col16}>
     {hasImportedData&&(
       <div style={{background:P.sageBg||P.panel,border:`1px solid ${P.sage}44`,borderRadius:10,
-        padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+        padding:"10px 14px",display:"flex",alignItems:"center",gap:12}}>
         <span style={{fontSize:14}}>🔄</span>
         <div style={{flex:1,fontFamily:FF.s,fontSize:10,color:P.sub,lineHeight:1.5}}>
           Imported data detected. <strong>Reload the dashboard</strong> so Today, Overview, and Body Comp pages pick up the latest values.
@@ -6663,7 +6650,7 @@ function ImportPage(){
       )}
       <div style={CS(14,"16px 18px")}>
         <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.sub,letterSpacing:"0.10em",textTransform:"uppercase",marginBottom:12}}>Supported Document Types</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
           {[
             {icon:"🧬",label:"Lab Reports",desc:"BioLab, Quest, LabCorp PDFs — extracts all biomarkers, flags out-of-range values"},
             {icon:"⌚",label:"WHOOP Exports",desc:"CSV physiological cycles or screenshot — updates recovery, HRV, RHR, strain"},
@@ -6896,9 +6883,9 @@ function ImportPage(){
 
     </>)}
     {activeTab==="peloton"&&(
-      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+      <div style={{display:"flex",flexDirection:"column",gap:16}}>
         <div style={{background:"linear-gradient(135deg,#E60000,#C40000)",borderRadius:14,
-          padding:"20px 22px",display:"flex",alignItems:"center",gap:16}}>
+          padding:"20px 22px",display:"flex",alignItems:"center",gap:18}}>
           <div style={{width:48,height:48,borderRadius:12,background:"rgba(255,255,255,0.15)",
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,flexShrink:0}}>🚴</div>
           <div>
@@ -6916,7 +6903,7 @@ function ImportPage(){
             {n:3, text:'Hit "Download Workouts" button — top right corner'},
             {n:4, text:"Drag the downloaded CSV into the Upload tab above"},
           ].map(({n,text})=>(
-            <div key={n} style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+            <div key={n} style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:10}}>
               <div style={{width:22,height:22,borderRadius:"50%",background:"#E6000018",border:"1px solid #E6000044",
                 display:"flex",alignItems:"center",justifyContent:"center",
                 fontFamily:FF.m,fontSize:10,fontWeight:700,color:"#E60000",flexShrink:0}}>{n}</div>
@@ -6973,7 +6960,7 @@ function ImportPage(){
             </div>
             {uploads.map(u=>(
               <div key={u.id} onClick={()=>setActiveTab("upload")}
-                style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",
+                style={{display:"flex",alignItems:"center",gap:12,padding:"10px 12px",
                   borderRadius:10,background:P.panel,border:`1px solid ${P.border}`,cursor:"pointer",
                   transition:"background .15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background=P.card}
@@ -6998,14 +6985,14 @@ function ImportPage(){
       <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,marginTop:-8,marginBottom:14,lineHeight:1.6}}>
         Apple Health exports are typically 2–8 GB — too large for the browser. Use the Python script to extract Hume body comp data on your Mac, then drag the resulting CSV above.
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12}}>
         {[
           {icon:"1",title:"Connect Hume → Apple Health",body:"Hume app → Settings → Connected Apps → Apple Health → enable Body Fat %, Lean Body Mass, Body Mass"},
           {icon:"2",title:"Export from Apple Health",body:"Apple Health → Profile (top right) → Export All Health Data → share the ZIP to your Mac"},
           {icon:"3",title:"Run the Python extractor",body:"Terminal: python3 extract_hume.py ~/Downloads/apple_health_export/export.xml"},
           {icon:"4",title:"Upload hume_body_comp.csv",body:"Drag the output CSV into the dropzone above — Claude will parse and summarize all scan dates"},
         ].map(({icon,title,body})=>(
-          <div key={icon} style={{display:"flex",gap:10,padding:"11px 13px",borderRadius:10,background:P.panel,border:`1px solid ${P.border}`}}>
+          <div key={icon} style={{display:"flex",gap:12,padding:"11px 13px",borderRadius:10,background:P.panel,border:`1px solid ${P.border}`}}>
             <div style={{width:20,height:20,borderRadius:"50%",background:P.steel,display:"flex",alignItems:"center",justifyContent:"center",
               fontFamily:FF.m,fontSize:9,fontWeight:700,color:"#fff",flexShrink:0}}>{icon}</div>
             <div>
@@ -7171,7 +7158,7 @@ function PelotonPage(){
     )}
 
     {hasData&&(<>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:12}}>
         {[
           {icon:"🚴",label:"Total Workouts",  val:peloData.length,        color:"#E60000", sub:`${cyclingWorks.length} cycling`},
           {icon:"⚡",label:"Total Output",    val:totalOutput>0?`${totalOutput.toLocaleString()} kJ`:"—", color:P.amber, sub:`${avgOutput} kJ avg/ride`},
@@ -7269,7 +7256,7 @@ function PelotonPage(){
                     {fmtDate(w.dateKey)}{w.instructor?` · ${w.instructor}`:""}{w.duration?` · ${w.duration}min`:""}
                   </div>
                 </div>
-                <div style={{display:"flex",gap:10,flexShrink:0,alignItems:"center"}}>
+                <div style={{display:"flex",gap:12,flexShrink:0,alignItems:"center"}}>
                   {w.output>0&&(
                     <div style={{textAlign:"right"}}>
                       <div style={{fontFamily:FF.r,fontSize:15,fontWeight:600,color:P.amber}}>{w.output}</div>
@@ -7558,7 +7545,7 @@ function SupplementsPage(){
               <div style={S.divider}/>
             </div>
             {pausedStack.map(s=>(
-              <div key={s.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",
+              <div key={s.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",
                 background:P.panel,border:`1px solid ${P.border}`,borderRadius:10,marginBottom:6,opacity:0.6}}>
                 <span style={{fontSize:16}}>{s.icon}</span>
                 <span style={{fontFamily:FF.s,fontSize:11,color:P.sub,flex:1}}>{s.name} · {s.dose} {s.unit}</span>
@@ -7601,7 +7588,7 @@ function SupplementsPage(){
               border:"none",background:P.sage,color:"#fff",cursor:"pointer",alignSelf:"flex-end"}}>Add</button>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:10}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
           {filteredPresets.map(p=>{
             const catColor = CAT_COLORS[p.category]||P.steel;
             return(
@@ -7979,7 +7966,7 @@ function GoalsPage(){
           const col = b.status==="overdue"?P.terra:b.status==="due_soon"?P.amber:P.sage;
           const bg  = b.status==="overdue"?P.terracottaBg:b.status==="due_soon"?P.amberBg:P.sageBg;
           return(
-            <div key={b.name} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",
+            <div key={b.name} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 12px",
               borderRadius:8,background:bg,border:`1px solid ${col}22`}}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
@@ -8436,7 +8423,7 @@ function PersonalBestsPage({setPage}) {
             {bests.bench&&` Lifting ratios based on ${bodyweight} lbs current bodyweight.`}
           </div>
         </div>
-        <div style={{marginLeft:"auto",display:"flex",gap:10,flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
+        <div style={{marginLeft:"auto",display:"flex",gap:12,flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
           {[...RUNNING_EVENTS,...LIFTING_EVENTS].filter(e=>scores[e.key]!==null).map(e=>{
             const s=scores[e.key];const {color:c}=pbLabel(s);
             return(<div key={e.key} style={{textAlign:"center",minWidth:48}}>
@@ -8448,7 +8435,7 @@ function PersonalBestsPage({setPage}) {
       </div>
     )}
     <div>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
         <div style={{width:3,height:14,borderRadius:2,background:P.amber}}/>
         <div style={{fontFamily:FF.s,fontSize:10,fontWeight:700,color:P.sub,letterSpacing:"0.10em",textTransform:"uppercase"}}>
           Running
@@ -8463,7 +8450,7 @@ function PersonalBestsPage({setPage}) {
       </div>
     </div>
     <div>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
         <div style={{width:3,height:14,borderRadius:2,background:P.sage}}/>
         <div style={{fontFamily:FF.s,fontSize:10,fontWeight:700,color:P.sub,letterSpacing:"0.10em",textTransform:"uppercase"}}>
           Strength
@@ -8566,10 +8553,10 @@ function SleepPage(){
     {name:"Awake",  val:WHOOP.sleep.awake, target:0.2, color:P.muted,  tip:"<5% ideal. Fragmentation hurts deep sleep."},
   ];
 
-  return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
+  return(<div style={{display:"flex",flexDirection:"column",gap:18}}>
 
     {/* Header */}
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:10}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:12}}>
       <div>
         <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>
           WHOOP · {dailyData.length} nights · Dec 2025 – Mar 2026
@@ -8590,7 +8577,7 @@ function SleepPage(){
     </div>
 
     {/* Hero stats */}
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:10}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:12}}>
       {[
         {icon:"🌙",label:"Avg Score",    val:`${avgScore}%`,  color:P.steel,  sub:`last ${sliceDays.length} nights`},
         {icon:"⏱",label:"Avg Duration", val:`${Math.floor(avgDur)}h ${Math.round((avgDur%1)*60)}m`, color:P.violet, sub:"per night"},
@@ -8660,7 +8647,7 @@ function SleepPage(){
           <div style={S.mut9}>Sleep Performance</div>
         </div>
       </div>
-      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
         {STAGE_TARGET.map(({name,val,target,color,tip})=>{
           const pct = Math.min(100,(val/target)*100);
           const over = val >= target;
@@ -8671,7 +8658,7 @@ function SleepPage(){
                   <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0}}/>
                   <span style={{fontFamily:FF.s,fontSize:11,fontWeight:600,color:P.text}}>{name}</span>
                 </div>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
                   <span style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>target {target}h</span>
                   <span style={{fontFamily:FF.m,fontSize:13,fontWeight:600,color:over?P.sage:P.amber}}>
                     {Math.floor(val)}h {String(Math.round((val%1)*60)).padStart(2,"0")}m
@@ -8717,7 +8704,7 @@ function SleepPage(){
     </div>
 
     {/* Duration + Weekly avg */}
-    <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:14}}>
+    <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:16}}>
 
       {/* Daily duration */}
       <div style={CS()}>
@@ -8779,7 +8766,7 @@ function SleepPage(){
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:-8,marginBottom:14}}>
         Based on {Object.values(CAL_DATA).filter(d=>d.alc).length} alcohol nights vs {Object.values(CAL_DATA).filter(d=>!d.alc&&d.slp).length} sober nights
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:16}}>
         {[
           {label:"Sober Nights",     val:"95.1%", sub:"avg sleep score",       color:P.sage},
           {label:"After Alcohol",    val:"88.3%", sub:"avg sleep score",       color:P.terra},
@@ -8804,7 +8791,7 @@ function SleepPage(){
     {/* Tonight's optimal window */}
     <div style={{background:P.cardDk,border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"18px 20px"}}>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:12}}>Tonight</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:12}}>
         {[
           {icon:"🌙",label:"Target Bedtime",  val:optBed,   color:"#C4A850"},
           {icon:"☀",label:"Target Wake",    val:optWake,  color:"#7AC49A"},
@@ -8867,7 +8854,7 @@ function CorrelationsPage(){
   );
 
   return(<div style={S.col16}>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:10}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:12}}>
       <div>
         <div style={S.mut9uc}>55 weeks · Dec 2024 – Mar 2026</div>
         <div style={S.h18}>Correlations & Insights</div>
@@ -8888,7 +8875,7 @@ function CorrelationsPage(){
         {icon:"😴",priority:"Medium",text:"Protect the 7.5h sleep floor — your variance is high. On nights you can't get 8h, prioritize sleep quality over duration."},
         {icon:"🏋",priority:"Medium",text:"2 FF sessions/week is your HRV-positive sweet spot. Adding a 3rd before your aerobic base is rebuilt will suppress recovery."},
       ].map(({icon,priority,text},i)=>(
-        <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:i<3?12:0}}>
+        <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start",marginBottom:i<3?12:0}}>
           <span style={{fontSize:16,flexShrink:0}}>{icon}</span>
           <div style={{flex:1}}>
             <span style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:priority==="High"?P.terra:P.amber,
@@ -8944,19 +8931,11 @@ function MobileNav({active,set}){
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const PRIMARY_TABS=[
-    {id:"today",   icon:"☀",  label:"Today"},
-    {id:"fitness", icon:"🏃", label:"Fitness"},
-    {id:"score",   icon:"⚡", label:"Score"},
-    {id:"labs",    icon:"🧬", label:"Labs"},
-  ];
-
-  const DRAWER_PAGES=[
-    {group:"Daily",items:[
-      {id:"today",        icon:"☀",   label:"Today"},
-      {id:"overview",     icon:"⊞",   label:"Overview"},
-      {id:"readiness",    icon:"📡",   label:"Readiness"},
-      {id:"fueling",      icon:"🥗",   label:"Fueling"},
-    ]},
+    {id:"today",    icon:"☀",    label:"Today"},
+    {id:"score",    icon:"⚡",   label:"Score"},
+    {id:"fitness",  icon:"🏃", label:"Fitness"},
+    {id:"calendar", icon:"📅",label:"Calendar"},
+  ]},
     {group:"Health",items:[
       {id:"score",        icon:"⚡",   label:"Health Score"},
       {id:"labs",         icon:"🧬",   label:"Labs"},
@@ -9375,7 +9354,7 @@ export default function App(){
         <div style={{
           flex:1,overflowY:"auto",overflowX:"hidden",
           padding: mob?"12px 12px 80px":"22px 28px 48px",
-          maxWidth: mob?"100%":1100,
+          maxWidth: mob?"100%":1200,
           width:"100%",
           boxSizing:"border-box",
           margin:"0 auto",
