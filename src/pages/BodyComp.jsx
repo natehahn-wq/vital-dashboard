@@ -8,8 +8,10 @@ import {
 import { P, FF, S, CS } from "../lib/theme.js";
 import { DXA, SCAN_HISTORY, HUME_WT_TREND, HUME_BF_TREND } from "../lib/data/body.js";
 import { SLabel } from "../components/shared.jsx";
+import { useIsMobile } from "../hooks/useIsMobile.js";
 
 export function BodyComp(){
+  const mob = useIsMobile();
   const [activeRegion, setActiveRegion] = useState(null);
   const ax = {tick:{fontFamily:FF.m,fontSize:9,fill:P.muted},axisLine:{stroke:P.border},tickLine:false};
 
@@ -376,32 +378,32 @@ export function BodyComp(){
         width:"min(400px,80vw)",height:"min(400px,80vw)",borderRadius:"50%",
         background:"radial-gradient(circle,rgba(58,156,104,0.06) 0%,transparent 70%)",
         pointerEvents:"none"}}/>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+      <div style={{display:"flex",flexDirection:mob?"column":"row",justifyContent:"space-between",alignItems:mob?"stretch":"center",marginBottom:20,gap:mob?14:0}}>
         <div>
           <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.30)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:4}}>Total Body Fat</div>
           <div style={{fontFamily:FF.r,fontSize:28,fontWeight:700,color:"rgba(255,255,255,0.90)",letterSpacing:"-0.02em",lineHeight:1}}>26.4%</div>
           <div style={{fontFamily:FF.s,fontSize:10,color:"rgba(196,96,74,0.90)",marginTop:3,fontWeight:500}}>Above Average</div>
         </div>
-        <div style={{display:"flex",gap:20}}>
+        <div style={{display:mob?"grid":"flex",gridTemplateColumns:mob?"repeat(3,1fr)":undefined,gap:mob?10:20}}>
           {[
             {label:"Lean Mass",val:"149.8 lb",color:"#3A9C68"},
             {label:"Fat Mass", val:"56.5 lb", color:"#C4604A"},
-            {label:"BMD T-Score",val:"+1.3",  color:"#4A8FA0"},
+            {label:"BMD T",val:"+1.3",  color:"#4A8FA0"},
           ].map(({label,val,color})=>(
-            <div key={label} style={{textAlign:"center"}}>
+            <div key={label} style={{textAlign:mob?"left":"center"}}>
               <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.28)",marginBottom:3,letterSpacing:"0.06em",textTransform:"uppercase"}}>{label}</div>
               <div style={{fontFamily:FF.r,fontSize:16,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
             </div>
           ))}
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:5}}>
+        {!mob&&<div style={{display:"flex",flexDirection:"column",gap:5}}>
           {[{c:"#3A9C68",l:"Lean <22%"},{c:"#C47830",l:"Avg 22–26%"},{c:"#C4604A",l:"High >26%"}].map(({c,l})=>(
             <div key={l} style={S.row6}>
               <div style={{width:8,height:8,borderRadius:2,background:c,boxShadow:`0 0 6px ${c}`}}/>
               <span style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.32)"}}>{l}</span>
             </div>
           ))}
-        </div>
+        </div>}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"clamp(110px,20vw,160px) 1fr clamp(110px,20vw,160px)",gap:8,alignItems:"center"}}>
         <div style={{display:"flex",flexDirection:"column",gap:12,alignItems:"flex-end"}}>

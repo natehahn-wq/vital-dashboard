@@ -68,7 +68,8 @@ export function ScorePage(){
     </div>
 
       {/* ── Metabolic Age + Domain Contributions ── */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:18}}>
+      {(()=>{const mob=useIsMobile();return(
+      <div style={{display:"grid",gridTemplateColumns:mob?"1fr":"1fr 1fr",gap:16,marginBottom:18}}>
         {/* Left – Perceived Metabolic Age card */}
         <div style={{background:P.cardDk,borderRadius:16,padding:"28px 24px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
           <div style={{fontFamily:FF.s,fontSize:9,color:P.mutedDk,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:16}}>Perceived Metabolic Age</div>
@@ -98,6 +99,7 @@ export function ScorePage(){
           ))}
         </div>
       </div>
+      );})()}
 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
       {subKeys.map(k=><SubScoreCard key={k} data={SCORES_NOW[k]} active={activeDetail===k} onClick={()=>setActiveDetail(k)}/>)}
     </div>

@@ -7,8 +7,10 @@ import { HUME_DATA, LATEST } from "../lib/data/body.js";
 import { WHOOP, HRV_ZONES } from "../lib/data/whoop.js";
 import { SCORES_NOW } from "../lib/data/scores.js";
 import { CAL_DATA, CAL_RICH, RECENT_WORKOUTS } from "../lib/data/calendar.js";
+import { useIsMobile } from "../hooks/useIsMobile.js";
 
 export function CalendarPage(){
+  const mob = useIsMobile();
   const [viewMonth, setViewMonth] = useState({y:new Date().getFullYear(),m:new Date().getMonth()}); // 0-indexed
   const [selected,  setSelected]  = useState(null);
 
@@ -126,7 +128,7 @@ export function CalendarPage(){
               <div key={day}
                 onClick={()=>inRange&&setSelected(isSel?null:key)}
                 style={{
-                  height:90, borderRadius:10, padding:"6px 6px 4px",
+                  height:mob?(inRange?58:32):(inRange?90:50), borderRadius:10, padding:mob?"4px 4px 3px":"6px 6px 4px",
                   cursor:inRange?"pointer":"default", position:"relative",
                   background:isSel?P.cardDk:inRange&&rec?`rgba(${recColor(rec)==="#3A5C48"?"58,92,72":recColor(rec)==="#C47830"?"196,120,48":"196,96,74"},0.07)`:"transparent",
                   border:`1.5px solid ${isSel?P.amber:isToday?"#C47830":inRange?P.border:"transparent"}`,
