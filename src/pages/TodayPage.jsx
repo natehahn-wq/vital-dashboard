@@ -420,39 +420,41 @@ export function TodayPage({setPage, whoopStatus="loading"}){
               const rhr = WHOOP.rhr;
               const HRV_MEAN = 44.4;
               const zone =
-                hrv >= HRV_MEAN+5  ? {label:"Peak",     color:"#5BC4F0", tip:"Push hard — nervous system primed."} :
-                hrv >= HRV_MEAN-3  ? {label:"Normal",   color:"#3A9C68", tip:"Train as planned."} :
-                hrv >= HRV_MEAN-10 ? {label:"Reduced",  color:"#C4604A", tip:"Moderate intensity only."} :
-                                     {label:"Low",      color:"#8B2020", tip:"Recovery day — skip hard efforts."};
+                hrv >= HRV_MEAN+5  ? {label:"Peak",    color:"#5BC4F0", tip:"Push hard — nervous system primed for full effort."} :
+                hrv >= HRV_MEAN-3  ? {label:"Normal",  color:"#3A9C68", tip:"Train as planned. Monitor cumulative load."} :
+                hrv >= HRV_MEAN-10 ? {label:"Reduced", color:"#C47830", tip:"Moderate intensity only. No new PRs today."} :
+                                     {label:"Low",     color:"#C4604A", tip:"Recovery day. Skip hard efforts, prioritise sleep."};
               return(
-                <div style={{background:`linear-gradient(135deg,${zone.color}12,${P.card})`,
-                  borderRadius:16,padding:"20px 24px",
-                  border:`1px solid ${zone.color}30`,
-                  boxShadow:`0 2px 16px ${zone.color}14`}}>
+                <div style={{background:`linear-gradient(135deg,${zone.color}0F,${P.card} 60%)`,
+                  borderRadius:18,padding:"22px 26px",
+                  border:`1px solid ${zone.color}28`,
+                  boxShadow:`0 2px 20px ${zone.color}12`}}>
 
-                  {/* Top row: zone + HRV gauge */}
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18,flexWrap:"wrap",gap:10}}>
+                  {/* Zone header */}
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:12}}>
                     <div>
-                      <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.10em",
-                        textTransform:"uppercase",marginBottom:6}}>Readiness Zone</div>
-                      <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,letterSpacing:"0.10em",
+                        textTransform:"uppercase",marginBottom:8}}>Readiness Zone</div>
+                      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
                         <div style={{width:10,height:10,borderRadius:"50%",background:zone.color,
-                          boxShadow:`0 0 10px ${zone.color}88`,flexShrink:0}}/>
-                        <span style={{fontFamily:FF.r,fontSize:22,fontWeight:600,color:zone.color,
+                          flexShrink:0,boxShadow:`0 0 10px ${zone.color}88`}}/>
+                        <span style={{fontFamily:FF.r,fontSize:24,fontWeight:600,color:zone.color,
                           letterSpacing:"-0.01em"}}>{zone.label}</span>
                       </div>
-                      <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,marginTop:5,lineHeight:1.5}}>{zone.tip}</div>
+                      <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,lineHeight:1.55,maxWidth:300}}>{zone.tip}</div>
                     </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginBottom:4}}>HRV today vs baseline</div>
-                      <div style={{display:"flex",alignItems:"baseline",gap:5,justifyContent:"flex-end"}}>
-                        <span style={{fontFamily:FF.r,fontSize:36,fontWeight:600,color:zone.color,
-                          letterSpacing:"-0.02em",lineHeight:1}}>{hrv}</span>
-                        <span style={{fontFamily:FF.s,fontSize:10,color:P.muted}}>ms</span>
-                        <span style={{fontFamily:FF.s,fontSize:11,color:hrv>=HRV_MEAN?P.sage:P.terra,
-                          fontWeight:600,marginLeft:4}}>
-                          {hrv>=HRV_MEAN?"+":""}{(hrv-HRV_MEAN).toFixed(1)} vs avg
-                        </span>
+
+                    {/* HRV vs baseline */}
+                    <div style={{textAlign:"right",flexShrink:0}}>
+                      <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginBottom:5,letterSpacing:"0.06em"}}>HRV vs your baseline</div>
+                      <div style={{display:"flex",alignItems:"baseline",gap:6,justifyContent:"flex-end"}}>
+                        <span style={{fontFamily:FF.r,fontSize:42,fontWeight:600,color:zone.color,
+                          letterSpacing:"-0.03em",lineHeight:1}}>{hrv}</span>
+                        <span style={{fontFamily:FF.s,fontSize:11,color:P.muted}}>ms</span>
+                      </div>
+                      <div style={{fontFamily:FF.s,fontSize:10,marginTop:4,
+                        color:hrv>=HRV_MEAN?P.sage:P.terra,fontWeight:600}}>
+                        {hrv>=HRV_MEAN?"+":""}{(hrv-HRV_MEAN).toFixed(1)} vs 44.4 avg
                       </div>
                     </div>
                   </div>
@@ -461,7 +463,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
                     {[
                       {label:"Recovery",val:`${rec}%`,
-                        sub:rec>=76?"Above avg":rec>=58?"Normal":"Below avg",
+                        sub:rec>=76?"Above average":rec>=58?"Normal range":"Below average",
                         color:rec>=76?P.sage:rec>=58?P.amber:P.terra},
                       {label:"Resting HR",val:`${rhr} bpm`,
                         sub:rhr<=48?"Excellent":rhr<=52?"Normal":"Elevated",
@@ -470,12 +472,11 @@ export function TodayPage({setPage, whoopStatus="loading"}){
                         sub:`${WHOOP.sleep.score}% performance`,
                         color:WHOOP.sleep.score>=90?P.sage:WHOOP.sleep.score>=80?P.steel:P.amber},
                     ].map(({label,val,sub,color})=>(
-                      <div key={label} style={{padding:"12px 14px",background:"rgba(255,255,255,0.5)",
-                        backdropFilter:"blur(4px)",borderRadius:12}}>
+                      <div key={label} style={{padding:"14px 16px",background:"rgba(255,255,255,0.55)",borderRadius:12}}>
                         <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,
-                          letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:6}}>{label}</div>
-                        <div style={{fontFamily:FF.r,fontSize:22,fontWeight:600,color,
-                          letterSpacing:"-0.01em",lineHeight:1,marginBottom:3}}>{val}</div>
+                          letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:7}}>{label}</div>
+                        <div style={{fontFamily:FF.r,fontSize:24,fontWeight:600,color,
+                          letterSpacing:"-0.02em",lineHeight:1,marginBottom:4}}>{val}</div>
                         <div style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>{sub}</div>
                       </div>
                     ))}
@@ -588,7 +589,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
                     );
                   })()}
                   {!tomorrowCustom&&tomorrowSchedule&&(
-                    <div style={{marginTop:8,fontFamily:FF.s,fontSize:9,color:P.muted,lineHeight:1.5}}>
+                    <div style={{marginTop:8,fontFamily:FF.s,fontSize:10,color:P.muted,lineHeight:1.5}}>
                       Pattern-based prediction from your training history. Tap "Edit plan" to override.
                     </div>
                   )}
@@ -733,9 +734,9 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           </div>
         )}
         {calEvents&&calEvents.length===0&&!calError&&(
-          <div style={{padding:"16px",background:P.panel,borderRadius:10,textAlign:"center"}}>
-            <div style={{fontFamily:FF.r,fontSize:18,fontWeight:600,color:P.sage,marginBottom:4}}>Clear day ✓</div>
-            <div style={{fontFamily:FF.s,fontSize:11,color:P.muted}}>No events scheduled. Good window for deep work or training.</div>
+          <div style={{padding:"18px 20px",background:P.panel,borderRadius:12,textAlign:"center"}}>
+            <div style={{fontFamily:FF.r,fontSize:20,fontWeight:600,color:P.sage,marginBottom:5}}>Clear day ✓</div>
+            <div style={{fontFamily:FF.s,fontSize:11,color:P.muted,lineHeight:1.6}}>No events scheduled. Good window for deep work, training, or recovery.</div>
           </div>
         )}
         {calError&&(
@@ -756,7 +757,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
             {[{c:"#3A5C48",l:"Recovery %"},{c:"#4A6070",l:"HRV ms",dash:"4 2"}].map(({c,l,dash})=>(
               <div key={l} style={S.row5}>
                 <svg width={14} height={2}><line x1={0} y1={1} x2={14} y2={1} stroke={c} strokeWidth={2} strokeDasharray={dash}/></svg>
-                <span style={S.mut9}>{l}</span>
+                <span style={{fontFamily:FF.s,fontSize:8,color:P.muted}}>{l}</span>
               </div>
             ))}
           </div>
@@ -810,11 +811,10 @@ export function TodayPage({setPage, whoopStatus="loading"}){
           <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:6}}>VITAL Score</div>
           <div style={{fontFamily:FF.r,fontSize:58,fontWeight:600,color:P.textInv,lineHeight:1,letterSpacing:"-0.03em"}}>{SCORES_NOW.master.score}</div>
           <div style={{fontFamily:FF.s,fontSize:10,color:P.amber,marginTop:6,fontWeight:500}}>{SCORE_LABEL(SCORES_NOW.master.score)}</div>
-          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,marginTop:8,opacity:0.6}}>Tap for full report →</div>
+          <div style={{fontFamily:FF.s,fontSize:8,color:P.mutedDk,marginTop:10,opacity:0.55,letterSpacing:"0.04em"}}>Tap for full report →</div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12}}>
           {[
-            {icon:"⚡",label:"Health Score",sub:`${SCORES_NOW.master.score}/100`,    page:"score",   flag:false},
             {icon:"🏃",label:"Fitness",     sub:"8W · 95.2 peak", page:"fitness", flag:false},
             {icon:"📅",label:"Calendar",    sub:"Mar activity",   page:"calendar",flag:false},
             {icon:"🧬",label:"Labs",        sub:"May 23 · 3 flags",page:"labs",   flag:true},
