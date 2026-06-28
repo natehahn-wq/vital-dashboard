@@ -1,90 +1,37 @@
 // Theme + design tokens for the VITAL dashboard.
-//
-// P_BASE is a singleton object whose properties are mutated in-place by
-// setActiveTheme (never reassigned), so importers can hold a stable
-// reference and getter-based reads on `P` always reflect the current
-// theme. Reassigning a `let` binding from another module is not legal in
-// ESM, which is why this pattern matters now that the dashboard is split
-// into modules.
+// Single clinical palette — no theme switching. Every key in THEMES
+// resolves to the same object so stale localStorage values are harmless.
 
-export const THEMES = {
-  warm: {
-    id:"warm", name:"Medical Clinical", preview:"#F0F4F8",
-    accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
-    bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
-    border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
-    text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
-    terra:"#C4604A", terracottaBg:"#FDF1EE",
-    sage:"#3A9C68", sageBg:"#E8F5ED",
-    amber:"#5B9BD5", amberBg:"#E8F0FA",
-    steel:"#3A7CA5", steelBg:"#E2EEF6",
-    gold:"#64B4DC", clay:"#8B7155", rose:"#A85070", ink:"#1B3A5C", violet:"#7A5DA0",
-  },
-
-  calmLuxury: {
-    id:"calmLuxury", name:"Calm Luxury", preview:"#F2EFEA",
-    accent:"#557373", accentDk:"#272401", dark:false,
-    bg:"#F2EFEA", panel:"#E8E5DF", card:"#FAFAF8", cardDk:"#272401",
-    border:"rgba(85,115,115,0.18)", borderDk:"rgba(85,115,115,0.32)",
-    text:"#0D0D0D", textInv:"#F2EFEA", sub:"rgba(13,13,13,0.60)", muted:"rgba(13,13,13,0.38)", mutedDk:"rgba(242,239,234,0.65)",
-
-    terra:"#557373", sage:"#272401", amber:"#557373", steel:"#272401",
-    terracottaBg:"#DFE5F3", sageBg:"#DFE5F3", amberBg:"#DFE5F3", steelBg:"#DFE5F3",
-    gold:"#557373", clay:"#272401", rose:"#557373", ink:"#272401", violet:"#557373",
-  },
-
-  blueNeutral: {
-    id:"blueNeutral", name:"Blue Neutral", preview:"#07203F",
-    accent:"#D9AA90", accentDk:"#D9AA90", dark:true,
-    bg:"#07203F", panel:"#0A2848", card:"#0E2E50", cardDk:"#02000D",
-    border:"rgba(217,170,144,0.16)", borderDk:"rgba(217,170,144,0.28)",
-    text:"#EBDED4", textInv:"#EBDED4", sub:"rgba(235,222,212,0.60)", muted:"rgba(235,222,212,0.38)", mutedDk:"rgba(217,170,144,0.65)",
-    terra:"#A65E46", sage:"#D9AA90", amber:"#D9AA90", steel:"#8A9CC0",
-    terracottaBg:"rgba(166,94,70,0.18)", sageBg:"rgba(217,170,144,0.14)", amberBg:"rgba(217,170,144,0.14)", steelBg:"rgba(138,156,192,0.14)",
-    gold:"#D9AA90", clay:"#A65E46", rose:"#D9AA90", ink:"#02000D", violet:"#8A9CC0",
-  },
-
-  greenPalette: {
-    id:"greenPalette", name:"Green", preview:"#192231",
-    accent:"#C0B283", accentDk:"#C0B283", dark:true,
-    bg:"#192231", panel:"#222E26", card:"#1E2A26", cardDk:"#101620",
-    border:"rgba(192,178,131,0.16)", borderDk:"rgba(192,178,131,0.28)",
-    text:"#EDDBCD", textInv:"#EDDBCD", sub:"rgba(237,219,205,0.60)", muted:"rgba(237,219,205,0.38)", mutedDk:"rgba(192,178,131,0.65)",
-    terra:"#C0B283", sage:"#404A42", amber:"#C0B283", steel:"#404A42",
-    terracottaBg:"rgba(192,178,131,0.14)", sageBg:"rgba(64,74,66,0.30)", amberBg:"rgba(192,178,131,0.14)", steelBg:"rgba(64,74,66,0.30)",
-    gold:"#C0B283", clay:"#EDDBCD", rose:"#C0B283", ink:"#192231", violet:"#8A9CB8",
-  },
-
-  lifeforce: {
-    id:"lifeforce", name:"Lifeforce", preview:"#F0F4F8",
-    accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
-    bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
-    border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
-    text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
-    terra:"#C4604A",   terracottaBg:"#FDF1EE",
-    sage:"#3A9C68",    sageBg:"#E8F5ED",
-    amber:"#5B9BD5",   amberBg:"#E8F0FA",
-    steel:"#3A7CA5",   steelBg:"#E2EEF6",
-    gold:"#64B4DC",    clay:"#8B7155",
-    rose:"#A85070",    ink:"#1B3A5C",  violet:"#7A5DA0",
-  },
+const CLINICAL = {
+  id:"clinical", name:"Medical Clinical", preview:"#F0F4F8",
+  accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
+  bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
+  border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
+  text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
+  terra:"#C4604A", terracottaBg:"#FDF1EE",
+  sage:"#3A9C68", sageBg:"#E8F5ED",
+  amber:"#5B9BD5", amberBg:"#E8F0FA",
+  steel:"#3A7CA5", steelBg:"#E2EEF6",
+  gold:"#64B4DC", clay:"#8B7155", rose:"#A85070", ink:"#1B3A5C", violet:"#7A5DA0",
 };
 
-// Active theme — read from localStorage on load, default to warm
-let _activeTheme = "warm";
-try { _activeTheme = localStorage.getItem("vital_theme") || "warm"; } catch(e){}
+// All legacy keys resolve to the same palette so localStorage can't break it
+export const THEMES = {
+  clinical: CLINICAL,
+  warm: CLINICAL,
+  calmLuxury: CLINICAL,
+  blueNeutral: CLINICAL,
+  greenPalette: CLINICAL,
+  lifeforce: CLINICAL,
+};
 
-export const P_BASE = {...(THEMES[_activeTheme] || THEMES.warm)};
+export const P_BASE = {...CLINICAL};
 
-export function setActiveTheme(t){
-  const next = THEMES[t] || THEMES.warm;
-  // Wipe stale keys then copy fresh ones so theme switches are clean.
-  for (const k of Object.keys(P_BASE)) delete P_BASE[k];
-  Object.assign(P_BASE, next);
+export function setActiveTheme(_t){
+  // No-op — single palette, kept for API compat
 }
 
 export const P = {
-  // Backgrounds — dynamic per theme
   get bg()       { return P_BASE.bg; },
   get panel()    { return P_BASE.panel; },
   get card()     { return P_BASE.card; },
@@ -92,58 +39,54 @@ export const P = {
   get border()   { return P_BASE.border; },
   get borderDk() { return P_BASE.borderDk; },
 
-  // Text — dynamic per theme
   get text()     { return P_BASE.text; },
   get textInv()  { return P_BASE.textInv; },
   get sub()      { return P_BASE.sub; },
   get muted()    { return P_BASE.muted; },
   get mutedDk()  { return P_BASE.mutedDk; },
 
-  get terra()          { return P_BASE.terra      || "#C4604A"; },
-  get terracottaBg()   { return P_BASE.terracottaBg|| "#FDF1EE"; },
-  get sage()           { return P_BASE.sage       || "#3A5C48"; },
-  get sageBg()         { return P_BASE.sageBg     || "#EBF0EC"; },
-  get amber()          { return P_BASE.amber      || "#C47830"; },
-  get amberBg()        { return P_BASE.amberBg    || "#FDF5E8"; },
-  get steel()          { return P_BASE.steel      || "#4A6070"; },
-  get steelBg()        { return P_BASE.steelBg    || "#ECF2F6"; },
-  get gold()           { return P_BASE.gold       || "#B8902A"; },
-  get clay()           { return P_BASE.clay       || "#8A6050"; },
-  get rose()           { return P_BASE.rose       || "#9A4558"; },
-  get ink()            { return P_BASE.ink        || "#2A3540"; },
-  get violet()         { return P_BASE.violet     || "#7A5A80"; },
-  get accent()         { return P_BASE.accent     || "#C47830"; },
+  get terra()          { return P_BASE.terra; },
+  get terracottaBg()   { return P_BASE.terracottaBg; },
+  get sage()           { return P_BASE.sage; },
+  get sageBg()         { return P_BASE.sageBg; },
+  get amber()          { return P_BASE.amber; },
+  get amberBg()        { return P_BASE.amberBg; },
+  get steel()          { return P_BASE.steel; },
+  get steelBg()        { return P_BASE.steelBg; },
+  get gold()           { return P_BASE.gold; },
+  get clay()           { return P_BASE.clay; },
+  get rose()           { return P_BASE.rose; },
+  get ink()            { return P_BASE.ink; },
+  get violet()         { return P_BASE.violet; },
+  get accent()         { return P_BASE.accent; },
 
-  get cyan()    { return P_BASE.sage   || "#3A5C48"; },
-  get cyanBg()  { return P_BASE.sageBg || "#EBF0EC"; },
-  get coral()   { return P_BASE.terra  || "#C4604A"; },
-  get coralBg() { return P_BASE.terracottaBg || "#FDF1EE"; },
-  get blue()    { return P_BASE.steel  || "#4A6070"; },
-  get blueBg()  { return P_BASE.steelBg|| "#ECF2F6"; },
-  get green()   { return P_BASE.sage   || "#3A5C48"; },
-  get greenBg() { return P_BASE.sageBg || "#EBF0EC"; },
-  get pink()    { return P_BASE.rose   || "#9A4558"; },
-  get pinkBg()  { return P_BASE.roseBg || "#F8ECEF"; },
-  get pelo()    { return P_BASE.terra  || "#C4604A"; },
-  get peloBg()  { return P_BASE.terracottaBg || "#FDF1EE"; },
+  get cyan()    { return P_BASE.sage; },
+  get cyanBg()  { return P_BASE.sageBg; },
+  get coral()   { return P_BASE.terra; },
+  get coralBg() { return P_BASE.terracottaBg; },
+  get blue()    { return P_BASE.steel; },
+  get blueBg()  { return P_BASE.steelBg; },
+  get green()   { return P_BASE.sage; },
+  get greenBg() { return P_BASE.sageBg; },
+  get pink()    { return P_BASE.rose; },
+  get pinkBg()  { return "#F0E4EA"; },
+  get pelo()    { return P_BASE.terra; },
+  get peloBg()  { return P_BASE.terracottaBg; },
 
-  // Fixed
-  roseBg:    "#F8ECEF",
-  goldBg:    "#FBF5E6",
+  roseBg:    "#F0E4EA",
+  goldBg:    "#E8F0FA",
   inkBg:     "#E8EDF2",
   violetBg:  "#F2EBF6",
-  clayBg:    "#F5EDE8",
-  greenBg:   "#EBF0EC",
+  clayBg:    "#F0EBE6",
+  greenBg:   "#E8F5ED",
 
   mono: '"DM Mono", monospace',
   sans: '"DM Sans", system-ui, sans-serif',
   serif: '"Cormorant Garant", Georgia, serif',
 };
 
-// Font shorthand
 export const FF = { s: P.sans, r: P.serif, m: P.mono };
 
-// Reusable inline-style shorthands (saves ~12KB of repeated style objects)
 export const S = {
   mut9:  {fontFamily:FF.s,fontSize:9,color:P.muted},
   mut9t2:{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:2},
@@ -171,7 +114,6 @@ export const S = {
   g120:  {display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:12},
 };
 
-// Card container style helper (82 uses × ~60 chars = ~5KB saved)
 export const CS = (r=14, p="18px", sh="0 1px 3px rgba(0,0,0,.04)") => ({
   background: P.card,
   border: `1px solid ${P.border}`,

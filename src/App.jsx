@@ -1,5 +1,5 @@
-import { useState, useEffect, lazy, Suspense } from "react";
-import { P, FF, setActiveTheme } from "./lib/theme.js";
+import { useState, lazy, Suspense } from "react";
+import { P, FF } from "./lib/theme.js";
 
 import { useIsMobile } from "./hooks/useIsMobile.js";
 import { useWhoopLive } from "./hooks/useWhoopLive.js";
@@ -36,19 +36,7 @@ export default function App(){
   const [showMobileProfile, setShowMobileProfile]=useState(false);
   const { whoopStatus } = useWhoopLive();
 
-  const [theme,setTheme]=useState(()=>{
-    try{ return localStorage.getItem("vital_theme")||"warm"; } catch(e){ return "warm"; }
-  });
-
-  useEffect(()=>{
-    setActiveTheme(theme);
-  },[theme]);
-
-  const setThemeAndSave = (t) => {
-    try{ localStorage.setItem("vital_theme",t); }catch(e){}
-    setTheme(t);
-    setActiveTheme(t);
-  };
+  // Single clinical palette — no theme switching
 
   const mob = useIsMobile();
 
@@ -76,8 +64,8 @@ export default function App(){
 
   return(
     <div style={{display:"flex",minHeight:"100vh",background:P.bg,color:P.text,fontFamily:FF.s}}>
-      {showMobileProfile&&<UserModal onClose={()=>setShowMobileProfile(false)} theme={theme} setTheme={setThemeAndSave}/>}
-      {!mob&&<Sidebar active={page} set={setPage} peloConnected={false} theme={theme} setTheme={setThemeAndSave}/>}
+      {showMobileProfile&&<UserModal onClose={()=>setShowMobileProfile(false)} theme="clinical" setTheme={()=>{}}/>}
+      {!mob&&<Sidebar active={page} set={setPage} peloConnected={false} theme="clinical" setTheme={()=>{}}/>}
       <div style={{flex:1,display:"flex",flexDirection:"column",minWidth:0,overflowX:"hidden"}}>
         {mob
           ? <MobileTopbar page={page} onProfile={()=>setShowMobileProfile(true)}/>

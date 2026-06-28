@@ -1,7 +1,7 @@
-// User profile modal — identity, health context, data sources, theme picker.
+// User profile modal — identity, health context, data sources.
 // Local form state only; "Save" closes without persisting (placeholder).
 import { useState } from "react";
-import { P, FF, S, THEMES } from "../lib/theme.js";
+import { P, FF, S } from "../lib/theme.js";
 
 export function UserModal({onClose,theme,setTheme}){
   const [form, setForm] = useState({
@@ -112,41 +112,6 @@ export function UserModal({onClose,theme,setTheme}){
                 </div>
               </div>
             ))}
-          </div>
-
-          <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.10em",textTransform:"uppercase",margin:"8px 0 12px",paddingBottom:6,borderBottom:`1px solid ${P.border}`}}>Appearance</div>
-          <div style={{marginBottom:16}}>
-            <div style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color:P.text,marginBottom:10}}>Color Scheme</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:8}}>
-              {Object.values(THEMES).map(t=>{
-                const isActive = (theme||"warm")===t.id;
-                return(
-                  <div key={t.id} onClick={()=>setTheme&&setTheme(t.id)}
-                    style={{
-                      display:"flex",alignItems:"center",gap:12,padding:"10px 12px",
-                      borderRadius:10,cursor:"pointer",transition:"all .15s",
-                      border:`1.5px solid ${isActive?t.accent:(P.border)}`,
-                      background:isActive?t.accent+"10":P.panel,
-                      boxShadow:isActive?`0 0 0 1px ${t.accent}33`:"none",
-                    }}>
-                    <div style={{
-                      width:28,height:28,borderRadius:8,flexShrink:0,
-                      background:t.preview,
-                      border:`2px solid ${t.accent}`,
-                      boxShadow:`inset 0 0 0 4px ${t.accent}30`,
-                    }}/>
-                    <div style={{flex:1}}>
-                      <div style={{fontFamily:FF.s,fontSize:10,fontWeight:isActive?700:500,color:isActive?t.accent:P.text}}>{t.name}</div>
-                      {isActive&&<div style={{fontFamily:FF.s,fontSize:8,color:t.accent,marginTop:1,letterSpacing:"0.06em"}}>Active</div>}
-                    </div>
-                    {isActive&&<div style={{width:8,height:8,borderRadius:"50%",background:t.accent}}/>}
-                  </div>
-                );
-              })}
-            </div>
-            <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:8,lineHeight:1.5}}>
-              Changing the theme takes effect immediately. Your preference is saved locally.
-            </div>
           </div>
 
           <div style={{display:"flex",gap:12}}>
