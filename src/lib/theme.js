@@ -56,17 +56,17 @@ export const THEMES = {
   },
 
   lifeforce: {
-    id:"lifeforce", name:"Lifeforce", preview:"#F7F0E6",
-    accent:"#C89A5A", accentDk:"#8B6F4E", dark:false,
-    bg:"#F7F0E6", panel:"#EDE4D6", card:"#FBF7F2", cardDk:"#1C1410",
-    border:"rgba(214,200,180,0.55)", borderDk:"rgba(139,111,78,0.30)",
-    text:"#1C1410", textInv:"#FBF7F2", sub:"#4A3728", muted:"#8C7B6A", mutedDk:"#A89880",
-    terra:"#B5301A",   terracottaBg:"#FDDBD6",
-    sage:"#2D6A4F",    sageBg:"#D8F3DC",
-    amber:"#C47C1A",   amberBg:"#FFF3CD",
-    steel:"#2A7D8C",   steelBg:"#D1ECF1",
-    gold:"#C89A5A",    clay:"#8B6F4E",
-    rose:"#A03820",    ink:"#1C1410",  violet:"#6B5DA0",
+    id:"lifeforce", name:"Lifeforce", preview:"#F0F4F8",
+    accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
+    bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
+    border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
+    text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
+    terra:"#C4604A",   terracottaBg:"#FDF1EE",
+    sage:"#3A9C68",    sageBg:"#E8F5ED",
+    amber:"#5B9BD5",   amberBg:"#E8F0FA",
+    steel:"#3A7CA5",   steelBg:"#E2EEF6",
+    gold:"#64B4DC",    clay:"#8B7155",
+    rose:"#A85070",    ink:"#1B3A5C",  violet:"#7A5DA0",
   },
 };
 
