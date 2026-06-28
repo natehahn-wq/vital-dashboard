@@ -1,5 +1,5 @@
 // Calendar page — month grid with workout/recovery/HRV indicators and day detail.
-import { useState, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { P, FF, S, CS } from "../lib/theme.js";
 import { fmt } from "../lib/utils.js";
 import { SLabel } from "../components/shared.jsx";
@@ -9,10 +9,43 @@ import { SCORES_NOW } from "../lib/data/scores.js";
 import { CAL_DATA, CAL_RICH, RECENT_WORKOUTS } from "../lib/data/calendar.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 
+const WHOOP_SPORT = {"-1":"other",0:"running",1:"cycling",21:"other",48:"fitness",52:"walking",63:"other",71:"spin",82:"other",84:"sport",97:"fitness"};
+const WHOOP_NAME  = {"-1":"Activity",0:"Running",1:"Cycling",21:"Sport",48:"Functional Fitness",52:"Walking",63:"Activity",71:"Spin",82:"Other",84:"Sport",97:"Functional Fitness"};
+
 export function CalendarPage(){
   const mob = useIsMobile();
   const [viewMonth, setViewMonth] = useState({y:new Date().getFullYear(),m:new Date().getMonth()}); // 0-indexed
   const [selected,  setSelected]  = useState(null);
+
+  const [historyDays, setHistoryDays] = useState([]);
+  useEffect(() => {
+    fetch('/api/whoop/history').then(r => r.ok ? r.json() : null)
+      .then(res => { if (res?.days?.length) setHistoryDays(res.days); })
+      .catch(() => {});
+  }, []);
+
+  const {liveCalData, liveCalRich} = useMemo(() => {
+    const ld = {...CAL_DATA}, lr = {...CAL_RICH};
+    const staticEnd = Object.keys(CAL_RICH).sort().pop() || "2026-03-26";
+    for(const day of historyDays){
+      const k = day.date;
+      if(k <= staticEnd) continue;
+      if(day.recovery != null){
+        ld[k] = {rec:day.recovery, hrv:day.hrv, rhr:day.rhr, slp:day.sleep||0, sdur:day.sdur||0};
+      }
+      if(day.workouts?.length){
+        lr[k] = day.workouts.map(w => {
+          const cat = WHOOP_SPORT[w.sport] || "other";
+          const name = WHOOP_NAME[w.sport] || "Workout";
+          const startTime = w.start ? new Date(w.start).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}) : "";
+          const z = w.zones || {};
+          return {cat, name, strain:+w.strain||0, dur:+w.dur||0, cal:+w.cal||0, avgHR:w.avgHR||0, maxHR:w.maxHR||0, start:startTime,
+            z1p:z.z1p||0,z2p:z.z2p||0,z3p:z.z3p||0,z4p:z.z4p||0,z5p:z.z5p||0,z1m:z.z1m||0,z2m:z.z2m||0,z3m:z.z3m||0,z4m:z.z4m||0,z5m:z.z5m||0};
+        });
+      }
+    }
+    return {liveCalData:ld, liveCalRich:lr};
+  }, [historyDays]);
 
   // Category → icon + color
   const CAT = {
@@ -40,20 +73,20 @@ export function CalendarPage(){
 
   // Month-level stats
   const mKeys = Array.from({length:daysInMonth},(_,i)=>dateKey(i+1));
-  const mWorkouts = mKeys.filter(k=>CAL_RICH[k]?.length).length;
-  const mAlc      = mKeys.filter(k=>CAL_DATA[k]?.alc).length;
-  const mRecDays  = mKeys.filter(k=>CAL_DATA[k]?.rec!=null);
-  const mAvgRec   = mRecDays.length ? Math.round(mRecDays.reduce((s,k)=>s+(CAL_DATA[k].rec||0),0)/mRecDays.length) : null;
-  const mSlpDays  = mKeys.filter(k=>CAL_DATA[k]?.slp!=null);
-  const mAvgSlp   = mSlpDays.length ? Math.round(mSlpDays.reduce((s,k)=>s+(CAL_DATA[k].slp||0),0)/mSlpDays.length) : null;
-  const mStrain   = mKeys.reduce((s,k)=>{const r=CAL_RICH[k];return s+(r?.reduce((a,w)=>a+w.strain,0)||0);},0);
+  const mWorkouts = mKeys.filter(k=>liveCalRich[k]?.length).length;
+  const mAlc      = mKeys.filter(k=>liveCalData[k]?.alc).length;
+  const mRecDays  = mKeys.filter(k=>liveCalData[k]?.rec!=null);
+  const mAvgRec   = mRecDays.length ? Math.round(mRecDays.reduce((s,k)=>s+(liveCalData[k].rec||0),0)/mRecDays.length) : null;
+  const mSlpDays  = mKeys.filter(k=>liveCalData[k]?.slp!=null);
+  const mAvgSlp   = mSlpDays.length ? Math.round(mSlpDays.reduce((s,k)=>s+(liveCalData[k].slp||0),0)/mSlpDays.length) : null;
+  const mStrain   = mKeys.reduce((s,k)=>{const r=liveCalRich[k];return s+(r?.reduce((a,w)=>a+w.strain,0)||0);},0);
 
-  const sel = selected ? {...CAL_DATA[selected], w:CAL_RICH[selected]} : null;
+  const sel = selected ? {...liveCalData[selected], w:liveCalRich[selected]} : null;
 
   return(<div style={S.col18}>
     <div style={S.rowsb}>
       <div>
-        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Dec – Mar</div>
+        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>WHOOP · Activity</div>
         <div style={S.h18}>Activity Calendar</div>
       </div>
       <div style={{display:"flex",gap:6,alignItems:"center"}}>
@@ -117,7 +150,7 @@ export function CalendarPage(){
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,minWidth:280}}>
           {Array.from({length:firstDay},(_,i)=><div key={`e${i}`}/>)}
           {Array.from({length:daysInMonth},(_,i)=>{
-            const day=i+1, key=dateKey(day), d={...(CAL_DATA[key]||{}), w:CAL_RICH[key]};
+            const day=i+1, key=dateKey(day), d={...(liveCalData[key]||{}), w:liveCalRich[key]};
             const inRange=key>="2025-12-01"&&key<=today; // extended to today
             const isSel=selected===key, isToday=key===today;
             const dayStrain=d.w?.reduce((s,w)=>s+w.strain,0)||0;
@@ -136,7 +169,7 @@ export function CalendarPage(){
                   display:"flex",flexDirection:"column",gap:2,
                 }}
                 onMouseEnter={e=>{if(inRange&&!isSel){e.currentTarget.style.background=P.panel;e.currentTarget.style.transform="translateY(-1px)";}}}
-                onMouseLeave={e=>{if(!isSel){const r=CAL_DATA[key]?.rec;e.currentTarget.style.background=isSel?P.cardDk:inRange&&r?`rgba(${recColor(r)==="#3A5C48"?"58,92,72":recColor(r)==="#C47830"?"196,120,48":"196,96,74"},0.07)`:"transparent";e.currentTarget.style.transform="none";}}}>
+                onMouseLeave={e=>{if(!isSel){const r=liveCalData[key]?.rec;e.currentTarget.style.background=isSel?P.cardDk:inRange&&r?`rgba(${recColor(r)==="#3A5C48"?"58,92,72":recColor(r)==="#C47830"?"196,120,48":"196,96,74"},0.07)`:"transparent";e.currentTarget.style.transform="none";}}}>
                 <div style={{fontFamily:FF.m,fontSize:10,fontWeight:isSel||isToday?700:400,color:isSel?P.textInv:isToday?P.amber:P.sub,lineHeight:1}}>{day}</div>
                 {acts.length>0&&(
                   <div style={{display:"flex",gap:2,alignItems:"center",flexWrap:"wrap",minHeight:18}}>
@@ -290,9 +323,9 @@ export function CalendarPage(){
       </div>
       {(()=>{
         // Build combined 7-column heatmap for the viewed month
-        const alcDays = mKeys.filter(k=>CAL_DATA[k]?.alc);
-        const wktDays = mKeys.filter(k=>CAL_RICH[k]?.length);
-        const restDays = mKeys.filter(k=>!CAL_RICH[k]?.length&&!CAL_DATA[k]?.alc&&CAL_DATA[k]?.rec!=null);
+        const alcDays = mKeys.filter(k=>liveCalData[k]?.alc);
+        const wktDays = mKeys.filter(k=>liveCalRich[k]?.length);
+        const restDays = mKeys.filter(k=>!liveCalRich[k]?.length&&!liveCalData[k]?.alc&&liveCalData[k]?.rec!=null);
         const alcCount  = alcDays.length;
         const wktCount  = wktDays.length;
         const weeks     = daysInMonth / 7;
@@ -321,7 +354,7 @@ export function CalendarPage(){
               <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:6,background:P.amberBg+"44",border:`1px solid ${P.amber}33`}}>
                 <span style={{fontFamily:FF.s,fontSize:9}}>🔀</span>
                 <span style={{fontFamily:FF.s,fontSize:9,color:P.amber}}>
-                  {mKeys.filter(k=>CAL_DATA[k]?.alc&&CAL_RICH[k]?.length).length} both same day
+                  {mKeys.filter(k=>liveCalData[k]?.alc&&liveCalRich[k]?.length).length} both same day
                 </span>
               </div>
             )}
@@ -335,14 +368,14 @@ export function CalendarPage(){
               ))}
             </div>
             {weekRows.map((week,wi)=>{
-              const wkAlc = week.filter(k=>k&&CAL_DATA[k]?.alc).length;
+              const wkAlc = week.filter(k=>k&&liveCalData[k]?.alc).length;
               const wkLbl = week.find(k=>k) ? week.find(k=>k).slice(5,10).replace("-","/") : "";
               return(<Fragment key={wi}>
                 <div style={{fontFamily:FF.m,fontSize:8,color:P.muted,paddingTop:3,textAlign:"right",paddingRight:6}}>{wkLbl}</div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3}}>
                   {week.map((key,di)=>{
                     if(!key) return <div key={di}/>;
-                    const d={...(CAL_DATA[key]||{}), w:CAL_RICH[key]};
+                    const d={...(liveCalData[key]||{}), w:liveCalRich[key]};
                     const hasAlc=!!d.alc, hasWkt=!!d.w?.length;
                     const inRange=key>="2025-12-01"&&key<=today;
                     const rec=d.rec;

@@ -4,6 +4,7 @@
 
 import { P } from "../theme.js";
 import { CAL_DATA, CAL_RICH } from "./calendar.js";
+import { HUME_DATA, DXA } from "./body.js";
 
 export const SCORES_NOW = {
   // Master = weighted avg of 7 domains
@@ -175,6 +176,55 @@ export const METABOLIC_AGE = (() => {
   if (SCORES_NOW.recovery.drivers) { SCORES_NOW.recovery.drivers.forEach(dr => { if (dr.name?.includes("Recovery")) { dr.value = Math.round(avgRec) + "% avg"; dr.score = recScore; } if (dr.name?.includes("HRV")) { dr.value = avgHRV.toFixed(1) + " ms"; dr.score = hrvScore; } if (dr.name?.includes("RHR")) { dr.value = avgRHR.toFixed(1) + " bpm"; dr.score = rhrScore; } if (dr.name?.includes("Sleep")) { dr.value = avgSleep.toFixed(1) + " hrs avg"; dr.score = sleepScore; } }); }
   if (SCORES_NOW.cardiovascular?.drivers) { SCORES_NOW.cardiovascular.drivers.forEach(dr => { if (dr.name?.includes("HRV")) { dr.value = avgHRV.toFixed(1) + " ms (90d)"; dr.score = hrvScore; } if (dr.name?.includes("RHR")) { dr.value = avgRHR.toFixed(1) + " bpm (90d)"; dr.score = rhrScore; } }); let cvT = 0, cvC = 0; SCORES_NOW.cardiovascular.drivers.forEach(dr => { if (dr.score != null) { cvT += dr.score; cvC++; } }); if (cvC > 0) SCORES_NOW.cardiovascular.score = Math.round(cvT / cvC); }
   if (SCORES_NOW.strength?.drivers) { SCORES_NOW.strength.drivers.forEach(dr => { if (dr.name?.includes("Strain")) { dr.value = weeklyStrain.toFixed(1) + "/wk"; dr.score = strainScore; } if (dr.name?.includes("Gym") || dr.name?.includes("session")) { dr.value = weeklyGym.toFixed(1) + "/wk"; dr.score = gymScore; } }); let stT = 0, stC = 0; SCORES_NOW.strength.drivers.forEach(dr => { if (dr.score != null) { stT += dr.score; stC++; } }); if (stC > 0) SCORES_NOW.strength.score = Math.round(stT / stC); }
+  // ─── Dynamic Body Comp from Hume weight/BF data ───
+  if (HUME_DATA.length >= 2) {
+    const sorted = HUME_DATA.slice().sort((a, b) => b.d.localeCompare(a.d));
+    const latest = sorted[0];
+    const oldest = sorted[sorted.length - 1];
+    const recent30 = sorted.filter(r => r.d >= fmtISO(d90));
+    const avgWt = recent30.length ? recent30.reduce((s, r) => s + r.wt, 0) / recent30.length : latest.wt;
+    const avgBf = recent30.length ? recent30.reduce((s, r) => s + r.bf, 0) / recent30.length : latest.bf;
+
+    // BIA-to-DXA offset: DXA read 26.4% when Hume read ~16% → ~10.4pt offset
+    const BIA_DXA_OFFSET = DXA.totalFatPct - (HUME_DATA.find(r => r.d <= "2026-01-23")?.bf || 16);
+    const estDxaBf = latest.bf + BIA_DXA_OFFSET;
+    const estDxaBfAvg = avgBf + BIA_DXA_OFFSET;
+
+    const wtDelta = latest.wt - DXA.weight;
+    const bfDelta = latest.bf - oldest.bf;
+    const leanEst = latest.wt * (1 - latest.bf / 100);
+
+    // Scoring functions for body comp
+    const scoreBf = bf => bf <= 15 ? 95 : bf <= 18 ? 88 : bf <= 20 ? 78 : bf <= 23 ? 68 : bf <= 26 ? 55 : 45;
+    const scoreWtTrend = delta => delta <= -15 ? 92 : delta <= -10 ? 85 : delta <= -5 ? 75 : delta <= 0 ? 68 : delta <= 5 ? 55 : 45;
+    const scoreLean = lbs => lbs >= 170 ? 90 : lbs >= 160 ? 82 : lbs >= 150 ? 75 : lbs >= 140 ? 65 : 55;
+
+    const bfScore = scoreBf(estDxaBfAvg);
+    const wtTrendScore = scoreWtTrend(wtDelta);
+    const leanScore = scoreLean(leanEst);
+    // Keep DXA-anchored scores for VAT and BMD (no daily tracking for those)
+    const vatScore = SCORES_NOW.bodyComp.drivers.find(d => d.name.includes("VAT"))?.score || 60;
+    const bmdScore = SCORES_NOW.bodyComp.drivers.find(d => d.name.includes("BMD"))?.score || 99;
+
+    const bcOverall = Math.round(bfScore * 0.30 + wtTrendScore * 0.20 + leanScore * 0.20 + vatScore * 0.15 + bmdScore * 0.15);
+    SCORES_NOW.bodyComp.score = bcOverall;
+    SCORES_NOW.bodyComp.dataDate = `Hume BIA (latest ${latest.d}) · DXA Jan 23, 2026 (VAT/BMD)`;
+
+    SCORES_NOW.bodyComp.drivers = [
+      {name:"Body Fat % (est.)",   val:estDxaBf.toFixed(1)+"%",  note:`Hume BIA ${latest.bf.toFixed(1)}% + ${BIA_DXA_OFFSET.toFixed(0)}pt DXA offset — ${latest.d}`, score:bfScore, trend: bfDelta < -1 ? "up" : bfDelta > 1 ? "flag" : "stable"},
+      {name:"Weight",              val:latest.wt.toFixed(1)+" lbs", note:`${wtDelta >= 0 ? "+" : ""}${wtDelta.toFixed(1)} lbs vs DXA baseline (${DXA.weight} lbs)`, score:wtTrendScore, trend: wtDelta < -5 ? "up" : "stable"},
+      {name:"Lean Mass (est.)",    val:leanEst.toFixed(1)+" lbs", note:"Estimated from Hume weight × (1 − BF%)", score:leanScore, trend:"stable"},
+      {name:"VAT (DXA)",           val:DXA.vatArea_cm2+" cm²",  note:"Jan 23, 2026 — target <100 cm²",     score:vatScore, trend:"flag"},
+      {name:"BMD T-score (DXA)",   val:"+"+DXA.bmd.total.tScore, note:"Exceptional — 111th percentile",   score:bmdScore, trend:"up"},
+    ];
+
+    // Also update metabolic BF driver if present
+    if (SCORES_NOW.metabolic?.drivers) {
+      const metBf = SCORES_NOW.metabolic.drivers.find(d => d.name.includes("Body Fat"));
+      if (metBf) { metBf.val = estDxaBf.toFixed(1) + "%"; metBf.note = `Est. from Hume BIA ${latest.bf.toFixed(1)}% + DXA offset — ${latest.d}`; metBf.score = bfScore; }
+    }
+  }
+
   const weights = { cardiovascular: 0.2, metabolic: 0.15, bodyComp: 0.15, strength: 0.15, hormonal: 0.1, longevity: 0.15, recovery: 0.1 };
   let total = 0, wSum = 0;
   Object.keys(weights).forEach(k => { if (SCORES_NOW[k]?.score != null) { total += SCORES_NOW[k].score * weights[k]; wSum += weights[k]; } });

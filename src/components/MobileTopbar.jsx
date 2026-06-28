@@ -13,7 +13,7 @@ export function MobileTopbar({page, onProfile}){
     overview:"Dashboard",score:"Health Score",fitness:"Fitness",
     calendar:"Calendar",body:"Body Comp",labs:"Labs",trends:"Trends"};
   return(
-    <div style={{height:52,background:P.card,borderBottom:`1px solid ${P.border}`,
+    <div style={{height:52,background:"rgba(255,255,255,0.65)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",borderBottom:`1px solid ${P.border}`,
       display:"flex",alignItems:"center",justifyContent:"space-between",
       padding:"0 14px",position:"sticky",top:0,zIndex:20}}>
       <div style={{fontFamily:FF.r,fontWeight:600,fontSize:16,color:P.text,flex:1,minWidth:0,
@@ -31,10 +31,10 @@ export function MobileTopbar({page, onProfile}){
           {SCORES_NOW.master.score}
         </div>
         <div onClick={onProfile}
-          style={{width:30,height:30,borderRadius:"50%",background:P.cardDk,
+          style={{width:30,height:30,borderRadius:"50%",background:"linear-gradient(135deg, #5B9BD5, #3A7CA5)",
             display:"flex",alignItems:"center",justifyContent:"center",
-            fontFamily:FF.r,fontWeight:600,fontSize:12,color:P.textInv,
-            cursor:"pointer",flexShrink:0,border:`1px solid ${P.border}`}}>
+            fontFamily:FF.r,fontWeight:600,fontSize:12,color:"#fff",
+            cursor:"pointer",flexShrink:0,boxShadow:"0 2px 6px rgba(59,124,165,0.20)"}}>
           N
         </div>
       </div>

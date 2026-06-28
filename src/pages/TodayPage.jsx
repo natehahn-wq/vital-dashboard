@@ -89,11 +89,11 @@ export function TodayPage({setPage, whoopStatus="loading"}){
  
   const WEEKLY_SCHEDULE = {
     0:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:11.0,dur:50,freq:69},
-    1:{name:"Functional Fitness",icon:"🏋",color:"#3A5C48",time:"10:00",timeH:10,strain:11.2,dur:68,freq:62},
+    1:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.2,dur:68,freq:62},
     2:{name:"Running",           icon:"🏃",color:"#C47830",time:"11:00",timeH:11,strain:12.8,dur:52,freq:69,note:"Wed 11am run · 69% of weeks"},
-    3:{name:"Functional Fitness",icon:"🏋",color:"#3A5C48",time:"10:00",timeH:10,strain:11.5,dur:68,freq:79},
+    3:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.5,dur:68,freq:79},
     4:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:10.2,dur:50,freq:62},
-    5:{name:"Functional Fitness",icon:"🏋",color:"#3A5C48",time:"07:00",timeH:7, strain:14.1,dur:76,freq:62},
+    5:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"07:00",timeH:7, strain:14.1,dur:76,freq:62},
     6:{name:"Running",           icon:"🏃",color:"#C47830",time:"09:00",timeH:9, strain:11.3,dur:52,freq:41},
   };
 
@@ -105,7 +105,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
  
     // Build doneTodayAll from CAL_RICH (populated by live WHOOP API) instead of hardcoded data
       const iconMap = {running:"\u{1F3C3}",fitness:"\u{1F3CB}",walking:"\u{1F6B6}",cycling:"\u{1F6B4}",spin:"\u{1F6B4}",other:"\u{1F4AA}",sport:"\u26BD"};
-      const colorMap = {running:"#C47830",fitness:"#3A5C48",walking:"#7A5AB0",cycling:"#2D7D9A",spin:"#2D7D9A",other:"#666",sport:"#444"};
+      const colorMap = {running:"#5B9BD5",fitness:"#3A7CA5",walking:"#7A5AB0",cycling:"#64B4DC",spin:"#64B4DC",other:"#8AA4BC",sport:"#4A6A84"};
       const doneTodayAll = (CAL_RICH[now.toLocaleDateString("en-CA")] || []).map(w => ({
               name: w.name || "Activity",
               icon: iconMap[w.cat] || "\u{1F4AA}",
@@ -163,7 +163,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
     {d:"Mar 26",rec:54, hrv:39}, // Today
   ];
 
-  const recColor = r => r>=80?"#3A5C48":r>=60?"#C47830":"#C4604A";
+  const recColor = r => r>=80?"#3A9C68":r>=60?"#5B9BD5":"#C4604A";
   const recLabel = r => r>=80?"Optimal":r>=60?"Moderate":"Low";
   const rc = recColor(REC);
   const ax ={tick:{fontFamily:FF.m,fontSize:8,fill:P.muted},axisLine:{stroke:P.border},tickLine:false};
@@ -314,16 +314,16 @@ export function TodayPage({setPage, whoopStatus="loading"}){
 
   // Hero gradient adapts to time of day
   const heroBg =
-    isMorning   ? "linear-gradient(135deg, #261D14 0%, #362410 60%, #1E2614 100%)" :
-    isMidday    ? "linear-gradient(135deg, #14241E 0%, #1A3020 60%, #20240E 100%)" :
-    isAfternoon ? "linear-gradient(135deg, #28180A 0%, #341E0C 60%, #2C1210 100%)" :
-                  "linear-gradient(135deg, #14142A 0%, #100E22 60%, #121624 100%)";
+    isMorning   ? "linear-gradient(135deg, #1B3A5C 0%, #264A6E 60%, #1E4468 100%)" :
+    isMidday    ? "linear-gradient(135deg, #1E4468 0%, #2A5A80 60%, #1B3A5C 100%)" :
+    isAfternoon ? "linear-gradient(135deg, #243C5A 0%, #2E4E6C 60%, #1B3A5C 100%)" :
+                  "linear-gradient(135deg, #162A42 0%, #1B3050 60%, #142438 100%)";
 
   const heroAccent =
-    isMorning   ? "rgba(196,120,48,0.22)" :
-    isMidday    ? "rgba(58,92,72,0.22)"   :
-    isAfternoon ? "rgba(184,90,42,0.22)"  :
-                  "rgba(74,96,112,0.22)";
+    isMorning   ? "rgba(91,155,213,0.18)" :
+    isMidday    ? "rgba(58,156,104,0.18)"  :
+    isAfternoon ? "rgba(100,180,220,0.18)" :
+                  "rgba(91,155,213,0.18)";
 
   const SectionDivider = ({label, icon}) => (
     <div style={{display:"flex",alignItems:"center",gap:12,margin:"8px 0 4px"}}>
@@ -392,7 +392,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
         <div style={{display:"flex",justifyContent:"flex-end",marginTop:10}}>
           {whoopStatus==="connected"&&(
             <div style={{display:"inline-flex",alignItems:"center",gap:5,padding:"4px 10px",background:"rgba(58,156,104,0.12)",borderRadius:8,border:"1px solid rgba(58,156,104,0.25)"}}>
-              <div style={{width:5,height:5,borderRadius:"50%",background:"#3A9C68",boxShadow:"0 0 5px #3A9C68"}}/>
+              <div style={{width:5,height:5,borderRadius:"50%",background:"#3A9C68",boxShadow:"0 0 5px rgba(58,156,104,0.5)"}}/>
               <span style={{fontFamily:FF.s,fontSize:8,color:"#7AC49A",fontWeight:600,letterSpacing:"0.08em"}}>LIVE</span>
             </div>
           )}
@@ -537,7 +537,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
                   <div style={{fontFamily:FF.s,fontSize:10,color:P.sub,marginBottom:8}}>What are you planning tomorrow?</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
                     {[
-                      {name:"Functional Fitness",icon:"🏋",color:"#3A5C48"},
+                      {name:"Functional Fitness",icon:"🏋",color:"#3A7CA5"},
                       {name:"Running",            icon:"🏃",color:"#C47830"},
                       {name:"Spin",               icon:"🚴",color:"#C4604A"},
                       {name:"Walking",            icon:"🚶",color:"#7A5A80"},
@@ -754,7 +754,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
             <div style={{fontFamily:FF.r,fontSize:14,fontWeight:600,color:P.text}}>Recovery · HRV</div>
           </div>
           <div style={{display:"flex",gap:12}}>
-            {[{c:"#3A5C48",l:"Recovery %"},{c:"#4A6070",l:"HRV ms",dash:"4 2"}].map(({c,l,dash})=>(
+            {[{c:"#3A9C68",l:"Recovery %"},{c:"#5B9BD5",l:"HRV ms",dash:"4 2"}].map(({c,l,dash})=>(
               <div key={l} style={S.row5}>
                 <svg width={14} height={2}><line x1={0} y1={1} x2={14} y2={1} stroke={c} strokeWidth={2} strokeDasharray={dash}/></svg>
                 <span style={{fontFamily:FF.s,fontSize:8,color:P.muted}}>{l}</span>
@@ -769,8 +769,8 @@ export function TodayPage({setPage, whoopStatus="loading"}){
             <YAxis yAxisId="rec" {...ax} domain={[0,100]}/>
             <YAxis yAxisId="hrv" orientation="right" {...ax} domain={[20,80]}/>
             <Tooltip content={({active,payload,label})=>active&&payload?.length?(<div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:8,padding:"8px 12px",fontFamily:FF.s,fontSize:11,boxShadow:"0 4px 12px rgba(0,0,0,0.08)"}}><div style={{color:P.muted,marginBottom:4,fontSize:9,textTransform:"uppercase"}}>{label}</div>{payload.map(p=><div key={p.name} style={{display:"flex",gap:8,marginBottom:2}}><span style={{color:p.color,minWidth:70}}>{p.name}</span><span style={{fontFamily:FF.m,color:P.text}}>{p.value}</span></div>)}</div>):null}/>
-            <ReferenceLine yAxisId="rec" y={80} stroke="#3A5C48" strokeDasharray="3 3" strokeOpacity={0.35}/>
-            <Line yAxisId="rec" type="monotone" dataKey="rec" stroke="#3A5C48" strokeWidth={2} isAnimationActive={true} animationDuration={1000} animationEasing="ease-out"
+            <ReferenceLine yAxisId="rec" y={80} stroke="#3A9C68" strokeDasharray="3 3" strokeOpacity={0.35}/>
+            <Line yAxisId="rec" type="monotone" dataKey="rec" stroke="#3A9C68" strokeWidth={2} isAnimationActive={true} animationDuration={1000} animationEasing="ease-out"
               dot={(p)=><circle key={p.index} cx={p.cx} cy={p.cy} r={p.index===6?5:3} fill={recColor(p.value)} stroke={P.card} strokeWidth={1.5}/>}
               name="Recovery"/>
             <Line yAxisId="hrv" type="monotone" dataKey="hrv" stroke="#4A6070" strokeWidth={1.5} strokeDasharray="4 2" dot={false} name="HRV ms" isAnimationActive={true} animationDuration={1100} animationEasing="ease-out"/>
@@ -818,7 +818,7 @@ export function TodayPage({setPage, whoopStatus="loading"}){
             {icon:"🏃",label:"Fitness",     sub:"8W · 95.2 peak", page:"fitness", flag:false},
             {icon:"📅",label:"Calendar",    sub:"Mar activity",   page:"calendar",flag:false},
             {icon:"🧬",label:"Labs",        sub:"May 23 · 3 flags",page:"labs",   flag:true},
-            {icon:"📐",label:"Body Comp",   sub:"DXA Jan 2026",   page:"body",    flag:false},
+            {icon:"📐",label:"Body Comp",   sub:"Hume daily",      page:"body",    flag:false},
             {icon:"⊞",label:"Overview",    sub:"All metrics",    page:"overview",flag:false},
           ].map(({icon,label,sub,page,flag})=>(
             <div key={label} onClick={()=>setPage(page)} style={{background:P.card,border:`1px solid ${flag?P.terra+"44":P.border}`,borderRadius:12,

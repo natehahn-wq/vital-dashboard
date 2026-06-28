@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { P, FF, S } from "../lib/theme.js";
 import { LABS, LABS_MERGED, LAB_HISTORY, LAB_REFS, PANEL_TREND_KEYS } from "../lib/data/labs.js";
+import { DXA, SCAN_HISTORY } from "../lib/data/body.js";
 import { SLabel, BioCard } from "../components/shared.jsx";
 
 export function Labs(){
@@ -182,6 +183,59 @@ export function Labs(){
               <span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:color,background:color+"18",padding:"2px 6px",borderRadius:3,border:`1px solid ${color}33`,letterSpacing:"0.06em"}}>{badge}</span>
             </div>
             <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,lineHeight:1.65}}>{note}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    {/* ── DXA Scan · Historical Reference ── */}
+    <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"16px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+        <SLabel color={P.violet}>DXA Scan · Gold Standard Body Composition</SLabel>
+        <span style={{fontFamily:FF.s,fontSize:9,color:P.muted,padding:"3px 10px",borderRadius:5,background:P.panel,border:`1px solid ${P.border}`}}>
+          {DXA.date} · Pueblo Radiology · Hologic Horizon W
+        </span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:14}}>
+        {[
+          {label:"Total Body Fat",   val:`${DXA.totalFatPct}%`,   sub:`${DXA.totalFatLbs} lbs`, color:P.terra},
+          {label:"Lean Mass",        val:`${DXA.totalLeanLbs}`,   sub:"lbs (excl. BMC)",         color:P.sage},
+          {label:"BMC",              val:`${DXA.totalBMC_lbs}`,   sub:"lbs bone mineral",        color:P.steel},
+          {label:"Weight",           val:`${DXA.weight}`,         sub:"lbs",                     color:P.text},
+          {label:"BMI",              val:`${DXA.bmi}`,            sub:"",                        color:P.amber},
+          {label:"VAT Area",         val:`${DXA.vatArea_cm2}`,    sub:"cm²",                     color:P.coral},
+          {label:"A/G Ratio",        val:`${DXA.androidGynoidRatio}`, sub:"android / gynoid",    color:P.violet},
+          {label:"BMD T-Score",      val:`${DXA.bmd.total.tScore}`, sub:`Z: ${DXA.bmd.total.zScore}`, color:P.cyan},
+        ].map(({label,val,sub,color})=>(
+          <div key={label} style={{padding:"10px 12px",background:P.panel,borderRadius:10,border:`1px solid ${P.border}`}}>
+            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{label}</div>
+            <div style={{fontFamily:FF.r,fontSize:20,fontWeight:600,color,letterSpacing:"-0.01em"}}>{val}</div>
+            {sub&&<div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:2}}>{sub}</div>}
+          </div>
+        ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:8,marginBottom:14}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.sub,gridColumn:"1/-1",marginBottom:2}}>Regional Composition</div>
+        {Object.entries(DXA.regions).map(([key,r])=>(
+          <div key={key} style={{padding:"8px 10px",background:P.panel,borderRadius:8,border:`1px solid ${P.border}`}}>
+            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3}}>
+              {key==="lArm"?"L Arm":key==="rArm"?"R Arm":key==="trunk"?"Trunk":key==="lLeg"?"L Leg":"R Leg"}
+            </div>
+            <div style={{fontFamily:FF.m,fontSize:13,fontWeight:600,color:P.text}}>{r.fatPct}% fat</div>
+            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,marginTop:2}}>{r.leanLbs} lean · {r.fatLbs} fat</div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.sub,gridColumn:"1/-1",marginBottom:2}}>Scan History</div>
+        {SCAN_HISTORY.map(s=>(
+          <div key={s.date} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",background:P.panel,borderRadius:8,border:`1px solid ${P.border}`}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:s.source==="DXA"?P.violet:P.amber,flexShrink:0}}/>
+            <div>
+              <div style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color:P.text}}>{s.date} · {s.source}</div>
+              <div style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>
+                {s.weight} lbs · {s.fatPct}% BF · {s.leanLbs} lean · {s.note}
+              </div>
+            </div>
           </div>
         ))}
       </div>

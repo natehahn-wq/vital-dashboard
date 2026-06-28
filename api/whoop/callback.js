@@ -226,6 +226,8 @@ export async function fetchAndStoreWhoopData(accessToken) {
                                 strain: +w.strain,
                                 dur:    w.dur,
                                 cal:    w.cal,
+                                avgHR:  w.avgHR,
+                                maxHR:  w.maxHR,
                                 start:  w.start,
                                 zones:  w.zones,
                     })),
@@ -260,7 +262,7 @@ export async function fetchAndStoreWhoopData(accessToken) {
 
 // == Backfill missing days from WHOOP API ==
 async function backfillHistory(accessToken, history) {
-      const STATIC_END = '2026-03-16';
+      const STATIC_END = '2026-06-15';
       const today      = new Date().toLocaleDateString('en-CA');
       const existingDates = new Set(history.map(h => h.date));
 
@@ -363,6 +365,8 @@ async function backfillHistory(accessToken, history) {
                                                       strain: +(w.score?.strain || 0).toFixed(1),
                                                       dur:    Math.round(totalDurMs / 60000),
                                                       cal:    Math.round(w.score?.kilojoule ? w.score.kilojoule * 0.239 : 0),
+                                                      avgHR:  Math.round(w.score?.average_heart_rate || 0),
+                                                      maxHR:  Math.round(w.score?.max_heart_rate || 0),
                                                       start:  w.start,
                                                       zones,
                                       };
