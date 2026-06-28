@@ -268,6 +268,7 @@ async function backfillHistory(accessToken, history) {
       const today      = new Date().toLocaleDateString('en-CA');
       const existingDates = new Set(history.map(h => h.date));
 
+  // Find missing dates AND dates with misattributed workouts
   const missing = [];
       const d = new Date(STATIC_END + 'T00:00:00Z');
       d.setUTCDate(d.getUTCDate() + 1);
@@ -275,7 +276,17 @@ async function backfillHistory(accessToken, history) {
       yesterday.setUTCDate(yesterday.getUTCDate() - 1);
       while (d <= yesterday) {
               const ds = d.toISOString().slice(0, 10);
-              if (!existingDates.has(ds)) missing.push(ds);
+              if (!existingDates.has(ds)) {
+                missing.push(ds);
+              } else {
+                // Re-fetch if workouts have wrong start dates (prior bug)
+                const existing = history.find(h => h.date === ds);
+                const bad = existing?.workouts?.some(w => w.start && w.start.slice(0, 10) !== ds);
+                if (bad) {
+                  history.splice(history.indexOf(existing), 1);
+                  missing.push(ds);
+                }
+              }
               d.setUTCDate(d.getUTCDate() + 1);
       }
 
@@ -293,49 +304,60 @@ async function backfillHistory(accessToken, history) {
       const rangeEnd   = today + 'T23:59:59.999Z';
 
   try {
-          const [recRes, wktRes, cycRes] = await Promise.all([
-                    fetch(`${base}/recovery?start=${rangeStart}&end=${rangeEnd}&limit=25`,         { headers }),
-                    fetch(`${base}/activity/workout?start=${rangeStart}&end=${rangeEnd}&limit=25`, { headers }),
-                    fetch(`${base}/cycle?start=${rangeStart}&end=${rangeEnd}&limit=25`,            { headers }),
+          // Paginate to fetch ALL records in the range (WHOOP caps at 25 per page)
+          async function fetchAll(url) {
+            const records = [];
+            let nextUrl = url;
+            while (nextUrl) {
+              const res = await fetch(nextUrl, { headers });
+              if (!res.ok) break;
+              const data = await res.json();
+              if (data.records?.length) records.push(...data.records);
+              nextUrl = data.next_token
+                ? `${url}&nextToken=${data.next_token}`
+                : null;
+            }
+            return records;
+          }
+
+          const [recRecords, wktRecords, cycRecords, slpRecords] = await Promise.all([
+                    fetchAll(`${base}/recovery?start=${rangeStart}&end=${rangeEnd}&limit=25`),
+                    fetchAll(`${base}/activity/workout?start=${rangeStart}&end=${rangeEnd}&limit=25`),
+                    fetchAll(`${base}/cycle?start=${rangeStart}&end=${rangeEnd}&limit=25`),
+                    fetchAll(`${base}/activity/sleep?start=${rangeStart}&end=${rangeEnd}&limit=25`),
                   ]);
 
-        const [recData, wktData, cycData] = await Promise.all([
-                  recRes.ok ? recRes.json() : { records: [] },
-                  wktRes.ok ? wktRes.json() : { records: [] },
-                  cycRes.ok ? cycRes.json() : { records: [] },
-                ]);
-
         console.log('[VITAL] Backfill API:', JSON.stringify({
-                  recoveries: recData.records?.length || 0,
-                  workouts:   wktData.records?.length || 0,
-                  cycles:     cycData.records?.length || 0,
+                  recoveries: recRecords.length,
+                  workouts:   wktRecords.length,
+                  cycles:     cycRecords.length,
+                  sleeps:     slpRecords.length,
         }));
 
         // Fetch zone details for all backfill workouts
-        const allWorkouts = wktData.records || [];
-          const zoneDetails = await Promise.all(
-                    allWorkouts.map(w => fetchWorkoutZones(w.id, headers))
+        const zoneDetails = await Promise.all(
+                    wktRecords.map(w => fetchWorkoutZones(w.id, headers))
                   );
           const zoneById = {};
-          allWorkouts.forEach((w, i) => { zoneById[w.id] = zoneDetails[i]; });
+          wktRecords.forEach((w, i) => { zoneById[w.id] = zoneDetails[i]; });
 
         // Index recoveries by date
         const recByDate = {};
-          for (const r of (recData.records || [])) {
+          for (const r of recRecords) {
                     const dt = r.created_at ? r.created_at.slice(0, 10) : null;
                     if (dt) recByDate[dt] = r;
           }
 
         // Index cycles by date
         const cycByDate = {};
-          for (const c of (cycData.records || [])) {
+          for (const c of cycRecords) {
                     const dt = c.start ? c.start.slice(0, 10) : null;
                     if (dt) cycByDate[dt] = c;
           }
 
         // Index workouts by date
         const wktByDate = {};
-          for (const w of (wktData.records || [])) {
+          for (const w of wktRecords) {
                     const dt = w.start ? w.start.slice(0, 10) : null;
                     if (dt) {
                                 if (!wktByDate[dt]) wktByDate[dt] = [];
@@ -343,13 +365,21 @@ async function backfillHistory(accessToken, history) {
                     }
           }
 
+        // Index sleep by date
+        const slpByDate = {};
+          for (const s of slpRecords) {
+                    const dt = s.end ? s.end.slice(0, 10) : null;
+                    if (dt) slpByDate[dt] = s;
+          }
+
         let filled = 0;
           for (const dateStr of missing) {
                     const rec  = recByDate[dateStr];
                     const cyc  = cycByDate[dateStr];
                     const wkts = wktByDate[dateStr] || [];
+                    const slp  = slpByDate[dateStr];
 
-            if (!rec && !cyc && wkts.length === 0) continue;
+            if (!rec && !cyc && wkts.length === 0 && !slp) continue;
 
             const entry = {
                         date:     dateStr,
@@ -357,7 +387,8 @@ async function backfillHistory(accessToken, history) {
                         hrv:      +(rec?.score?.hrv_rmssd_milli || 0).toFixed(1),
                         rhr:      Math.round(rec?.score?.resting_heart_rate || 0),
                         strain:   +(cyc?.score?.strain || 0).toFixed(1),
-                        sleep:    0,
+                        sleep:    Math.round(slp?.score?.sleep_performance_percentage || 0),
+                        sdur:     slp?.score?.total_in_bed_time_milli ? +(slp.score.total_in_bed_time_milli / 3600000).toFixed(1) : 0,
                         workouts: wkts.map(w => {
                                       const totalDurMs = new Date(w.end) - new Date(w.start);
                                       const zd = zoneById[w.id] || w.score?.zone_durations || w.score?.zone_duration || null;
