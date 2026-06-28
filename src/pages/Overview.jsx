@@ -98,8 +98,8 @@ export function Overview({setPage}){
         <StatCard icon="💓" label="HRV"         value={WHOOP.hrv}        unit="ms"   color={P.steel}  delta={2.1}  sparkData={T.hrv}/>
         <StatCard icon="❤" label="Resting HR"  value={WHOOP.rhr}        unit="bpm"  color={P.terra}  delta={-1.4} sparkData={T.rhr}/>
         <StatCard icon="⚖" label="Weight"      value={liveWeight}       unit="lbs"  color={P.steel}  delta={LATEST.weight7dDelta} sub={`Hume · ${liveWeightDate}`}/>
-        <StatCard icon="🫀" label="Body Fat"    value={LATEST.bodyFat}   unit="%"    color={P.clay}   delta={-11.6}/>
-        <StatCard icon="💪" label="Lean Mass"   value={LATEST.leanMass}  unit="lbs"  color={P.sage}   delta={5.7}/>
+        <StatCard icon="🫀" label="Body Fat"    value={LATEST.bodyFat}   unit="%"    color={P.clay}   sub="Hume BIA"/>
+        <StatCard icon="💪" label="Lean Mass"   value={LATEST.leanMass}  unit="lbs"  color={P.sage}   sub="Hume est."/>
       </div>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>

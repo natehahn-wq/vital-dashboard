@@ -127,7 +127,7 @@ export const HUME_DATA=[
 // CardioCoach RMR
 export const RMR = { measured:1858, lifestyle:1300, exercise:232, total:3390, maintenanceLow:1858, maintenanceHigh:3158, weightLossLow:1488, weightLossHigh:1858, comparison:"NORMAL (-8%)", rer:0.85 };
 
-// LATEST — weight from most recent Hume Pod scan (daily), body comp from DXA (gold standard)
+// LATEST — all body comp derived from most recent Hume Pod reading
 const _humeLatest    = HUME_DATA.length > 0 ? HUME_DATA[0] : null;
 const _humeOldest7   = HUME_DATA.length >= 7 ? HUME_DATA[6] : HUME_DATA[HUME_DATA.length-1];
 const _importedStored= (()=>{ try{ return !!localStorage.getItem("vital_hume_imported"); }catch(e){ return false; }})();
@@ -138,8 +138,11 @@ export const LATEST = {
   weightSource: _importedStored ? "Hume (imported)" : "Hume Pod",
   weight7dAgo:  _humeOldest7 ? _humeOldest7.wt : null,
   weight7dDelta:(_humeLatest && _humeOldest7) ? +(_humeLatest.wt - _humeOldest7.wt).toFixed(1) : null,
-  bodyFat:26.4, fatMass:56.47, leanMass:149.81, bmi:29.3,
-  bmr:1993, healthRisk:0, waistAbd:34.7, waistNarrow:32.9, hip:41.0, chest:41.0,
+  bodyFat:      _humeLatest ? _humeLatest.bf : 13.1,
+  leanMass:     _humeLatest ? +(_humeLatest.wt * (1 - _humeLatest.bf/100)).toFixed(1) : 170.3,
+  fatMass:      _humeLatest ? +(_humeLatest.wt * _humeLatest.bf/100).toFixed(1) : 25.7,
+  bmi:          _humeLatest ? +(_humeLatest.bmi || (_humeLatest.wt / (72*72) * 703)).toFixed(1) : 26.6,
+  bmr:1858, healthRisk:0,
 };
 
 // Multi-method body fat anchors (DXA + Styku = gold standard, Hume = BIA trend)

@@ -9,11 +9,16 @@
 
 export const THEMES = {
   warm: {
-    id:"warm", name:"Warm Clinical", preview:"#F4EFE8",
-    accent:"#C47830", accentDk:"#C47830", dark:false,
-    bg:"#F4EFE8", panel:"#EDE7DE", card:"#FFFFFF", cardDk:"#242220",
-    border:"rgba(221,214,204,0.55)", borderDk:"#4A4642",
-    text:"#1C1A17", textInv:"#F4EFE8", sub:"#6B6057", muted:"#A8A09A", mutedDk:"#B0A89E",
+    id:"warm", name:"Medical Clinical", preview:"#F0F4F8",
+    accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
+    bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
+    border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
+    text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
+    terra:"#C4604A", terracottaBg:"#FDF1EE",
+    sage:"#3A9C68", sageBg:"#E8F5ED",
+    amber:"#5B9BD5", amberBg:"#E8F0FA",
+    steel:"#3A7CA5", steelBg:"#E2EEF6",
+    gold:"#64B4DC", clay:"#8B7155", rose:"#A85070", ink:"#1B3A5C", violet:"#7A5DA0",
   },
 
   calmLuxury: {

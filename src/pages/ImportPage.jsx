@@ -119,7 +119,62 @@ export function ImportPage(){
         }
       }
 
+      // Hume / body_comp CSV — parse locally, no AI needed
+      const isHumeCSV = (file.name.toLowerCase().includes("hume") || file.name.toLowerCase().includes("body_comp")) && file.name.endsWith(".csv");
+      if(isHumeCSV){
+        updateProgress(entry.id, "Parsing Hume CSV…", 30);
+        try {
+          const text = await file.slice(0, 200000).text();
+          const allLines = text.trim().split("\n");
+          const headerLine = allLines[0].toLowerCase().replace(/"/g,"").trim();
+          const headers = headerLine.split(",").map(h=>h.trim());
+          const lines = allLines.slice(1);
+          const csvRows = [];
 
+          const findCol = (...candidates) => {
+            for(const c of candidates){
+              const i = headers.findIndex(h=>h.includes(c));
+              if(i>=0) return i;
+            }
+            return -1;
+          };
+          const iDate = findCol("date");
+          const iBf   = findCol("body_fat","bf");
+          const iLbm  = findCol("lean_body_mass","lean_mass","lbm");
+          const iWt   = headers.findIndex((h,i) => i !== iLbm && (h.includes("body_mass") || h.includes("weight") || h === "wt"));
+          const iBmi  = findCol("bmi");
+
+          for(const line of lines){
+            const cols = line.split(",");
+            if(cols.length < 3) continue;
+            const val = (i) => i>=0 ? parseFloat((cols[i]||"").replace(/"/g,"")) : NaN;
+            const d = iDate>=0 ? (cols[iDate]||"").trim().replace(/"/g,"") : (cols[0]||"").trim().replace(/"/g,"");
+            let wt = val(iWt);
+            const bf = val(iBf);
+            const lbm = val(iLbm);
+            let bmi = val(iBmi);
+            if(isNaN(wt) && !isNaN(bf) && !isNaN(lbm) && lbm > 0) wt = +(lbm / (1 - bf/100)).toFixed(1);
+            if(d && !isNaN(wt) && wt > 100 && wt < 400){
+              csvRows.push({d, wt:+wt.toFixed(1), bf:isNaN(bf)?null:+bf.toFixed(2), bmi:isNaN(bmi)?null:+bmi.toFixed(1)});
+            }
+          }
+          if(csvRows.length > 0){
+            csvRows.sort((a,b)=>b.d.localeCompare(a.d));
+            const existing = JSON.parse(localStorage.getItem("vital_hume_imported")||"[]");
+            const existDates = new Set(existing.map(r=>r.d));
+            const merged = [...csvRows.filter(r=>!existDates.has(r.d)), ...existing];
+            merged.sort((a,b)=>b.d.localeCompare(a.d));
+            localStorage.setItem("vital_hume_imported", JSON.stringify(merged.slice(0,500)));
+            setImportedHumeSummary({ count: merged.length, latest: merged[0], oldest: merged[merged.length-1] });
+            setUploads(u=>u.map(x=>x.id===entry.id?{...x,status:"done",progress:100,progressStep:"Complete",result:{summary:`${csvRows.length} Hume body comp readings saved. Latest: ${csvRows[0].wt} lbs on ${csvRows[0].d}. Reload the dashboard for weight card and trends to reflect your new data.`,biomarkers:[],insights:[],recommendations:[]}}:x));
+          } else {
+            setUploads(u=>u.map(x=>x.id===entry.id?{...x,status:"error",progress:0,progressStep:"No valid rows found"}:x));
+          }
+        } catch(e){
+          setUploads(u=>u.map(x=>x.id===entry.id?{...x,status:"error",progress:0,progressStep:e.message}:x));
+        }
+        return;
+      }
 
       if (isPDF || isImage) {
         const b64 = await new Promise((res, rej) => {
@@ -433,39 +488,6 @@ export function ImportPage(){
       }
 
      
-      if((file.name.toLowerCase().includes("hume") || file.name.toLowerCase().includes("body_comp"))
-          && (file.name.endsWith(".csv"))){
-        try {
-          const text = await file.slice(0, 200000).text();
-          const lines = text.trim().split("\n").slice(1); // skip header
-          const csvRows = [];
-          for(const line of lines){
-            const cols = line.split(",");
-            if(cols.length >= 3){
-              const d = (cols[0]||"").trim().replace(/"/g,"");
-              const wt = parseFloat((cols[1]||"").replace(/"/g,""));
-              const bf = parseFloat((cols[2]||"").replace(/"/g,""));
-              const bmi = parseFloat((cols[3]||"").replace(/"/g,""));
-              if(d && !isNaN(wt) && wt > 100 && wt < 400){
-                csvRows.push({d, wt:+wt.toFixed(1), bf:isNaN(bf)?null:+bf.toFixed(2), bmi:isNaN(bmi)?null:+bmi.toFixed(1)});
-              }
-            }
-          }
-          if(csvRows.length > 0){
-            csvRows.sort((a,b)=>b.d.localeCompare(a.d));
-            try {
-              const existing = JSON.parse(localStorage.getItem("vital_hume_imported")||"[]");
-              const existDates = new Set(existing.map(r=>r.d));
-              const merged = [...csvRows.filter(r=>!existDates.has(r.d)), ...existing];
-              merged.sort((a,b)=>b.d.localeCompare(a.d));
-              localStorage.setItem("vital_hume_imported", JSON.stringify(merged.slice(0,500)));
-              // Refresh the status banner
-              setImportedHumeSummary({ count: merged.length, latest: merged[0], oldest: merged[merged.length-1] });
-              parsed.dataUpdates = { description: `${csvRows.length} Hume body comp readings saved. Latest: ${csvRows[0].wt} lbs on ${csvRows[0].d}. Reload the dashboard for weight card and trends to reflect your new data.` };
-            } catch(e){}
-          }
-        } catch(e){}
-      }
 
      
       // constants (LATEST, HUME_DATA, etc.) pick up the fresh values
