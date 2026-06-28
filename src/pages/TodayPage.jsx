@@ -88,13 +88,13 @@ export function TodayPage({setPage, whoopStatus="loading"}){
   const SLEEP   = {perf:95, dur:8.53, rem:2.25, deep:1.85, light:4.43, eff:98, consistency:84, resp:14.9}; 
  
   const WEEKLY_SCHEDULE = {
-    0:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:11.0,dur:50,freq:69},
-    1:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.2,dur:68,freq:62},
+    0:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:11.0,dur:50,freq:69,note:"Mon 1pm run · 69% of weeks"},
+    1:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.2,dur:68,freq:62,note:"Tue 10am lift · 62% of weeks"},
     2:{name:"Running",           icon:"🏃",color:"#C47830",time:"11:00",timeH:11,strain:12.8,dur:52,freq:69,note:"Wed 11am run · 69% of weeks"},
-    3:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.5,dur:68,freq:79},
-    4:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:10.2,dur:50,freq:62},
-    5:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"07:00",timeH:7, strain:14.1,dur:76,freq:62},
-    6:{name:"Running",           icon:"🏃",color:"#C47830",time:"09:00",timeH:9, strain:11.3,dur:52,freq:41},
+    3:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"10:00",timeH:10,strain:11.5,dur:68,freq:79,note:"Thu 10am lift · 79% of weeks"},
+    4:{name:"Running",           icon:"🏃",color:"#C47830",time:"13:00",timeH:13,strain:10.2,dur:50,freq:62,note:"Fri 1pm run · 62% of weeks"},
+    5:{name:"Functional Fitness",icon:"🏋",color:"#3A7CA5",time:"07:00",timeH:7, strain:14.1,dur:76,freq:62,note:"Sat 7am lift · 62% of weeks"},
+    6:{name:"Running",           icon:"🏃",color:"#C47830",time:"09:00",timeH:9, strain:11.3,dur:52,freq:41,note:"Sun 9am run · 41% of weeks"},
   };
 
   // JS getDay(): 0=Sun → map to Mon=0 index

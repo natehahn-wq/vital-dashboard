@@ -221,7 +221,9 @@ export async function fetchAndStoreWhoopData(accessToken) {
                     rhr:      normalized.rhr,
                     strain:   +normalized.strain,
                     sleep:    normalized.sleep?.score || 0,
-                    workouts: (normalized.workouts || []).map(w => ({
+                    workouts: (normalized.workouts || [])
+                              .filter(w => w.start && w.start.slice(0, 10) === dateKey)
+                              .map(w => ({
                                 sport:  w.sport,
                                 strain: +w.strain,
                                 dur:    w.dur,
