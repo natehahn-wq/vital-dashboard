@@ -72,7 +72,7 @@ export function StatusBadge({status}){
   return <span style={{fontFamily:FF.s,fontSize:9,fontWeight:500,color:c,background:c+"15",padding:"2px 8px",borderRadius:99,letterSpacing:"0.01em"}}>{l}</span>;
 }
 
-export function BioCard({name,val,unit,range,status,prev,note,drawDate,notRedrawn}){
+export function BioCard({name,val,unit,range,status,prev,note,drawDate,notRedrawn,nonFasting}){
   const c=status==="high"?P.terra:status==="low"?P.amber:P.sage;
   const bgC=status==="high"?P.terracottaBg:status==="low"?P.amberBg:P.card;
   const bdC=notRedrawn?"rgba(196,120,48,0.2)":status==="high"?"#C4604A33":status==="low"?"#C4783033":P.border;
@@ -93,6 +93,9 @@ export function BioCard({name,val,unit,range,status,prev,note,drawDate,notRedraw
       <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:2}}>
         <StatusBadge status={status}/>
         {dateLabel&&<span style={{fontFamily:FF.m,fontSize:7,color:notRedrawn?P.amber:P.muted,letterSpacing:"0.04em",fontWeight:notRedrawn?600:400}}>{dateLabel}{notRedrawn?" *":""}</span>}
+        {nonFasting&&<span style={{fontFamily:FF.s,fontSize:6.5,fontWeight:700,color:P.steel,
+          background:P.steelBg,padding:"1px 5px",borderRadius:3,letterSpacing:"0.05em",
+          whiteSpace:"nowrap"}}>NON-FASTING</span>}
       </div>
     </div>
     <div style={{display:"flex",alignItems:"baseline",gap:6,marginBottom:3}}>
@@ -100,8 +103,8 @@ export function BioCard({name,val,unit,range,status,prev,note,drawDate,notRedraw
       {delta!==null&&<div style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:deltaColor,letterSpacing:"0.02em"}}>{deltaArrow} {Math.abs(delta)}<span style={{fontFamily:FF.s,fontSize:7,color:P.muted,marginLeft:1}}>vs prior</span></div>}
     </div>
     {range&&<div style={{fontFamily:FF.s,fontSize:8,color:P.muted,letterSpacing:"0.01em"}}>Ref {range}</div>}
-    {notRedrawn&&<div style={{fontFamily:FF.s,fontSize:7.5,color:P.amber,marginTop:3,lineHeight:1.4}}>* Not drawn in Jan '26 — most recent available</div>}
-    {note&&status!=="normal"&&<div style={{fontFamily:FF.s,fontSize:8,color:c,marginTop:4,lineHeight:1.45,opacity:0.85}}>{note}</div>}
+    {notRedrawn&&<div style={{fontFamily:FF.s,fontSize:7.5,color:P.amber,marginTop:3,lineHeight:1.4}}>* Not redrawn — most recent available</div>}
+    {note&&<div style={{fontFamily:FF.s,fontSize:8,color:status!=="normal"?c:P.muted,marginTop:4,lineHeight:1.45,opacity:0.9}}>{note}</div>}
   </div>);
 }
 

@@ -7,9 +7,139 @@ import {
   XAxis, YAxis, Tooltip, ReferenceLine,
 } from "recharts";
 import { P, FF, S } from "../lib/theme.js";
-import { LABS, LABS_MERGED, LAB_HISTORY, LAB_REFS, PANEL_TREND_KEYS } from "../lib/data/labs.js";
+import { LABS, LABS_MERGED, LAB_HISTORY, LAB_REFS, PANEL_TREND_KEYS, LABS_PENDING,
+         LABS_2024, LABS_PRIOR2, LABS_PRIOR, LABS_AUG2026 } from "../lib/data/labs.js";
+import { LAB_CONTEXT } from "../lib/data/medical.js";
 import { DXA, SCAN_HISTORY } from "../lib/data/body.js";
 import { SLabel, BioCard } from "../components/shared.jsx";
+
+// Interpretation lenses that apply to each panel — surfaced so a treated or
+// supplement-confounded value isn't read as a clean lifestyle signal.
+const PANEL_CONTEXT = {
+  lipids:    ["statinEra", "lipids", "fastingStatus"],
+  metabolic: ["egfr", "fastingStatus"],
+  hormones:  ["testosterone", "dheas", "cortisol", "vitaminD"],
+  special:   ["ironSat", "ferritin", "ck"],
+  cbc:       ["ferritin"],
+};
+
+function ContextNote({ ctx }) {
+  const tone = ctx.tone === "caution" ? P.amber : P.steel;
+  const bg   = ctx.tone === "caution" ? P.amberBg : P.steelBg;
+  return (
+    <div style={{padding:"11px 13px",borderRadius:10,background:bg,
+      border:`1px solid ${tone}33`,display:"flex",gap:10,alignItems:"flex-start"}}>
+      <span style={{fontSize:13,lineHeight:1.2,flexShrink:0}}>{ctx.tone==="caution"?"⚠":"ℹ"}</span>
+      <div>
+        <div style={{fontFamily:FF.s,fontSize:11,fontWeight:700,color:tone,marginBottom:3}}>{ctx.title}</div>
+        <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,lineHeight:1.55}}>{ctx.body}</div>
+      </div>
+    </div>
+  );
+}
+
+// Every draw on record, newest first. Gives the historical panels — including
+// the two 2025 BioLab draws transcribed from the original PDFs — a surface of
+// their own, so their fasting status and per-marker notes are readable rather
+// than only feeding trend points.
+const DRAW_ARCHIVE = [
+  { id:"aug26", src:LABS_AUG2026, label:"Quest · WHOOP Advanced Labs", accent:P.sage },
+  { id:"jan26", src:LABS,         label:"ExamOne / Quest",             accent:P.steel },
+  { id:"may25", src:LABS_PRIOR,   label:"BioLab",                      accent:P.violet },
+  { id:"feb25", src:LABS_PRIOR2,  label:"BioLab",                      accent:P.violet },
+  { id:"jul24", src:LABS_2024,    label:"Cedars-Sinai",                accent:P.clay },
+];
+
+const PANEL_TITLES = {
+  metabolic:"Metabolic", lipids:"Lipids", liver:"Liver",
+  hormones:"Hormones", special:"Special Chem", cbc:"CBC",
+};
+
+function DrawArchive(){
+  const [openId, setOpenId] = useState(null);
+  return (
+    <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"16px"}}>
+      <SLabel color={P.clay} right={`${DRAW_ARCHIVE.length} draws on record`}>
+        Draw Archive · What each panel actually contained
+      </SLabel>
+      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+        {DRAW_ARCHIVE.map(({id,src,label,accent})=>{
+          if(!src?.panels) return null;
+          const open = openId===id;
+          const panels = Object.entries(src.panels).filter(([,arr])=>arr?.length);
+          const markerCount = panels.reduce((n,[,arr])=>n+arr.length,0);
+          const flagged = panels.flatMap(([,arr])=>arr).filter(b=>b.status&&b.status!=="normal");
+          const nonFasting = src.fasting === false;
+          return (
+            <div key={id} style={{border:`1px solid ${open?accent+"55":P.border}`,borderRadius:11,
+              overflow:"hidden",background:open?P.card:P.panel,transition:"all .15s"}}>
+              <button onClick={()=>setOpenId(open?null:id)}
+                style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",
+                  gap:10,padding:"11px 14px",border:"none",background:"transparent",cursor:"pointer",
+                  textAlign:"left"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0,flexWrap:"wrap"}}>
+                  <div style={{width:7,height:7,borderRadius:"50%",background:accent,flexShrink:0}}/>
+                  <span style={{fontFamily:FF.s,fontSize:12.5,fontWeight:600,color:P.text}}>{src.date}</span>
+                  <span style={{fontFamily:FF.s,fontSize:10,color:P.muted}}>{label}</span>
+                  {nonFasting&&(
+                    <span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:P.steel,
+                      background:P.steelBg,padding:"2px 6px",borderRadius:3,letterSpacing:"0.05em"}}>
+                      NON-FASTING
+                    </span>
+                  )}
+                  {src.collected&&(
+                    <span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:P.sage,
+                      background:P.sageBg,padding:"2px 6px",borderRadius:3,letterSpacing:"0.05em"}}>
+                      FASTING
+                    </span>
+                  )}
+                </div>
+                <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                  {flagged.length>0&&(
+                    <span style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.terra,
+                      background:P.terracottaBg,padding:"2px 8px",borderRadius:99}}>
+                      {flagged.length} flagged
+                    </span>
+                  )}
+                  <span style={{fontFamily:FF.s,fontSize:9,color:P.muted}}>{markerCount} markers</span>
+                  <span style={{fontFamily:FF.s,fontSize:13,color:P.muted,display:"inline-block",
+                    transform:open?"rotate(90deg)":"none",transition:"transform .2s"}}>›</span>
+                </div>
+              </button>
+              {open&&(
+                <div style={{padding:"0 14px 14px"}}>
+                  {src.fastingNote&&(
+                    <div style={{fontFamily:FF.s,fontSize:10,color:P.sub,lineHeight:1.55,
+                      padding:"9px 11px",background:P.steelBg,border:`1px solid ${P.steel}33`,
+                      borderRadius:8,marginBottom:11}}>
+                      ⚠ {src.fastingNote}
+                    </div>
+                  )}
+                  {src.note&&(
+                    <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,lineHeight:1.55,
+                      marginBottom:11}}>{src.note}</div>
+                  )}
+                  {panels.map(([pkey,arr])=>(
+                    <div key={pkey} style={{marginBottom:12}}>
+                      <div style={{fontFamily:FF.s,fontSize:8.5,fontWeight:700,color:P.muted,
+                        letterSpacing:"0.10em",textTransform:"uppercase",marginBottom:7}}>
+                        {PANEL_TITLES[pkey]||pkey}
+                      </div>
+                      <div style={{display:"grid",
+                        gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:8}}>
+                        {arr.map((b,i)=><BioCard key={b.name+i} {...b}/>)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export function Labs(){
   const [activePanel, setActivePanel]=useState("metabolic");
@@ -30,8 +160,9 @@ export function Labs(){
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:6}}>
           {[
-            {label:"Jan 15, 2026",sublabel:"ExamOne · lipids, metabolic, liver",badge:"LATEST",color:P.sage},
-            {label:"May 23, 2025",sublabel:"BioLab · hormones, HbA1c, CRP, ApoB, Ferritin",badge:"MOST RECENT FOR THESE",color:P.steel},
+            {label:"Aug 25, 2026",sublabel:"Quest · CMP, lipids, hormones, thyroid, iron, CBC",badge:"LATEST",color:P.sage},
+            {label:"Sep 26, 2025",sublabel:"HbA1c 5.4%",badge:"HbA1c",color:P.steel},
+            {label:"May 23, 2025",sublabel:"BioLab · ApoB, hs-CRP, homocysteine, PSA",badge:"NOT REDRAWN",color:P.violet},
           ].map(({label,sublabel,badge,color})=>(
             <div key={label} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 11px",
               borderRadius:7,background:color+"0C",border:`1px solid ${color}33`}}>
@@ -53,6 +184,17 @@ export function Labs(){
             </div>
           ))}
         </div>
+        {LABS.resolved?.length>0&&(
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:7}}>
+            {LABS.resolved.map(r=>(
+              <div key={r.name} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",
+                borderRadius:7,background:P.sageBg,border:`1px solid ${P.sage}44`}}>
+                <span style={{fontFamily:FF.s,fontSize:10,fontWeight:700,color:P.sage}}>✓ {r.name} resolved</span>
+                <span style={{fontFamily:FF.m,fontSize:9,color:P.muted}}>{r.was} → {r.now}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
     <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
@@ -68,9 +210,43 @@ export function Labs(){
       {data.some(b=>b.notRedrawn)&&(
         <div style={{fontFamily:FF.s,fontSize:8.5,color:P.amber,padding:"7px 10px",
           borderRadius:7,background:"rgba(196,120,48,0.07)",border:"1px solid rgba(196,120,48,0.2)",marginTop:8}}>
-          * Not drawn in Jan 2026 — value shown is May 23, 2025 (BioLab), the most recent available.
+          * Not drawn in Jan 2026 — value shown is the most recent available draw.
         </div>
       )}
+      {(PANEL_CONTEXT[activePanel]||[]).length>0&&(
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:12}}>
+          <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.muted,
+            letterSpacing:"0.12em",textTransform:"uppercase"}}>How to read these</div>
+          {(PANEL_CONTEXT[activePanel]||[]).map(k=>
+            LAB_CONTEXT[k] ? <ContextNote key={k} ctx={LAB_CONTEXT[k]}/> : null
+          )}
+        </div>
+      )}
+    </div>
+
+    {/* Pending panel — Aug 2026 WHOOP Advanced Labs still processing */}
+    <div style={{background:P.card,border:`1px dashed ${P.steel}55`,borderRadius:14,padding:"16px"}}>
+      <SLabel color={P.steel} right={`${LABS_PENDING.markers.length} markers pending`}>
+        {LABS_PENDING.source} · {LABS_PENDING.date}
+      </SLabel>
+      <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,marginBottom:12,lineHeight:1.55}}>
+        {LABS_PENDING.note}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:9}}>
+        {LABS_PENDING.markers.map(m=>(
+          <div key={m.name} style={{padding:"11px 13px",borderRadius:10,background:P.panel,
+            border:`1px solid ${P.border}`}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",
+              gap:8,marginBottom:4}}>
+              <span style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.text}}>{m.name}</span>
+              <span style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.steel,
+                background:P.steelBg,padding:"2px 7px",borderRadius:99,
+                letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{m.group}</span>
+            </div>
+            <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,lineHeight:1.5}}>{m.watch}</div>
+          </div>
+        ))}
+      </div>
     </div>
     {PANEL_TREND_KEYS[activePanel] && (() => {
       const histData = LAB_HISTORY[activePanel] || [];
@@ -187,6 +363,9 @@ export function Labs(){
         ))}
       </div>
     </div>
+    {/* ── Draw Archive · per-draw historical panels ── */}
+    <DrawArchive/>
+
     {/* ── DXA Scan · Historical Reference ── */}
     <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"16px"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
