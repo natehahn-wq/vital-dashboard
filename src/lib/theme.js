@@ -2,17 +2,20 @@
 // Single clinical palette — no theme switching. Every key in THEMES
 // resolves to the same object so stale localStorage values are harmless.
 
+// Warm editorial palette — cream ground, muted earth accents, ink text.
+// Restraint over saturation: one accent moment per surface, colour reserved
+// for clinical status (sage = in range, terra = out, amber = attention).
 const CLINICAL = {
-  id:"clinical", name:"Medical Clinical", preview:"#F0F4F8",
-  accent:"#5B9BD5", accentDk:"#3A7CA5", dark:false,
-  bg:"#F0F4F8", panel:"#E4EBF2", card:"#FFFFFF", cardDk:"#1B3A5C",
-  border:"rgba(180,200,220,0.45)", borderDk:"#3A5A78",
-  text:"#1B3A5C", textInv:"#F0F4F8", sub:"#4A6A84", muted:"#8AA4BC", mutedDk:"#9AB4CC",
-  terra:"#C4604A", terracottaBg:"#FDF1EE",
-  sage:"#3A9C68", sageBg:"#E8F5ED",
-  amber:"#5B9BD5", amberBg:"#E8F0FA",
-  steel:"#3A7CA5", steelBg:"#E2EEF6",
-  gold:"#64B4DC", clay:"#8B7155", rose:"#A85070", ink:"#1B3A5C", violet:"#7A5DA0",
+  id:"clinical", name:"Warm Clinical", preview:"#FBF7F0",
+  accent:"#B5763F", accentDk:"#8E5A2E", dark:false,
+  bg:"#FBF7F0", panel:"#F3ECE1", card:"#FFFDFA", cardDk:"#2A2621",
+  border:"rgba(160,140,115,0.20)", borderDk:"#4A423A",
+  text:"#2A2621", textInv:"#FBF7F0", sub:"#6B6259", muted:"#A09689", mutedDk:"#B0A698",
+  terra:"#C0623A", terracottaBg:"#FAF0EA",
+  sage:"#6E8259", sageBg:"#EFF2EA",
+  amber:"#C08A2E", amberBg:"#FAF3E4",
+  steel:"#7A8894", steelBg:"#EFF2F4",
+  gold:"#D9A441", clay:"#8B7155", rose:"#A85070", ink:"#2A2621", violet:"#7A6A90",
 };
 
 // All legacy keys resolve to the same palette so localStorage can't break it
@@ -82,7 +85,7 @@ export const P = {
 
   mono: '"DM Mono", monospace',
   sans: '"DM Sans", system-ui, sans-serif',
-  serif: '"Cormorant Garant", Georgia, serif',
+  serif: '"Cormorant Garamond", Georgia, serif',
 };
 
 export const FF = { s: P.sans, r: P.serif, m: P.mono };
