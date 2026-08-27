@@ -13,10 +13,13 @@ export const STYKU = {
 };
 
 // DXA Scan — January 23, 2026 · Pueblo Radiology (Hologic Horizon W)
-// Gold-standard DEXA measurement — most accurate body composition available
+// PRE-WEGOVY BASELINE. Semaglutide started ~Feb 2026; weight is now ~189 lb
+// (−27 lb). These values are historical, not current. New BodySpec DXA pending.
 export const DXA = {
   date: "Jan 23, 2026",
-  age: 47,
+  baselineLabel: "Pre-Wegovy baseline",
+  isCurrent: false,
+  age: 48,
   weight: 216.0,       // lbs
   height: 72.0,        // inches
   bmi: 29.3,
@@ -160,8 +163,16 @@ export const HUME_BF_TREND = HUME_DATA.slice().reverse().map(r=>({d:r.d.slice(5)
 // Latest Hume weight (first entry in HUME_DATA) for WEIGHT_LOG display
 export const HUME_LATEST_WT = HUME_DATA.length>0 ? HUME_DATA[0].wt : null;
 export const WEIGHT_LOG=[
+  {date:"2023-12-01",weight:203.0,source:"Clinic"},
+  {date:"2024-06-19",weight:200.0,source:"Clinic"},
   {date:"2025-02-14",weight:208.0,source:"Styku"},
   {date:"2025-05-23",weight:212.0,source:"Styku"},
   {date:"2026-01-23",weight:216.0,source:"DXA"},
+  {date:"2026-08-25",weight:189.0,source:"Current"},
   ...(HUME_LATEST_WT?[{date:HUME_DATA[0].d,weight:HUME_LATEST_WT,source:"Hume BIA"}]:[]),
 ];
+
+// Current weight — post-Wegovy (started ~Feb 2026). The Jan 2026 DXA is the
+// pre-Wegovy baseline, not a current reading.
+export const CURRENT_WEIGHT = { weight:189.0, date:"Aug 2026", deltaSinceDXA:-27.0 };
+export const DXA_PENDING = { lab:"BodySpec", status:"pending", note:"New DXA scheduled — will replace the Jan 2026 pre-Wegovy baseline" };

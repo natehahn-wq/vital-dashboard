@@ -21,6 +21,9 @@ export function MobileNav({active,set}){
     {group:"Health",items:[
       {id:"score",        icon:"⚡",   label:"Health Score"},
       {id:"labs",         icon:"🧬",   label:"Labs"},
+      {id:"biomarkers",   icon:"🩸",  label:"Biomarkers"},
+      {id:"medical",      icon:"⚕",   label:"Medical"},
+      {id:"labtrends",    icon:"📉",  label:"Lab Trends"},
       {id:"body",         icon:"📐",   label:"Body Comp"},
       {id:"trends",       icon:"↗",    label:"Trends"},
       {id:"correlations", icon:"🔗",   label:"Correlations"},

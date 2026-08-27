@@ -188,7 +188,7 @@ export function FitnessPage(){
   const catMeta = cat => CAT_META_LOCAL[cat] || CAT_META_LOCAL.other;
   const strColor = s => s>=16?P.terra:s>=12?P.amber:P.sage;
   const zoneColors = ["#6B7C8A","#3A5C48","#C47830","#C4604A","#8A3020"];
-  const zoneLabels = ["Z1 Warmup","Z2 Aerobic","Z3 Tempo","Z4 Threshold","Z5 Max"];
+  const zoneLabels = ["Z1 Recovery","Z2 Aerobic","Z3 Tempo","Z4 Threshold","Z5 Max"];
 
   return(<div style={S.col18}>
     <div>
@@ -221,11 +221,11 @@ export function FitnessPage(){
           {todayWorkouts.map((w,i)=>{
             const meta = catMeta(w.cat);
             const zones = [
-              {pct:w.z1p, min:w.z1m, color:zoneColors[0], label:"Z1 Warmup",    sub:"<50% HRmax"},
-              {pct:w.z2p, min:w.z2m, color:zoneColors[1], label:"Z2 Aerobic",   sub:"50–60%"},
-              {pct:w.z3p, min:w.z3m, color:zoneColors[2], label:"Z3 Tempo",     sub:"60–70%"},
-              {pct:w.z4p, min:w.z4m, color:zoneColors[3], label:"Z4 Threshold", sub:"70–80%"},
-              {pct:w.z5p, min:w.z5m, color:zoneColors[4], label:"Z5 Max",       sub:">80%"},
+              {pct:w.z1p, min:w.z1m, color:zoneColors[0], label:"Z1 Recovery",  sub:"112–123 bpm"},
+              {pct:w.z2p, min:w.z2m, color:zoneColors[1], label:"Z2 Aerobic",   sub:"124–135"},
+              {pct:w.z3p, min:w.z3m, color:zoneColors[2], label:"Z3 Tempo",     sub:"136–147"},
+              {pct:w.z4p, min:w.z4m, color:zoneColors[3], label:"Z4 Threshold", sub:"148–161"},
+              {pct:w.z5p, min:w.z5m, color:zoneColors[4], label:"Z5 Max",       sub:"162+"},
             ].filter(z=>z.pct>0);
             const hasZones = zones.length>0;
             const maxHRpct = w.avgHR && w.maxHR ? Math.round((w.avgHR/w.maxHR)*100) : null;

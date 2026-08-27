@@ -28,6 +28,9 @@ const FuelingPage      = lazy(()=> import("./pages/FuelingPage.jsx").then(m=>({d
 const SupplementsPage  = lazy(()=> import("./pages/SupplementsPage.jsx").then(m=>({default:m.SupplementsPage})));
 const PelotonPage      = lazy(()=> import("./pages/PelotonPage.jsx").then(m=>({default:m.PelotonPage})));
 const ImportPage       = lazy(()=> import("./pages/ImportPage.jsx").then(m=>({default:m.ImportPage})));
+const BiomarkersPage   = lazy(()=> import("./pages/BiomarkersPage.jsx").then(m=>({default:m.BiomarkersPage})));
+const MedicalPage      = lazy(()=> import("./pages/MedicalPage.jsx").then(m=>({default:m.MedicalPage})));
+const LabTrendsPage    = lazy(()=> import("./pages/LabTrendsPage.jsx").then(m=>({default:m.LabTrendsPage})));
 
 
 export default function App(){
@@ -58,6 +61,9 @@ export default function App(){
       case "supps":        return <SupplementsPage/>;
       case "peloton":      return <PelotonPage/>;
       case "import":       return <ImportPage/>;
+      case "biomarkers":   return <BiomarkersPage/>;
+      case "medical":      return <MedicalPage/>;
+      case "labtrends":    return <LabTrendsPage/>;
       default:             return <TodayPage setPage={setPage} whoopStatus={whoopStatus}/>;
     }
   };

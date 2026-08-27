@@ -1,20 +1,33 @@
 // Score page — VITAL master health score breakdown across 7 clinical domains.
 // Shows master ring, sub-score cards, drill-down driver grid, full history
 // chart, top-3 actions, and the lab integration panel.
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ResponsiveContainer, LineChart, Line, CartesianGrid,
   XAxis, YAxis, Tooltip, ReferenceLine,
 } from "recharts";
 import { P, FF, S, CS } from "../lib/theme.js";
 import { SCORE_COLOR, SCORE_LABEL, SCORE_GRADE } from "../lib/utils.js";
-import { SCORES_NOW, SCORE_HISTORY, METABOLIC_AGE } from "../lib/data/scores.js";
+import { SCORES_NOW, SCORE_HISTORY, METABOLIC_AGE, recomputeScoresFromHistory, applyLiveScores } from "../lib/data/scores.js";
 import { LAB_OVERDUE } from "../lib/data/labs.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 import { MasterRing, SubScoreCard, SLabel, CTip } from "../components/shared.jsx";
 
 export function ScorePage(){
   const [activeDetail,setActiveDetail]=useState("cardiovascular");
+  const [,setLiveReady]=useState(false);
+  useEffect(()=>{
+    fetch('/api/whoop/history').then(r=>r.ok?r.json():null)
+      .then(res=>{
+        if(res?.days?.length){
+          const stats=recomputeScoresFromHistory(res.days);
+          const dates=res.days.map(d=>d.date).sort();
+          const rangeLabel=dates[0]+' – '+dates[dates.length-1];
+          applyLiveScores(stats,rangeLabel);
+          setLiveReady(true);
+        }
+      }).catch(()=>{});
+  },[]);
   const ax={tick:{fontFamily:FF.m,fontSize:9,fill:P.muted},axisLine:{stroke:P.border},tickLine:false};
   const detail=SCORES_NOW[activeDetail];
   const subKeys=["cardiovascular","metabolic","bodyComp","strength","hormonal","longevity","recovery"];
@@ -26,7 +39,7 @@ export function ScorePage(){
         <MasterRing score={SCORES_NOW.master.score}/>
       </div>
       <div style={{flex:1,minWidth:0}}>
-        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>VITAL Health Score · Nate Hahn · 47yo Male</div>
+        <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:8}}>VITAL Health Score · Nate Hahn · 48yo Male</div>
         <div style={{fontFamily:FF.s,fontWeight:800,fontSize:22,color:P.text,marginBottom:4}}>
           {SCORE_GRADE(SCORES_NOW.master.score)} · {SCORE_LABEL(SCORES_NOW.master.score)}
         </div>
@@ -183,7 +196,7 @@ export function ScorePage(){
         {[
           {rank:1,cat:"Longevity",score:64,action:"Investigate elevated Ferritin (394.5)",detail:"Retest fasting ferritin + iron panel. Consider HFE gene test. Ferritin is your lowest single driver.",color:P.coral,impact:"+3–5 pts"},
           {rank:2,cat:"Hormonal",score:66,action:"Supplement Vitamin D3 + K2",detail:"At 26.5 ng/mL you're insufficient. Target 50–70 ng/mL with 5,000 IU/day D3. Impacts immunity, hormones, mood.",color:P.amber,impact:"+2–4 pts"},
-          {rank:3,cat:"Hormonal",score:66,action:"Address low DHEA-S (119.1)",detail:"Below range for 47yo. Discuss 25–50mg DHEA supplementation with Dr. Greene. Supports testosterone and energy.",color:P.amber,impact:"+2–3 pts"},
+          {rank:3,cat:"Hormonal",score:66,action:"Address low DHEA-S (119.1)",detail:"Below range for 48yo. Discuss 25–50mg DHEA supplementation with Dr. Greene. Supports testosterone and energy.",color:P.amber,impact:"+2–3 pts"},
         ].map(({rank,cat,score,action,detail,color,impact})=>(
           <div key={rank} style={{padding:"16px 18px",background:P.card,borderRadius:12,border:`1px solid ${P.border}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>

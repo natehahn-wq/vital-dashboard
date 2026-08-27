@@ -10,7 +10,7 @@ import { P, FF, S, CS } from "../lib/theme.js";
 import { SCORE_LABEL, calColor, calLabel, fmtEvtTime } from "../lib/utils.js";
 import { WHOOP } from "../lib/data/whoop.js";
 import { SCORES_NOW } from "../lib/data/scores.js";
-import { CAL_RICH } from "../lib/data/calendar.js";
+import { CAL_RICH, CAL_DATA } from "../lib/data/calendar.js";
 import { useCalendarEvents } from "../hooks/useCalendarEvents.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 
@@ -150,18 +150,32 @@ export function TodayPage({setPage, whoopStatus="loading"}){
     });
   }
 
-  // Recovery trend (7-day)
-  // 8-day recovery trend — real WHOOP values + Mar 22 screenshot
-  const recTrend=[
-    {d:"Mar 19",rec:62, hrv:43},
-    {d:"Mar 20",rec:69, hrv:45},
-    {d:"Mar 21",rec:69, hrv:43},
-    {d:"Mar 22",rec:37, hrv:37},
-    {d:"Mar 23",rec:87, hrv:52},
-    {d:"Mar 24",rec:0,  hrv:0},
-    {d:"Mar 25",rec:54, hrv:39},
-    {d:"Mar 26",rec:54, hrv:39}, // Today
-  ];
+  // Recovery trend — trailing 7 days ending today, from live WHOOP history
+  // (falls back to static CAL_DATA for any day the API hasn't filled).
+  const [histDays, setHistDays] = useState([]);
+  useEffect(()=>{
+    fetch('/api/whoop/history').then(r=>r.ok?r.json():null)
+      .then(res=>{ if(res?.days?.length) setHistDays(res.days); })
+      .catch(()=>{});
+  },[]);
+
+  const recTrend = (()=>{
+    const byDate = {};
+    histDays.forEach(d=>{ byDate[d.date] = {rec:d.recovery||0, hrv:+d.hrv||0}; });
+    const out = [];
+    for(let i=7;i>=0;i--){
+      const dt = new Date(now); dt.setDate(dt.getDate()-i);
+      const key = dt.toLocaleDateString('en-CA');
+      const live = byDate[key];
+      const stat = CAL_DATA[key];
+      out.push({
+        d: dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}),
+        rec: live?.rec ?? stat?.rec ?? 0,
+        hrv: live?.hrv ?? stat?.hrv ?? 0,
+      });
+    }
+    return out;
+  })();
 
   const recColor = r => r>=80?"#3A9C68":r>=60?"#5B9BD5":"#C4604A";
   const recLabel = r => r>=80?"Optimal":r>=60?"Moderate":"Low";

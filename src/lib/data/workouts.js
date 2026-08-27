@@ -236,10 +236,12 @@ export const ZONE_TOTALS = WEEKLY_REAL.reduce((acc,w)=>{
 },[0,0,0,0,0]);
 export const ZONE_TOTAL_MIN = ZONE_TOTALS.reduce((a,b)=>a+b,0);
 
+// HR zones — manually set in the WHOOP app 4/27/26. These override any
+// %-of-max estimate; the dashboard mirrors the device so zone stats match.
 export const ZONE_CFG=[
-  {label:"Z1",full:"Zone 1",sub:"Recovery",  range:"<108 bpm",  color:"#A8A09A"},
-  {label:"Z2",full:"Zone 2",sub:"Aerobic",   range:"108-126",   color:"#3A5C48"},
-  {label:"Z3",full:"Zone 3",sub:"Tempo",     range:"127-144",   color:"#4A6070"},
-  {label:"Z4",full:"Zone 4",sub:"Threshold", range:"145-162",   color:"#C47830"},
-  {label:"Z5",full:"Zone 5",sub:"Max",       range:">162 bpm",  color:"#C4604A"},
+  {label:"Z1",full:"Zone 1",sub:"Recovery",  range:"112-123",   lo:112, hi:123, color:"#A8A09A"},
+  {label:"Z2",full:"Zone 2",sub:"Aerobic",   range:"124-135",   lo:124, hi:135, color:"#3A5C48"},
+  {label:"Z3",full:"Zone 3",sub:"Tempo",     range:"136-147",   lo:136, hi:147, color:"#4A6070"},
+  {label:"Z4",full:"Zone 4",sub:"Threshold", range:"148-161",   lo:148, hi:161, color:"#C47830"},
+  {label:"Z5",full:"Zone 5",sub:"Max",       range:"162+ bpm",  lo:162, hi:220, color:"#C4604A"},
 ];

@@ -1,8 +1,18 @@
 // Supplements page — local stack management with presets, dose log, and category badges.
 import { useState } from "react";
 import { P, FF, S } from "../lib/theme.js";
+import { SUPPLEMENTS_STOPPED } from "../lib/data/medical.js";
 
 const SUPPS_STORAGE = "vital_supplements_v1";
+
+// Actual current stack — seeds the page on first load so it reflects the
+// medical record rather than starting empty.
+const ACTUAL_STACK = [
+  {id:"s-creatine",  name:"Creatine",           icon:"💪", dose:5,   unit:"g",      freq:"Daily", timing:"Post-workout", category:"Performance", purpose:"Muscle strength & power — note: inflates serum creatinine, see eGFR context", active:true},
+  {id:"s-melatonin", name:"Melatonin",          icon:"🌙", dose:12,  unit:"mg",     freq:"Daily", timing:"Bedtime",      category:"Sleep",       purpose:"Circadian rhythm support", active:true},
+  {id:"s-magnesium", name:"Magnesium",          icon:"🌙", dose:135, unit:"mg",     freq:"Daily", timing:"Bedtime",      category:"Minerals",    purpose:"Sleep quality, muscle recovery, HRV", active:true},
+  {id:"s-lmnt",      name:"LMNT Electrolyte",   icon:"⚡", dose:1,   unit:"packet", freq:"Daily", timing:"Post-workout", category:"Performance", purpose:"Pre-workout hydration & electrolytes", active:true},
+];
 
 // Preset supplement templates
 const SUPP_PRESETS = [
@@ -30,7 +40,14 @@ const CAT_COLORS = {
 
 export function SupplementsPage(){
   const [stack, setStack] = useState(()=>{
-    try{ return JSON.parse(localStorage.getItem(SUPPS_STORAGE)||"[]"); }catch(e){ return []; }
+    try{
+      const saved = localStorage.getItem(SUPPS_STORAGE);
+      if(saved){
+        const parsed = JSON.parse(saved);
+        if(parsed.length) return parsed;
+      }
+    }catch(e){}
+    return ACTUAL_STACK;
   });
   const [view,    setView]    = useState("stack"); // stack | add | log
   const [search,  setSearch]  = useState("");
@@ -243,6 +260,30 @@ export function SupplementsPage(){
             ))}
           </div>
         )}
+
+        {/* Discontinued — kept visible because stop dates explain lab changes */}
+        <div style={{marginTop:18}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+            <span style={{fontSize:14}}>🚫</span>
+            <div style={{fontFamily:FF.s,fontSize:10,fontWeight:700,color:P.muted,
+              letterSpacing:"0.10em",textTransform:"uppercase"}}>Stopped ~Feb 2026</div>
+            <div style={S.divider}/>
+          </div>
+          <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,marginBottom:9,lineHeight:1.5}}>
+            Stop dates matter — they explain shifts in the lab panels.
+          </div>
+          {SUPPLEMENTS_STOPPED.map(s=>(
+            <div key={s.name} style={{padding:"11px 14px",background:P.panel,
+              border:`1px solid ${P.border}`,borderRadius:10,marginBottom:7}}>
+              <div style={{display:"flex",alignItems:"baseline",gap:8,marginBottom:3}}>
+                <span style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.sub,
+                  textDecoration:"line-through"}}>{s.name}</span>
+                <span style={{fontFamily:FF.s,fontSize:9.5,color:P.muted}}>{s.stopped}</span>
+              </div>
+              <div style={{fontFamily:FF.s,fontSize:10,color:P.amber,lineHeight:1.5}}>{s.impact}</div>
+            </div>
+          ))}
+        </div>
       </div>
     )}
     {view==="add"&&(

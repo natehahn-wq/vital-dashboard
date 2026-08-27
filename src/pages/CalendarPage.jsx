@@ -26,12 +26,15 @@ export function CalendarPage(){
 
   const {liveCalData, liveCalRich} = useMemo(() => {
     const ld = {...CAL_DATA}, lr = {...CAL_RICH};
-    const staticEnd = Object.keys(CAL_RICH).sort().pop() || "2026-03-26";
+    // Use CAL_DATA for staticEnd — CAL_RICH gets mutated by useWhoopLive
+    const staticEnd = Object.keys(CAL_DATA).sort().pop() || "2026-06-15";
+    let added = 0;
     for(const day of historyDays){
       const k = day.date;
       if(k <= staticEnd) continue;
       if(day.recovery != null){
         ld[k] = {rec:day.recovery, hrv:day.hrv, rhr:day.rhr, slp:day.sleep||0, sdur:day.sdur||0};
+        added++;
       }
       if(day.workouts?.length){
         lr[k] = day.workouts.map(w => {

@@ -6,7 +6,10 @@ export const NAV_PRIMARY=[
   {id:"score",    icon:"⚡",   label:"Health Score"},
   {id:"fitness",  icon:"🏃", label:"Fitness"},
   {id:"calendar", icon:"📅",label:"Calendar"},
-  {id:"labs",     icon:"🧬",    label:"Labs"},
+  {id:"labs",       icon:"🧬",    label:"Labs"},
+  {id:"biomarkers", icon:"🩸",   label:"Biomarkers"},
+  {id:"medical",    icon:"⚕",    label:"Medical"},
+  {id:"labtrends",  icon:"📉",   label:"Lab Trends"},
 ];
 export const NAV_MORE=[
   {id:"overview",     icon:"⊞",  label:"Overview"},

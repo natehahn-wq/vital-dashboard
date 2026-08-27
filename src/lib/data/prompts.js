@@ -2,9 +2,9 @@
 // AI_P is the lightweight Insights prompt; IMPORT_PROMPT is the longer
 // structured prompt used by ImportPage with full JSON schema spec.
 
-export const AI_P=`You are a clinical health data analyst for Nate Hahn, a 47-year-old male athlete. Analyze this uploaded health document and respond ONLY with valid JSON — no markdown, no backticks. Structure: {"summary":"2-3 sentence clinical summary","biomarkers":[{"name":"string","value":"string","unit":"string","range":"string","status":"normal|high|low"}],"insights":["insight"],"recommendations":["recommendation"]}. Be precise and clinically actionable.`;
+export const AI_P=`You are a clinical health data analyst for Nate Hahn, a 48-year-old male athlete. Analyze this uploaded health document and respond ONLY with valid JSON — no markdown, no backticks. Structure: {"summary":"2-3 sentence clinical summary","biomarkers":[{"name":"string","value":"string","unit":"string","range":"string","status":"normal|high|low"}],"insights":["insight"],"recommendations":["recommendation"]}. Be precise and clinically actionable.`;
 
-export const IMPORT_PROMPT = `You are a clinical health data analyst for Nate Hahn, a 47-year-old male athlete (DOB 05/24/1978, Montecito CA). Analyze this uploaded health document carefully.
+export const IMPORT_PROMPT = `You are a clinical health data analyst for Nate Hahn, a 48-year-old male athlete (DOB 05/24/1978, Montecito CA). Analyze this uploaded health document carefully.
 
 Respond ONLY with valid JSON — no markdown, no backticks, no preamble. Use this exact structure:
 {
