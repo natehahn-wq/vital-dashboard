@@ -13,23 +13,26 @@ export const SCORES_NOW = {
   master:       { score:71, prev:68, label:"VITAL Score",        icon:"⚡", color:P.cyan,   weight:1.0 },
 
   cardiovascular:{ score:75, prev:70, label:"Cardiovascular",    icon:"❤️", color:P.coral,  weight:.20,
-    dataDate:"Lipids: Jan 15, 2026 · ApoB/CRP: May 23, 2025 · WHOOP 3-mo avg",
+    dataDate:"Lipids/hs-CRP/omega: Aug 25, 2026 · ApoB: May 2025 · WHOOP 90-day",
     drivers:[
-      {name:"Triglycerides",        val:"80 mg/dL",  note:"Good ↓ from 183 (Feb '25) — Jan 15, 2026",       score:86, trend:"up"},
-      {name:"HDL Cholesterol",      val:"62 mg/dL",  note:"Optimal ↑ from 38 (Feb '25) — Jan 15, 2026",     score:92, trend:"up"},
-      {name:"LDL",                  val:"71 mg/dL",  note:"Excellent <100 — Jan 15, 2026",                  score:90, trend:"up"},
-      {name:"Chol/HDL Ratio",       val:"2.4",       note:"Excellent ↓ from 4.3 (Feb '25) — Jan 15, 2026",  score:93, trend:"up"},
+      {name:"Triglycerides",        val:"93 mg/dL",  note:"Aug '26 — well under 150",                        score:88, trend:"stable"},
+      {name:"HDL Cholesterol",      val:"60 mg/dL",  note:"Aug '26 — optimal",                               score:91, trend:"stable"},
+      {name:"LDL",                  val:"57 mg/dL",  note:"Aug '26 — best on record. Rosuvastatin 40 mg.",   score:96, trend:"up"},
+      {name:"Chol/HDL Ratio",       val:"2.3",       note:"Aug '26 — excellent",                             score:94, trend:"up"},
       {name:"ApoB",                 val:"66 mg/dL",  note:"Excellent <80 — May 23, 2025 (not redrawn)",      score:92, trend:"stable"},
-      {name:"CRP-Cardiac",          val:"0.1 mg/L",  note:"Near-zero inflammation — May 23, 2025 (not redrawn)",score:98, trend:"stable"},
+      {name:"hs-CRP",               val:"<0.2 mg/L", note:"Aug '26 — third consecutive optimal",              score:98, trend:"stable"},
+      {name:"Omega-3 Index",        val:"6.8%",      note:"Aug '26 — optimal ≥5.5, cardioprotective",        score:92, trend:"up"},
       {name:"HRV (3-mo avg)",       val:"43.2 ms",   note:"10-wk avg Dec–Mar — below personal mean 44.4",   score:46, trend:"flag"},
       {name:"RHR (3-mo avg)",       val:"51.0 bpm",  note:"10-wk avg — above athletic threshold of ≤49",    score:54, trend:"flag"},
     ]},
 
   metabolic:    { score:73, prev:73, label:"Metabolic Health",   icon:"⚗️", color:P.amber,  weight:.15,
-    dataDate:"Jan 15, 2026 (metabolic) · May 23, 2025 (HbA1c) · Jan 2026 DXA",
+    dataDate:"Aug 25, 2026 (insulin/HOMA-IR) · Jan 2026 DXA",
     drivers:[
       {name:"HbA1c",             val:"5.3%",       note:"May '25 BioLab — not drawn Jan '26. No IR risk.",score:92, trend:"stable"},
       {name:"Glucose",           val:"97 mg/dL",   note:"Jan '26 — normal range, ↑ from 84 (May '25)",   score:84, trend:"stable"},
+      {name:"HOMA-IR",           val:"1.25",       note:"Aug '26 — insulin-sensitive (concern ≥2.0). First-ever insulin measurement.", score:94, trend:"up"},
+      {name:"Insulin (fasting)", val:"5.4 µIU/mL", note:"Aug '26 — optimal ≤18.4, on statin which raises glucose", score:93, trend:"up"},
       {name:"RMR (measured)",    val:"1,858 kcal", note:"CardioCoach — −8% vs predicted",               score:78, trend:"stable"},
       {name:"ALT",               val:"24 U/L",     note:"Jan '26 — ↓ from 28 (May '25), excellent",     score:90, trend:"up"},
       {name:"AST",               val:"21 U/L",     note:"Jan '26 — ↓ from 26 (May '25), excellent",     score:90, trend:"up"},
@@ -60,21 +63,22 @@ export const SCORES_NOW = {
     ]},
 
   hormonal:     { score:72, prev:66, label:"Hormonal Health",    icon:"⚗", color:P.pink,   weight:.15,
-    dataDate:"May 23, 2025",
+    dataDate:"Aug 25, 2026 · Quest",
     drivers:[
-      {name:"Testosterone Total", val:"377.1 ng/dL",score:62, trend:"flag"},
-      {name:"Free Testosterone",  val:"6.99 ng/dL", note:"In range, lower end — ↑ from 6.40",    score:65, trend:"up"},
-      {name:"TSH",                val:"1.21 µIU/mL",note:"Optimal thyroid function",              score:92, trend:"stable"},
-      {name:"DHEA-S",             val:"460.3 µg/dL",note:"↑ above range — supp working",         score:75, trend:"up"},
-      {name:"Vitamin D",          val:"36.5 ng/mL", note:"Now sufficient ↑ from 26.5 (Feb '25)", score:72, trend:"up"},
-      {name:"Estradiol",          val:"36 pg/mL",   note:"Mid male range — balanced",             score:80, trend:"stable"},
-      {name:"Cortisol",           val:"9.1 µg/dL",  note:"Normal morning level",                 score:82, trend:"stable"},
+      {name:"Testosterone Total", val:"413 ng/dL",  note:"Aug '26 LC/MS — up from 377, drawn in a −27 lb deficit. Retest at maintenance.", score:72, trend:"up"},
+      {name:"SHBG",               val:"37 nmol/L",  note:"Aug '26 — rose modestly with weight loss", score:80, trend:"stable"},
+      {name:"TSH",                val:"1.52 mIU/L", note:"Aug '26 — full panel clean (FT4 1.4, FT3 3.2)", score:92, trend:"stable"},
+      {name:"DHEA-S",             val:"54 µg/dL",   note:"Aug '26 — below range off supplement. Recheck 3–4 mo.", score:58, trend:"flag"},
+      {name:"Vitamin D",          val:"57 ng/mL",   note:"Aug '26 — optimal, and off supplement",  score:93, trend:"up"},
+      {name:"Estradiol",          val:"<30 pg/mL",  note:"Aug '26 — fell with fat mass, as expected", score:84, trend:"stable"},
+      {name:"Cortisol",           val:"18.1 µg/dL", note:"Aug '26 — 7:15am draw, AM ref 4.0–22.0. Upper-normal.", score:78, trend:"stable"},
     ]},
 
   longevity:    { score:82, prev:64, label:"Longevity",          icon:"♾️", color:P.green,  weight:.10,
-    dataDate:"May 23, 2025",
+    dataDate:"Aug 25, 2026 · Quest",
     drivers:[
-      {name:"CRP-Cardiac",        val:"0.1 mg/L",   note:"Near-zero — May 23, 2025 (not redrawn Jan '26)", score:98, trend:"stable"},
+      {name:"hs-CRP",             val:"<0.2 mg/L",  note:"Aug '26 — third consecutive optimal (0.9 → 0.1 → <0.2)", score:98, trend:"stable"},
+      {name:"Omega-3 Index",      val:"6.8%",       note:"Aug '26 — optimal ≥5.5, sustained by diet 6mo off supplement", score:92, trend:"up"},
       {name:"HbA1c",              val:"5.3%",       note:"No IR — May 23, 2025 (not redrawn Jan '26)",     score:90, trend:"stable"},
       {name:"Ferritin",           val:"178.2 ng/mL",            score:85, trend:"up"},
       {name:"Homocysteine",       val:"10.2 µmol/L",              score:76, trend:"up"},
@@ -116,23 +120,27 @@ export const SCORE_HISTORY = [
 export const METABOLIC_AGE = (() => {
   const chrono = 48;
 
+  // Heuristic model with hand-tuned weights — directionally useful, not a
+  // validated epigenetic clock. Read the delta as a trend, not a literal age.
+  // Aug 2026 revision: HOMA-IR, hs-CRP and the omega-3 index all resulted
+  // optimal, and those are the inputs this kind of model weights most heavily.
   const factors = [
-    { label:"Cardiovascular",  delta:-7.2, note:"CRP <0.2, TG 66, HDL 60, RHR 52",       color:P.terra,  icon:"❤" },
-    { label:"Metabolic",       delta:-3.4, note:"HbA1c 5.2%, glucose 84, BMR 1858",       color:P.amber,  icon:"⚗" },
-    { label:"Body Comp",delta:+1.8, note:"BF 21.1% — Average tier for 48yo",       color:P.clay,   icon:"📐" },
-    { label:"Musculoskeletal", delta:-2.6, note:"+8.6 lbs lean mass, skeletal 75.6%",     color:P.sage,   icon:"💪" },
-    { label:"Hormonal",        delta:+1.2, note:"Testosterone 377 ng/dL — lower-mid",     color:P.violet, icon:"⚗" },
-    { label:"Recovery/CNS",    delta:-3.8, note:"HRV 67ms, sleep eff 91%, RHR 52",        color:P.steel,  icon:"🌙" },
-    { label:"Longevity Markers",delta:-1.4, color:P.sage,   icon:"♾" },
+    { label:"Cardiovascular",  delta:-7.8, note:"LDL 57, hs-CRP <0.2, omega-3 index 6.8%, HDL 60", color:P.terra,  icon:"❤" },
+    { label:"Metabolic",       delta:-4.6, note:"HOMA-IR 1.25, insulin 5.4, HbA1c 5.4%, glucose 94", color:P.amber, icon:"⚗" },
+    { label:"Body Comp",       delta:+0.6, note:"189 lb, −27 since Jan — DXA pending to confirm",  color:P.clay,   icon:"📐" },
+    { label:"Musculoskeletal", delta:-2.6, note:"Lean mass 149.8 lb, BMD T-score +1.3",            color:P.sage,   icon:"💪" },
+    { label:"Hormonal",        delta:+0.9, note:"Testosterone 413 (deficit-suppressed), DHEA-S low",color:P.violet, icon:"⚗" },
+    { label:"Recovery/CNS",    delta:-3.2, note:"Recovery 65% 90-day, sleep 9.1h, RHR 55",         color:P.steel,  icon:"🌙" },
+    { label:"Longevity Markers",delta:-2.2,note:"Omega-3 6.8%, hs-CRP <0.2, B12 405, folate 9.2",  color:P.sage,   icon:"♾" },
   ];
   const totalDelta = factors.reduce((s,f) => s + f.delta, 0);
   const perceived = Math.round((chrono + totalDelta) * 10) / 10;
 
   const history = [
-    {d:"Feb '23", age:43.8},
-    {d:"Aug '24", age:42.6},
-    {d:"Feb 14",  age:41.9},
-    {d:"May 23",  age:41.5},
+    {d:"Feb '25", age:41.9},
+    {d:"May '25", age:41.5},
+    {d:"Jan '26", age:35.2},
+    {d:"Aug '26", age:+(chrono + totalDelta).toFixed(1)},
   ];
   return { chrono, perceived, delta: +(chrono - perceived).toFixed(1), factors, history };
 })();

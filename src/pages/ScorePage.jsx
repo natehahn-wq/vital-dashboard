@@ -44,8 +44,8 @@ export function ScorePage(){
           {SCORE_GRADE(SCORES_NOW.master.score)} · {SCORE_LABEL(SCORES_NOW.master.score)}
         </div>
         <div style={{fontFamily:FF.s,fontSize:12,color:P.sub,lineHeight:1.7,maxWidth:"100%",marginBottom:16}}>
-          Your score reflects 7 clinical domains anchored to the most recent source for each — <span style={{color:P.cyan,fontWeight:700}}>Recovery, Strength, and Cardiovascular use 90-day rolling WHOOP averages</span> ({window.__VITAL_90DAY_RANGE__ || "Jan 1 2026 \u2013 Apr 1 2026"}) rather than single-day snapshots. Labs: Jan 15 '26 (lipids/metabolic) + May 23 '25 (hormones/CRP/HbA1c) — most recent per biomarker. Body comp: Hume Pod daily BIA (DXA-calibrated). Score is <span style={{color:P.cyan,fontWeight:700}}>+2 pts</span> since Feb '25 — lipid and longevity gains are partially offset by 3-month recovery averaging (63.9% avg vs 66.6% baseline) and a running-heavy training block with limited functional strength work.
-          Primary opportunities: Monitor testosterone decline (560→377), DHEA-S now elevated (needs recalibration), watch eGFR trend (97→77).
+          Your score reflects 7 clinical domains anchored to the most recent source for each — <span style={{color:P.cyan,fontWeight:700}}>Recovery, Strength, and Cardiovascular use 90-day rolling WHOOP averages</span> ({window.__VITAL_90DAY_RANGE__ || "Jan 1 2026 \u2013 Apr 1 2026"}) rather than single-day snapshots. Labs: Aug 25 '26 Quest 90-marker panel — the most complete draw on record. Body comp: Hume Pod daily BIA (DXA-calibrated), new DXA pending. Score is <span style={{color:P.cyan,fontWeight:700}}>+7 pts</span> since Feb '25, driven by the Aug panel: LDL 57, hs-CRP &lt;0.2, HOMA-IR 1.25 and an omega-3 index of 6.8% all landed optimal. Recovery remains the drag at 90-day averages.
+          Primary opportunities: retest testosterone at weight-stable maintenance (413 was drawn mid-deficit), recheck DHEA-S in 3–4 months (54, below range off supplement), and iron saturation 19% — the single flag on the whole panel. The eGFR question is closed: creatine artifact, not kidney decline.
         </div>
         <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
           {[
@@ -102,7 +102,7 @@ export function ScorePage(){
           {METABOLIC_AGE.factors.map((f,i)=>(
             <div key={i} style={{marginBottom:i<METABOLIC_AGE.factors.length-1?12:0}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <span style={{fontFamily:FF.s,fontSize:11,color:P.text}}>{f.name}</span>
+                <span style={{fontFamily:FF.s,fontSize:11,color:P.text}}>{f.label || f.name}</span>
                 <span style={{fontFamily:FF.s,fontSize:11,color:f.delta<0?P.sage:P.terra,fontWeight:600}}>{f.delta<0?"":"+"}{f.delta} yrs</span>
               </div>
               <div style={{height:5,borderRadius:3,background:P.border}}>
