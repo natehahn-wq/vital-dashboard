@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { P, FF, S } from "../lib/theme.js";
 import { LABS, LABS_MERGED, LAB_HISTORY, LAB_REFS, PANEL_TREND_KEYS, LABS_PENDING,
-         LABS_2024, LABS_PRIOR2, LABS_PRIOR, LABS_AUG2026 } from "../lib/data/labs.js";
+         LABS_2024, LABS_PRIOR2, LABS_PRIOR, LABS_AUG2026, PANEL_VERDICT } from "../lib/data/labs.js";
 import { LAB_CONTEXT } from "../lib/data/medical.js";
 import { DXA, SCAN_HISTORY } from "../lib/data/body.js";
 import { SLabel, BioCard } from "../components/shared.jsx";
@@ -19,8 +19,9 @@ const PANEL_CONTEXT = {
   lipids:    ["statinEra", "lipids", "fastingStatus"],
   metabolic: ["egfr", "fastingStatus"],
   hormones:  ["testosterone", "dheas", "cortisol", "vitaminD"],
-  special:   ["ironSat", "ferritin", "ck"],
+  special:   ["insulin", "hscrp", "ironSat", "ferritin", "ck"],
   cbc:       ["ferritin"],
+  omega:     ["omega3"],
 };
 
 function ContextNote({ ctx }) {
@@ -52,7 +53,7 @@ const DRAW_ARCHIVE = [
 
 const PANEL_TITLES = {
   metabolic:"Metabolic", lipids:"Lipids", liver:"Liver",
-  hormones:"Hormones", special:"Special Chem", cbc:"CBC",
+  hormones:"Hormones", special:"Special Chem", cbc:"CBC", omega:"Omega-3",
 };
 
 function DrawArchive(){
@@ -68,7 +69,7 @@ function DrawArchive(){
           const open = openId===id;
           const panels = Object.entries(src.panels).filter(([,arr])=>arr?.length);
           const markerCount = panels.reduce((n,[,arr])=>n+arr.length,0);
-          const flagged = panels.flatMap(([,arr])=>arr).filter(b=>b.status&&b.status!=="normal");
+          const flagged = panels.flatMap(([,arr])=>arr).filter(b=>b.status&&b.status!=="normal"&&!b.benign);
           const nonFasting = src.fasting === false;
           return (
             <div key={id} style={{border:`1px solid ${open?accent+"55":P.border}`,borderRadius:11,
@@ -149,6 +150,7 @@ export function Labs(){
     {id:"cbc",      label:"CBC",           color:P.cyan},
     {id:"hormones", label:"Hormones",      color:P.violet},
     {id:"special",  label:"Special Chem",  color:P.coral},
+    {id:"omega",    label:"Omega-3",       color:P.sage},
   ];
   const data = (LABS_MERGED.panels[activePanel] || LABS.panels[activePanel] || []);
   return(<div style={{display:"flex",flexDirection:"column",gap:16}}>
@@ -175,6 +177,13 @@ export function Labs(){
             </div>
           ))}
           <div style={{fontFamily:FF.s,fontSize:8.5,color:P.muted,alignSelf:"center"}}>↕ trend vs prior panel shown on each marker</div>
+        </div>
+        <div style={{display:"flex",gap:9,alignItems:"flex-start",padding:"10px 13px",
+          borderRadius:9,background:P.sageBg,border:`1px solid ${P.sage}33`,marginBottom:7}}>
+          <span style={{fontSize:12,lineHeight:1.3,flexShrink:0}}>✓</span>
+          <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,lineHeight:1.55}}>
+            <strong style={{color:P.sage}}>{PANEL_VERDICT.date} verdict.</strong> {PANEL_VERDICT.headline}
+          </div>
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
           {LABS.outOfRange.map(f=>(

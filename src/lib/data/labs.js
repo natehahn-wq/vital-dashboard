@@ -176,6 +176,10 @@ export const LABS_AUG2026 = {
         note:"Up from 24 but in range. Watch on the next draw." },
     ],
     hormones: [
+      { name:"Testosterone (Total)", val:413, unit:"ng/dL", range:"250–1100", status:"normal", prev:377.1,
+        note:"LC/MS, 7 AM fasted, off DHEA 6 months — the first clean draw. Up from 377, but taken mid −27 lb deficit which suppresses T 10–25%. Retest at weight-stable maintenance." },
+      { name:"SHBG",          val:37,  unit:"nmol/L", range:"10–50",  status:"normal", prev:34,
+        note:"Rose modestly with weight loss, as expected." },
       { name:"DHEA-S",        val:54,  unit:"µg/dL",  range:"61–442", status:"low",    prev:460.3,
         note:"Overcorrected. Was 460 (high) on supplementation; stopped ~Feb 2026 and it fell to 54 — now below range." },
       { name:"Cortisol",      val:18.1,unit:"µg/dL",  range:"4.0–22.0",status:"normal", prev:9.1,
@@ -203,8 +207,34 @@ export const LABS_AUG2026 = {
       { name:"Creatine Kinase", val:86,  unit:"U/L",    range:"26–366",  status:"normal", prev:null,
         note:"Normal — no statin myopathy signal despite heavy training." },
       { name:"Vitamin D",       val:57,  unit:"ng/mL",  range:"30–100",  status:"normal", prev:36.5 },
+      { name:"Insulin (fasting)",val:5.4, unit:"µIU/mL",range:"≤18.4",   status:"normal", prev:null,
+        note:"First-ever insulin measurement — closes a long-standing gap." },
+      { name:"HOMA-IR",         val:1.25,unit:"index", range:"<2.0",    status:"normal", prev:null,
+        note:"Calculated 5.4 × 94 ÷ 405. Insulin-sensitive, and achieved while on rosuvastatin 40 which nudges glucose up." },
+      { name:"hs-CRP",          val:0.2, unit:"mg/L",  range:"<1.0",    status:"normal", prev:0.1,
+        note:"Reported <0.2. Third consecutive optimal value: 0.9 → 0.1 → <0.2 across 18 months." },
+      { name:"Vitamin B12",     val:405, unit:"pg/mL", range:"200–1100",status:"normal", prev:null,
+        note:"First measurement." },
+      { name:"Folate",          val:9.2, unit:"ng/mL", range:">5.4",    status:"normal", prev:null,
+        note:"First measurement. With B12 405, explains the benign homocysteine 10.2." },
       { name:"Homocysteine",    val:10.2,unit:"µmol/L", range:"5.5–16.2",status:"normal", prev:12.3, notRedrawn:true, drawDate:"May 23, 2025" },
       { name:"PSA",             val:0.766,unit:"ng/mL", range:"0–4.0",   status:"normal", prev:0.845,notRedrawn:true, drawDate:"May 23, 2025" },
+    ],
+    // OmegaCheck — % by weight. Omega-3 index is the headline number.
+    omega: [
+      { name:"Omega-3 Index (EPA+DPA+DHA)", val:6.8, unit:"%", range:"≥5.5", status:"normal", prev:null,
+        note:"OPTIMAL. Measured 6 months AFTER stopping fish oil — diet alone sustains this. No restart needed. (Moderate 3.8–5.4; high risk ≤3.7.)" },
+      { name:"EPA",                 val:1.1,  unit:"%", range:"—",        status:"normal", prev:null },
+      { name:"DPA",                 val:1.3,  unit:"%", range:"—",        status:"normal", prev:null },
+      { name:"DHA",                 val:4.4,  unit:"%", range:"—",        status:"normal", prev:null,
+        note:"Carries most of the index." },
+      { name:"Omega-6 Total",       val:35.8, unit:"%", range:"—",        status:"normal", prev:null },
+      { name:"Arachidonic Acid",    val:15.5, unit:"%", range:"—",        status:"normal", prev:null,
+        note:"Top of range — but with the index at 6.8 and hs-CRP <0.2, not acting inflammatory." },
+      { name:"Omega-6 / Omega-3",   val:5.3,  unit:"ratio", range:"—",    status:"normal", prev:null },
+      { name:"AA / EPA Ratio",      val:14.2, unit:"ratio", range:"—",    status:"normal", prev:null },
+      { name:"Linoleic Acid",       val:16.7, unit:"%", range:"18.6–29.5",status:"low",    prev:null, benign:true,
+        note:"Lab-flagged low, but benign — reflects a low-seed-oil diet, not a deficiency. Not counted as a clinical flag." },
     ],
     cbc: [
       { name:"WBC",               val:5.8,   unit:"K/uL",   range:"3.8–10.8",   status:"normal", prev:6.1  },
@@ -329,6 +359,7 @@ export const LABS_MERGED = {
     hormones: [...LABS_AUG2026.panels.hormones],
     special:  [...LABS_AUG2026.panels.special],
     cbc:      [...LABS_AUG2026.panels.cbc],
+    omega:    [...LABS_AUG2026.panels.omega],
   },
 };
 
@@ -336,18 +367,19 @@ export const LABS_MERGED = {
 // Everything else from this draw has resulted; see LABS_AUG2026.
 export const LABS_PENDING = {
   date: "Aug 25, 2026", source: "Quest · WHOOP Advanced Labs",
-  note: "Most of the panel has resulted. These are still processing.",
+  note: "Second tranche resulted 8/27–28. Three markers still processing.",
   markers: [
-    { name:"Testosterone (Total, MS)",group:"Hormonal", watch:"The headline pending value. First clean baseline — no DHEA on board — but drawn in a Wegovy calorie deficit, which suppresses T. LH 5.4 and FSH 8.7 are both normal, so pituitary signaling is intact whatever the number." },
-    { name:"Free Testosterone",       group:"Hormonal", watch:"Read with SHBG. Prior free T 69.9 pg/mL was on DHEA." },
-    { name:"SHBG",                    group:"Hormonal", watch:"Rises with weight loss — can lower free T even if total T holds." },
-    { name:"hs-CRP",                  group:"Inflammation", watch:"Was 0.1 mg/L in May '25 — near-zero. Confirms whether that held." },
-    { name:"Cystatin C + eGFR",       group:"Kidney",   watch:"The definitive kidney read. Creatinine rose to 1.15 and creatinine-based eGFR is 79 — both confounded by creatine and muscle mass. This settles it." },
-    { name:"Insulin",                 group:"Metabolic",watch:"With glucose 94, gives HOMA-IR — the first true insulin-resistance read." },
-    { name:"Vitamin B12 + Folate",    group:"Vitamins", watch:"Never measured. Relevant to homocysteine 10.2." },
-    { name:"IGF-1 (LC/MS)",           group:"Longevity",watch:"Never measured. Growth-axis and longevity marker." },
-    { name:"OmegaCheck (EPA/DHA/AA)", group:"Fats",     watch:"Omega-3 supplement stopped ~Feb 2026 — expect the AA/EPA ratio to have worsened." },
+    { name:"Free Testosterone (dialysis)", group:"Hormonal", watch:"Equilibrium dialysis — the accurate method. Read against total T 413 and SHBG 37." },
+    { name:"IGF-1 (LC/MS)",                group:"Longevity",watch:"Never measured. Growth-axis and longevity marker." },
+    { name:"Cystatin C + eGFR",            group:"Kidney",   watch:"The definitive kidney read. Creatinine rose to 1.15 and creatinine-based eGFR is 79 — both confounded by creatine and muscle mass. This settles it." },
   ],
+};
+
+// One-line verdict for the Labs overview.
+export const PANEL_VERDICT = {
+  date: "Aug 2026",
+  headline: "90-marker panel: one flag total — iron saturation 19% (dietary fix, recheck ~3 mo). Everything else optimal or normal.",
+  flagCount: 1,
 };
 
 // Long-term lab history. Every point below is a documented draw — the previously
@@ -378,7 +410,7 @@ export const LAB_HISTORY = {
   hormones: [
     { d:"Feb '25",   testo:560,   dheas:119.1, vitd:26.5, tsh:1.30, cortisol:11.7 },
     { d:"May '25",   testo:377.1, dheas:460.3, vitd:36.5, tsh:1.21, cortisol:9.1  },
-    { d:"Aug '26",   testo:null,  dheas:54,    vitd:57,   tsh:1.52, cortisol:18.1 },
+    { d:"Aug '26",   testo:413,   dheas:54,    vitd:57,   tsh:1.52, cortisol:18.1 },
   ],
   special: [
     { d:"Feb '25",   ferritin:394.5, homocysteine:12.3, psa:0.845 },
@@ -433,6 +465,7 @@ export const PANEL_TREND_KEYS = {
   hormones: ["testo","dheas","vitd","tsh","cortisol"],
   special:  ["ferritin","homocysteine","psa"],
   cbc:      ["hgb","wbc","hct","rbc"],
+  omega:    [],
 };
 
 // Tracks the draw date for every tracked biomarker.

@@ -190,9 +190,24 @@ export const LAB_CONTEXT = {
     tone: "info",
   },
   testosterone: {
-    title: "Trend reversed — this is a decline, not an improvement",
-    body: "Corrected from the original BioLab reports: 560 ng/dL (Feb '25, native) → 377 (May '25). That is a fall of 183 points, coinciding with starting a DHEA supplement — not the 342→377 improvement previously shown. Free T fell alongside it, 10.8 → 6.99. LH 5.4 and FSH 8.7 are normal, so pituitary signaling is intact. The pending Aug 2026 redraw is the tiebreaker between 'May was an outlier' and 'real decline' — note it was drawn in a semaglutide calorie deficit, which suppresses T.",
-    tone: "caution",
+    title: "Acceptable — retest at weight-stable maintenance",
+    body: "Corrected full history: 560 (Feb '25, BioLab) → 377 (May '25) → 413 (Aug '26, LC/MS, 7 AM fasted, off DHEA six months). The 413 is the first clean draw, taken during an active ~27 lb semaglutide deficit that suppresses T by 10–25%. Not hypogonadal — that needs <300 twice plus symptoms, and LH 5.4 / FSH 8.7 are both normal. Plan: retest once at maintenance in 3–6 months. Only if it is still <400 there does the unrepaired bilateral varicocele conversation resurface with urology. TRT is not on the table given the 2017 PE and Xarelto.",
+    tone: "info",
+  },
+  insulin: {
+    title: "Optimal — a long-standing gap now closed",
+    body: "First-ever insulin measurement: 5.4 µIU/mL fasting, giving HOMA-IR 1.25 (concern starts at 2.0). Insulin-sensitive, and achieved while on rosuvastatin 40 mg, which nudges glucose upward. This downgrades the Jan '26 metabolic concern that rested on VAT 118 and glucose 97; pair it with the pending DXA for the full picture.",
+    tone: "info",
+  },
+  omega3: {
+    title: "Optimal without supplementation",
+    body: "Omega-3 index 6.8% (optimal ≥5.5) measured six months AFTER stopping fish oil — diet alone is sustaining it, so no restart is needed. Arachidonic acid sits at the top of range and the AA/EPA ratio is 14.2, but with the index at 6.8 and hs-CRP <0.2 there is no inflammatory signal to act on. Linoleic acid 16.7 is lab-flagged low; that reflects a low-seed-oil diet and is benign, not a deficiency.",
+    tone: "info",
+  },
+  hscrp: {
+    title: "Third consecutive optimal value",
+    body: "hs-CRP <0.2 mg/L. Across 18 months: 0.9 → 0.1 → <0.2. Systemic inflammation is consistently absent.",
+    tone: "info",
   },
   fastingStatus: {
     title: "Both 2025 BioLab draws were non-fasting",
