@@ -29,13 +29,14 @@ export const SCORES_NOW = {
   metabolic:    { score:73, prev:73, label:"Metabolic Health",   icon:"⚗️", color:P.amber,  weight:.15,
     dataDate:"Aug 25, 2026 (insulin/HOMA-IR) · Jan 2026 DXA",
     drivers:[
-      {name:"HbA1c",             val:"5.3%",       note:"May '25 BioLab — not drawn Jan '26. No IR risk.",score:92, trend:"stable"},
-      {name:"Glucose",           val:"97 mg/dL",   note:"Jan '26 — normal range, ↑ from 84 (May '25)",   score:84, trend:"stable"},
+      {name:"HbA1c",             val:"5.4%",       note:"Sep '25 — not on the Aug '26 panel. Add to next draw.",score:90, trend:"stable"},
+      {name:"Glucose",           val:"94 mg/dL",   note:"Aug '26 fasting — normal",                      score:88, trend:"up"},
       {name:"HOMA-IR",           val:"1.25",       note:"Aug '26 — insulin-sensitive (concern ≥2.0). First-ever insulin measurement.", score:94, trend:"up"},
       {name:"Insulin (fasting)", val:"5.4 µIU/mL", note:"Aug '26 — optimal ≤18.4, on statin which raises glucose", score:93, trend:"up"},
+      {name:"Cystatin C eGFR",   val:"100 mL/min", note:"Aug '26 — true GFR. Creatinine-based reads 77–79 (creatine artifact).", score:97, trend:"up"},
       {name:"RMR (measured)",    val:"1,858 kcal", note:"CardioCoach — −8% vs predicted",               score:78, trend:"stable"},
-      {name:"ALT",               val:"24 U/L",     note:"Jan '26 — ↓ from 28 (May '25), excellent",     score:90, trend:"up"},
-      {name:"AST",               val:"21 U/L",     note:"Jan '26 — ↓ from 26 (May '25), excellent",     score:90, trend:"up"},
+      {name:"ALT",               val:"40 U/L",     note:"Aug '26 — in range, up from 24. Likely transient from rapid weight loss.", score:76, trend:"flag"},
+      {name:"AST",               val:"21 U/L",     note:"Aug '26 — excellent",                          score:92, trend:"stable"},
       {name:"GGT",               val:"12 U/L",     note:"Jan '26 — very low, no alcohol or liver signal",score:95, trend:"stable"},
       {name:"Body Fat % (DXA)",  val:"26.4%",      note:"Jan 23, 2026 DXA — overfat category",          score:52, trend:"flag"},
       {name:"VAT Area (DXA)",    val:"118 cm²",    note:"Borderline — target <100 cm²",                  score:62, trend:"flag"},
@@ -66,6 +67,7 @@ export const SCORES_NOW = {
     dataDate:"Aug 25, 2026 · Quest",
     drivers:[
       {name:"Testosterone Total", val:"413 ng/dL",  note:"Aug '26 LC/MS — up from 377, drawn in a −27 lb deficit. Retest at maintenance.", score:72, trend:"up"},
+      {name:"Free Testosterone",  val:"50.2 pg/mL", note:"Aug '26 equilibrium dialysis — in range, lower third. Method differs from 2025 values.", score:70, trend:"stable"},
       {name:"SHBG",               val:"37 nmol/L",  note:"Aug '26 — rose modestly with weight loss", score:80, trend:"stable"},
       {name:"TSH",                val:"1.52 mIU/L", note:"Aug '26 — full panel clean (FT4 1.4, FT3 3.2)", score:92, trend:"stable"},
       {name:"DHEA-S",             val:"54 µg/dL",   note:"Aug '26 — below range off supplement. Recheck 3–4 mo.", score:58, trend:"flag"},
@@ -79,8 +81,9 @@ export const SCORES_NOW = {
     drivers:[
       {name:"hs-CRP",             val:"<0.2 mg/L",  note:"Aug '26 — third consecutive optimal (0.9 → 0.1 → <0.2)", score:98, trend:"stable"},
       {name:"Omega-3 Index",      val:"6.8%",       note:"Aug '26 — optimal ≥5.5, sustained by diet 6mo off supplement", score:92, trend:"up"},
-      {name:"HbA1c",              val:"5.3%",       note:"No IR — May 23, 2025 (not redrawn Jan '26)",     score:90, trend:"stable"},
-      {name:"Ferritin",           val:"178.2 ng/mL",            score:85, trend:"up"},
+      {name:"IGF-1",              val:"185 ng/mL",  note:"Aug '26 — Z +0.6, above average for age despite a −27 lb deficit", score:88, trend:"up"},
+      {name:"HbA1c",              val:"5.4%",       note:"Sep '25 — not on the Aug '26 panel",             score:90, trend:"stable"},
+      {name:"Ferritin",           val:"153 ng/mL",  note:"Aug '26 — normal. Xarelto bleed-watch marker, clean.", score:88, trend:"stable"},
       {name:"Homocysteine",       val:"10.2 µmol/L",              score:76, trend:"up"},
       {name:"PSA",                val:"0.766 ng/mL",      score:90, trend:"stable"},
       {name:"BMD T-score (DXA)",  val:"+1.3",       note:"Exceptional — Jan 23, 2026 DXA",               score:99, trend:"up"},
@@ -126,12 +129,12 @@ export const METABOLIC_AGE = (() => {
   // optimal, and those are the inputs this kind of model weights most heavily.
   const factors = [
     { label:"Cardiovascular",  delta:-7.8, note:"LDL 57, hs-CRP <0.2, omega-3 index 6.8%, HDL 60", color:P.terra,  icon:"❤" },
-    { label:"Metabolic",       delta:-4.6, note:"HOMA-IR 1.25, insulin 5.4, HbA1c 5.4%, glucose 94", color:P.amber, icon:"⚗" },
+    { label:"Metabolic",       delta:-5.0, note:"HOMA-IR 1.25, insulin 5.4, cystatin eGFR 100",     color:P.amber,  icon:"⚗" },
     { label:"Body Comp",       delta:+0.6, note:"189 lb, −27 since Jan — DXA pending to confirm",  color:P.clay,   icon:"📐" },
     { label:"Musculoskeletal", delta:-2.6, note:"Lean mass 149.8 lb, BMD T-score +1.3",            color:P.sage,   icon:"💪" },
-    { label:"Hormonal",        delta:+0.9, note:"Testosterone 413 (deficit-suppressed), DHEA-S low",color:P.violet, icon:"⚗" },
+    { label:"Hormonal",        delta:+0.7, note:"Total T 413, free T 50.2 in range, DHEA-S low",    color:P.violet, icon:"⚗" },
     { label:"Recovery/CNS",    delta:-3.2, note:"Recovery 65% 90-day, sleep 9.1h, RHR 55",         color:P.steel,  icon:"🌙" },
-    { label:"Longevity Markers",delta:-2.2,note:"Omega-3 6.8%, hs-CRP <0.2, B12 405, folate 9.2",  color:P.sage,   icon:"♾" },
+    { label:"Longevity Markers",delta:-2.8,note:"Omega-3 6.8%, hs-CRP <0.2, IGF-1 Z +0.6, B12 405", color:P.sage,   icon:"♾" },
   ];
   const totalDelta = factors.reduce((s,f) => s + f.delta, 0);
   const perceived = Math.round((chrono + totalDelta) * 10) / 10;
