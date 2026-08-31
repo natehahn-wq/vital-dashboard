@@ -143,9 +143,9 @@ export const LABS_AUG2026 = {
       { name:"Glucose",        val:94,   unit:"mg/dL",  range:"65–99",    status:"normal", prev:97 },
       { name:"BUN",            val:16,   unit:"mg/dL",  range:"7–25",     status:"normal", prev:16 },
       { name:"Creatinine",     val:1.15, unit:"mg/dL",  range:"0.60–1.29",status:"normal", prev:1.0,
-        note:"Up from 1.0. Creatine supplementation + muscle mass both inflate this — Cystatin C pending is the clean read." },
+        note:"Permanently confounded: creatine supplementation (~5 g/day since spring 2025) plus muscle mass both inflate serum creatinine. Cystatin C 0.86 / eGFR 100 is the true read." },
       { name:"eGFR",           val:79,   unit:"mL/min", range:">60",      status:"normal", prev:77,
-        note:"Improved from 77. Creatinine-based, so still confounded — Cystatin C eGFR pending." },
+        note:"Creatinine-based, so understated by ~21 points. Cystatin C eGFR came back 100 — use that number. This one stays confounded as long as creatine continues." },
       { name:"Sodium",         val:139,  unit:"mmol/L", range:"135–146",  status:"normal", prev:135 },
       { name:"Potassium",      val:4.3,  unit:"mmol/L", range:"3.5–5.3",  status:"normal", prev:4.7 },
       { name:"Chloride",       val:102,  unit:"mmol/L", range:"98–110",   status:"normal", prev:100 },
@@ -178,6 +178,9 @@ export const LABS_AUG2026 = {
     hormones: [
       { name:"Testosterone (Total)", val:413, unit:"ng/dL", range:"250–1100", status:"normal", prev:377.1,
         note:"LC/MS, 7 AM fasted, off DHEA 6 months — the first clean draw. Up from 377, but taken mid −27 lb deficit which suppresses T 10–25%. Retest at weight-stable maintenance." },
+      { name:"Free Testosterone", val:50.2, unit:"pg/mL", range:"35.0–155.0", status:"normal", prev:null,
+        methodChange:true,
+        note:"Equilibrium dialysis — the gold-standard method. NOT comparable to the Feb/May '25 BioLab values (10.8 / 6.99 ng/dL, calculated). In range, lower third; consistent with total T 413 drawn mid-deficit." },
       { name:"SHBG",          val:37,  unit:"nmol/L", range:"10–50",  status:"normal", prev:34,
         note:"Rose modestly with weight loss, as expected." },
       { name:"DHEA-S",        val:54,  unit:"µg/dL",  range:"61–442", status:"low",    prev:460.3,
@@ -207,6 +210,12 @@ export const LABS_AUG2026 = {
       { name:"Creatine Kinase", val:86,  unit:"U/L",    range:"26–366",  status:"normal", prev:null,
         note:"Normal — no statin myopathy signal despite heavy training." },
       { name:"Vitamin D",       val:57,  unit:"ng/mL",  range:"30–100",  status:"normal", prev:36.5 },
+      { name:"Cystatin C",      val:0.86,unit:"mg/L",  range:"0.60–1.00",status:"normal", prev:null,
+        note:"Optimal. Unaffected by creatine or muscle mass — the clean kidney read." },
+      { name:"Cystatin C eGFR", val:100, unit:"mL/min",range:">60",     status:"normal", prev:null,
+        note:"Optimal. True GFR ≈100 while creatinine-based eGFR reads 77–79 — confirming that gap is a creatine + muscle-mass artifact, not kidney decline. Kidney watch closed." },
+      { name:"IGF-1",           val:185, unit:"ng/mL", range:"52–328",  status:"normal", prev:null,
+        note:"Z-score +0.6 — above average for age, and that is despite six months of a ~27 lb deficit. Growth axis healthy; strong evidence against under-fueling or a catabolic state." },
       { name:"Insulin (fasting)",val:5.4, unit:"µIU/mL",range:"≤18.4",   status:"normal", prev:null,
         note:"First-ever insulin measurement — closes a long-standing gap." },
       { name:"HOMA-IR",         val:1.25,unit:"index", range:"<2.0",    status:"normal", prev:null,
@@ -365,20 +374,31 @@ export const LABS_MERGED = {
 
 // Aug 25, 2026 · Quest — still in progress on the partial report.
 // Everything else from this draw has resulted; see LABS_AUG2026.
+// Panel complete — every marker resulted 8/26–8/30. Nothing outstanding.
 export const LABS_PENDING = {
   date: "Aug 25, 2026", source: "Quest · WHOOP Advanced Labs",
-  note: "Second tranche resulted 8/27–28. Three markers still processing.",
-  markers: [
-    { name:"Free Testosterone (dialysis)", group:"Hormonal", watch:"Equilibrium dialysis — the accurate method. Read against total T 413 and SHBG 37." },
-    { name:"IGF-1 (LC/MS)",                group:"Longevity",watch:"Never measured. Growth-axis and longevity marker." },
-    { name:"Cystatin C + eGFR",            group:"Kidney",   watch:"The definitive kidney read. Creatinine rose to 1.15 and creatinine-based eGFR is 79 — both confounded by creatine and muscle mass. This settles it." },
-  ],
+  complete: true,
+  note: "Complete — all ~90 markers resulted 8/26–8/30.",
+  markers: [],
 };
+
+// Headline numbers for the Labs summary card.
+export const PANEL_HEADLINE = [
+  { label:"HOMA-IR",        val:"1.25"  },
+  { label:"hs-CRP",         val:"<0.2"  },
+  { label:"LDL",            val:"57"    },
+  { label:"Cystatin eGFR",  val:"100"   },
+  { label:"Omega-3 Index",  val:"6.8%"  },
+  { label:"Vitamin D",      val:"57"    },
+  { label:"Testosterone",   val:"413"   },
+];
 
 // One-line verdict for the Labs overview.
 export const PANEL_VERDICT = {
   date: "Aug 2026",
-  headline: "90-marker panel: one flag total — iron saturation 19% (dietary fix, recheck ~3 mo). Everything else optimal or normal.",
+  headline: "One actionable flag on the entire panel: iron saturation 19% (low; dietary iron fix, recheck ~3 months). All else optimal or normal.",
+  complete: true,
+  markerCount: "~90",
   flagCount: 1,
 };
 

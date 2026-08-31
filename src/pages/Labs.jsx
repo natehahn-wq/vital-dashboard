@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { P, FF, S } from "../lib/theme.js";
 import { LABS, LABS_MERGED, LAB_HISTORY, LAB_REFS, PANEL_TREND_KEYS, LABS_PENDING,
-         LABS_2024, LABS_PRIOR2, LABS_PRIOR, LABS_AUG2026, PANEL_VERDICT } from "../lib/data/labs.js";
+         LABS_2024, LABS_PRIOR2, LABS_PRIOR, LABS_AUG2026, PANEL_VERDICT, PANEL_HEADLINE } from "../lib/data/labs.js";
 import { LAB_CONTEXT } from "../lib/data/medical.js";
 import { DXA, SCAN_HISTORY } from "../lib/data/body.js";
 import { SLabel, BioCard } from "../components/shared.jsx";
@@ -18,8 +18,8 @@ import { SLabel, BioCard } from "../components/shared.jsx";
 const PANEL_CONTEXT = {
   lipids:    ["statinEra", "lipids", "fastingStatus"],
   metabolic: ["egfr", "fastingStatus"],
-  hormones:  ["testosterone", "dheas", "cortisol", "vitaminD"],
-  special:   ["insulin", "hscrp", "ironSat", "ferritin", "ck"],
+  hormones:  ["testosterone", "freeT", "dheas", "cortisol", "vitaminD"],
+  special:   ["insulin", "hscrp", "igf1", "ironSat", "ferritin", "ck"],
   cbc:       ["ferritin"],
   omega:     ["omega3"],
 };
@@ -233,30 +233,55 @@ export function Labs(){
       )}
     </div>
 
-    {/* Pending panel — Aug 2026 WHOOP Advanced Labs still processing */}
-    <div style={{background:P.card,border:`1px dashed ${P.steel}55`,borderRadius:14,padding:"16px"}}>
-      <SLabel color={P.steel} right={`${LABS_PENDING.markers.length} markers pending`}>
-        {LABS_PENDING.source} · {LABS_PENDING.date}
-      </SLabel>
-      <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,marginBottom:12,lineHeight:1.55}}>
-        {LABS_PENDING.note}
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:9}}>
-        {LABS_PENDING.markers.map(m=>(
-          <div key={m.name} style={{padding:"11px 13px",borderRadius:10,background:P.panel,
-            border:`1px solid ${P.border}`}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",
-              gap:8,marginBottom:4}}>
-              <span style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.text}}>{m.name}</span>
-              <span style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.steel,
-                background:P.steelBg,padding:"2px 7px",borderRadius:99,
-                letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{m.group}</span>
+    {/* Panel status — complete, or the outstanding markers if any remain */}
+    {LABS_PENDING.complete ? (
+      <div style={{background:P.sageBg,border:`1px solid ${P.sage}44`,borderRadius:14,padding:"16px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:12}}>
+          <span style={{fontSize:15}}>✓</span>
+          <span style={{fontFamily:FF.s,fontSize:13,fontWeight:700,color:P.sage}}>
+            Panel complete
+          </span>
+          <span style={{fontFamily:FF.s,fontSize:11,color:P.sub}}>
+            {LABS_PENDING.source} · {LABS_PENDING.date} — {LABS_PENDING.note}
+          </span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(112px,1fr))",gap:8}}>
+          {PANEL_HEADLINE.map(h=>(
+            <div key={h.label} style={{padding:"9px 11px",borderRadius:9,background:P.card,
+              border:`1px solid ${P.border}`}}>
+              <div style={{fontFamily:FF.s,fontSize:7.5,color:P.muted,letterSpacing:"0.08em",
+                textTransform:"uppercase",marginBottom:3}}>{h.label}</div>
+              <div style={{fontFamily:FF.r,fontSize:19,fontWeight:600,color:P.sage,
+                lineHeight:1,letterSpacing:"-0.01em"}}>{h.val}</div>
             </div>
-            <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,lineHeight:1.5}}>{m.watch}</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    ) : (
+      <div style={{background:P.card,border:`1px dashed ${P.steel}55`,borderRadius:14,padding:"16px"}}>
+        <SLabel color={P.steel} right={`${LABS_PENDING.markers.length} markers pending`}>
+          {LABS_PENDING.source} · {LABS_PENDING.date}
+        </SLabel>
+        <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,marginBottom:12,lineHeight:1.55}}>
+          {LABS_PENDING.note}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:9}}>
+          {LABS_PENDING.markers.map(m=>(
+            <div key={m.name} style={{padding:"11px 13px",borderRadius:10,background:P.panel,
+              border:`1px solid ${P.border}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",
+                gap:8,marginBottom:4}}>
+                <span style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.text}}>{m.name}</span>
+                <span style={{fontFamily:FF.s,fontSize:8,fontWeight:700,color:P.steel,
+                  background:P.steelBg,padding:"2px 7px",borderRadius:99,
+                  letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{m.group}</span>
+              </div>
+              <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,lineHeight:1.5}}>{m.watch}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
     {PANEL_TREND_KEYS[activePanel] && (() => {
       const histData = LAB_HISTORY[activePanel] || [];
       const keys = PANEL_TREND_KEYS[activePanel];
@@ -348,18 +373,22 @@ export function Labs(){
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
         {[
-          {title:"Lipid Panel — Jan 2026 Confirmed",color:P.sage,flag:false,badge:"CONFIRMED",
-           note:"Jan 15 2026: TG 80 (↓ from 183), HDL 62, LDL 71 — sustained improvement"},
-          {title:"Iron Status — Resolved",color:P.sage,flag:false,badge:"RESOLVED",
-           note:"Ferritin normalized from 394.5 (Feb 14) to 178.2 ng/mL (May 23) — now well"},
-          {title:"Vitamin D — Improved, Continue Protocol",color:P.amber,flag:true,badge:"MONITOR",
-           note:"Vitamin D improved from 26.5 (insufficient) to 36.5 ng/mL (May 23) — now i"},
-          {title:"BUN — Resolved",color:P.sage,flag:false,badge:"RESOLVED",
-           note:"BUN was mildly elevated at 21.0 mg/dL in May '25 (ref 8.9–20.6). Jan '26 E"},
-          {title:"Testosterone — Watch Trend",color:P.violet,flag:true,badge:"WATCH",
-           note:"Testosterone improved slightly from 342→377 ng/dL (Feb→May), but remains i"},
-          {title:"Metabolic Health — Strong",color:P.sage,flag:false,badge:"GOOD",
-           note:"Jan '26: Glucose 97 (normal), ALT 24, AST 21, GGT 12 — liver enzymes trend"},
+          {title:"Kidney function — confirmed normal",color:P.sage,flag:false,badge:"CLOSED",
+           note:"Cystatin C 0.86 gives a true eGFR of 100. The creatinine-based 77–79 was a creatine + muscle-mass artifact all along. Watch closed."},
+          {title:"Metabolic health — insulin-sensitive",color:P.sage,flag:false,badge:"OPTIMAL",
+           note:"HOMA-IR 1.25 from insulin 5.4 and glucose 94 — first ever measured. Concern threshold is 2.0."},
+          {title:"Lipids — best panel on record",color:P.sage,flag:false,badge:"OPTIMAL",
+           note:"Aug '26: LDL 57, total 135, non-HDL 75, TG 93. Treated values on rosuvastatin 40 mg since May 2024."},
+          {title:"Inflammation — three for three",color:P.sage,flag:false,badge:"OPTIMAL",
+           note:"hs-CRP <0.2 mg/L. Across 18 months: 0.9 → 0.1 → <0.2. Omega-3 index 6.8% supports it."},
+          {title:"Growth axis — healthy through the cut",color:P.sage,flag:false,badge:"GOOD",
+           note:"IGF-1 185, Z-score +0.6 — above average for age despite six months of a −27 lb deficit. Argues against under-fuelling."},
+          {title:"Iron saturation — the one flag",color:P.amber,flag:true,badge:"ACTION",
+           note:"19% against a 20 floor, with iron 59 and TIBC 313. Ferritin 153 and a clean CBC argue for a dietary fix and a recheck ~Nov 2026, not treatment."},
+          {title:"DHEA-S — recheck, do not restart",color:P.amber,flag:true,badge:"WATCH",
+           note:"54 off supplement. Native baseline was 119.1, so this is only modestly below where he actually sits. Recheck ~Dec 2026."},
+          {title:"Testosterone — retest at maintenance",color:P.violet,flag:true,badge:"WATCH",
+           note:"560 (Feb '25) → 377 (May '25) → 413 (Aug '26, LC/MS, off DHEA). Drawn mid-deficit, which suppresses T 10–25%. Not hypogonadal; LH and FSH normal."},
         ].map(({title,color,flag,badge,note})=>(
           <div key={title} style={{padding:"12px 14px",background:flag?color+"08":P.panel,borderRadius:9,border:`1px solid ${flag?color+"44":P.border}`}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:7,flexWrap:"wrap"}}>

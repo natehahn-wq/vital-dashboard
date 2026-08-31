@@ -135,17 +135,32 @@ export const SCREENINGS = [
   {
     name: "Comprehensive labs", lastDone: "Aug 2026", nextDue: "Annual",
     status: "current",
-    note: "Quest / WHOOP Advanced Labs — resulted. Testosterone, hs-CRP, cystatin C, insulin, B12 still processing.",
+    note: "Quest / WHOOP Advanced Labs — COMPLETE. All ~90 markers resulted 8/26–8/30.",
   },
   {
-    name: "DHEA-S recheck", lastDone: "Aug 2026", nextDue: "Discuss with PCP",
+    name: "Iron panel recheck", lastDone: "Aug 2026", nextDue: "~Nov 2026",
     status: "action",
-    note: "Fell to 54 (below the 61 floor) after stopping the supplement. Decide whether to restart at a lower dose.",
+    note: "Saturation 19%. Dietary iron first — ferritin 153 and a clean CBC argue against treating.",
   },
   {
-    name: "Iron saturation recheck", lastDone: "Aug 2026", nextDue: "Next draw",
+    name: "DHEA-S recheck", lastDone: "Aug 2026", nextDue: "~Dec 2026",
     status: "action",
-    note: "19% against a 20 floor. Ferritin and CBC are clean, so recheck rather than treat.",
+    note: "54 off supplement; native baseline was ~119. Recheck before deciding on any restart.",
+  },
+  {
+    name: "Testosterone retest", lastDone: "Aug 2026", nextDue: "At maintenance (~3–6 mo)",
+    status: "action",
+    note: "413 was drawn mid −27 lb deficit, which suppresses T 10–25%. Retest once weight-stable.",
+  },
+  {
+    name: "ApoB + HbA1c", lastDone: "May '25 / Sep '25", nextDue: "Add to next draw",
+    status: "action",
+    note: "Neither was on the Aug 2026 panel. Last values ApoB 66, HbA1c 5.4.",
+  },
+  {
+    name: "Vitamin D recheck", lastDone: "Aug 2026", nextDue: "Feb–Mar 2027",
+    status: "action",
+    note: "57 in August off supplement — that is the seasonal peak. Winter trough is the number that decides restart.",
   },
   {
     name: "DXA body composition", lastDone: "Jan 2026", nextDue: "~Annual",
@@ -175,9 +190,19 @@ export const LAB_CONTEXT = {
     tone: "info",
   },
   egfr: {
-    title: "Solved — creatine artifact, not kidney decline",
-    body: "The full sequence is 93 (May '24, creat 1.01) → 97 (Feb '25, creat 0.90) → 77 (May '25, creat 1.10) → 79 (Aug '26, creat 1.15). The drop lands exactly between Feb and May 2025, which is when creatine supplementation (~5 g/day) began. Creatine plus high muscle mass both raise creatinine and mechanically lower a creatinine-based eGFR. Kidneys documented normal, urinalysis normal 2024. Cystatin C (pending) confirms.",
+    title: "Kidney function — confirmed normal (cystatin C)",
+    body: "Closed. Cystatin C 0.86 gives a true eGFR of 100 mL/min, while the creatinine-based number reads 77–79 — a gap of roughly 21 points. Cystatin C is unaffected by muscle mass or creatine, so this confirms the creatinine sequence (97 → 77 → 79) tracked the start of creatine supplementation in spring 2025, not any decline in filtration. Kidneys are excellent. The creatinine-based eGFR will stay understated as long as creatine continues; read the cystatin number instead.",
     tone: "info",
+  },
+  igf1: {
+    title: "Growth axis healthy despite the deficit",
+    body: "IGF-1 185 ng/mL, Z-score +0.6 — above average for age, and measured after six months of a ~27 lb semaglutide deficit. That is strong evidence against under-fuelling or a catabolic state, which is the main risk of a cut this size. First time this has been measured.",
+    tone: "info",
+  },
+  freeT: {
+    title: "Method changed — do not compare to 2025 values",
+    body: "Free testosterone 50.2 pg/mL by equilibrium dialysis, the gold-standard method. The Feb and May 2025 values (10.8 and 6.99 ng/dL) were calculated, not measured, and are in different units — the three are not on a comparable scale and any trend line across them is meaningless. Read 50.2 on its own: in range, lower third, consistent with total T 413 drawn mid-deficit.",
+    tone: "caution",
   },
   dheas: {
     title: "Full arc — native low, supplemented high, now near baseline",
