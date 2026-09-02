@@ -4,7 +4,7 @@
 
 import { P } from "../theme.js";
 import { CAL_DATA, CAL_RICH } from "./calendar.js";
-import { HUME_DATA, DXA } from "./body.js";
+import { HUME_DATA, DXA, DXA_CURRENT, DXA_BASELINE } from "./body.js";
 
 export const SCORES_NOW = {
   // Master = weighted avg of 7 domains
@@ -53,11 +53,11 @@ export const SCORES_NOW = {
     ]},
 
   strength:     { score:76, prev:63, label:"Strength & Muscle",  icon:"💪", color:P.blue,   weight:.15,
-    dataDate:"DXA Jan 2026 · Calendar + WHOOP 3-month avg",
+    dataDate:"DXA Sep 2 2026 · Calendar + WHOOP 90-day",
     drivers:[
-      {name:"Lean Mass (DXA)",      val:"149.8 lbs", note:"Strong absolute lean mass — Jan 2026",             score:80, trend:"stable"},
-      {name:"Lean Mass %",          val:"69.4%",     note:"DXA Jan 2026 — target >72%",                      score:65, trend:"stable"},
-      {name:"BMD T-score (DXA)",    val:"+1.3",      note:"Exceptional bone density — 111th percentile",      score:99, trend:"up"},
+      {name:"Lean Mass (DXA)",      val:"155.7 lbs", note:"Sep '26 — up 5.9 lbs through a 25 lb cut. Top 21% for age.", score:86, trend:"up"},
+      {name:"Lean Mass %",          val:"81.5%",     note:"Sep '26 — 155.7 lean of 191.1 total",             score:92, trend:"up"},
+      {name:"BMD T-score (DXA)",    val:"+1.3",      note:"Jan '26 Hologic. Sep bone density 1.44 g/cm², 75th percentile.", score:96, trend:"stable"},
       {name:"Gym sessions (3-mo)",  val:"26 sessions",    score:82, trend:"up"},
       {name:"Weekly strain (3-mo)", val:"73.6/wk",   note:"10-wk WHOOP avg — solid training load",           score:61, trend:"stable"},
       {name:"Total sessions/wk",    val:"~3.5/wk",   note:"Gym 2× + running 1–2× — balanced block",         score:78, trend:"stable"},
@@ -130,22 +130,32 @@ export const METABOLIC_AGE = (() => {
   const factors = [
     { label:"Cardiovascular",  delta:-7.8, note:"LDL 57, hs-CRP <0.2, omega-3 index 6.8%, HDL 60", color:P.terra,  icon:"❤" },
     { label:"Metabolic",       delta:-5.0, note:"HOMA-IR 1.25, insulin 5.4, cystatin eGFR 100",     color:P.amber,  icon:"⚗" },
-    { label:"Body Comp",       delta:+0.6, note:"189 lb, −27 since Jan — DXA pending to confirm",  color:P.clay,   icon:"📐" },
-    { label:"Musculoskeletal", delta:-2.6, note:"Lean mass 149.8 lb, BMD T-score +1.3",            color:P.sage,   icon:"💪" },
+    { label:"Body Comp",       delta:-4.2, note:"DXA Sep '26: 14.3% BF, lean 155.7 lb, VAT lowest 28%", color:P.clay,   icon:"📐" },
+    { label:"Musculoskeletal", delta:-3.2, note:"Lean 155.7 lb (+5.9 through the cut), bone held",  color:P.sage,   icon:"💪" },
     { label:"Hormonal",        delta:+0.7, note:"Total T 413, free T 50.2 in range, DHEA-S low",    color:P.violet, icon:"⚗" },
     { label:"Recovery/CNS",    delta:-3.2, note:"Recovery 65% 90-day, sleep 9.1h, RHR 55",         color:P.steel,  icon:"🌙" },
     { label:"Longevity Markers",delta:-2.8,note:"Omega-3 6.8%, hs-CRP <0.2, IGF-1 Z +0.6, B12 405", color:P.sage,   icon:"♾" },
   ];
-  const totalDelta = factors.reduce((s,f) => s + f.delta, 0);
+  // The seven domains overlap heavily — body composition, metabolic health and
+  // cardiovascular markers all partly measure the same underlying fitness. Summing
+  // their deltas raw double-counts that shared variance and compounds into
+  // implausible numbers (the unscaled sum here lands near 22, a 26-year delta).
+  // OVERLAP_SCALE applies diminishing returns so the figure stays in a range a
+  // clinician would recognise. It is a judgement call, not a validated constant.
+  const OVERLAP_SCALE = 0.62;
+  const rawDelta = factors.reduce((s,f) => s + f.delta, 0);
+  const totalDelta = rawDelta * OVERLAP_SCALE;
   const perceived = Math.round((chrono + totalDelta) * 10) / 10;
 
   const history = [
     {d:"Feb '25", age:41.9},
     {d:"May '25", age:41.5},
     {d:"Jan '26", age:35.2},
+
     {d:"Aug '26", age:+(chrono + totalDelta).toFixed(1)},
   ];
-  return { chrono, perceived, delta: +(chrono - perceived).toFixed(1), factors, history };
+  return { chrono, perceived, delta: +(chrono - perceived).toFixed(1), factors, history,
+           rawDelta: +rawDelta.toFixed(1), overlapScale: OVERLAP_SCALE };
 })();
 
 // ─── Dynamic 90-day Health Score computation ───
@@ -252,48 +262,39 @@ export function applyLiveScores(stats, rangeLabel) {
   const rangeLabel = fmt(d90) + ' – ' + fmt(today);
   applyLiveScores(stats, rangeLabel);
 
-  // ─── Dynamic Body Comp from Hume weight/BF data ───
-  if (HUME_DATA.length >= 2) {
-    const sorted = HUME_DATA.slice().sort((a, b) => b.d.localeCompare(a.d));
-    const latest = sorted[0];
-    const oldest = sorted[sorted.length - 1];
-    const recent30 = sorted.filter(r => r.d >= fmtISO(d90));
-    const avgWt = recent30.length ? recent30.reduce((s, r) => s + r.wt, 0) / recent30.length : latest.wt;
-    const avgBf = recent30.length ? recent30.reduce((s, r) => s + r.bf, 0) / recent30.length : latest.bf;
-
-    const BIA_DXA_OFFSET = DXA.totalFatPct - (HUME_DATA.find(r => r.d <= "2026-01-23")?.bf || 16);
-    const estDxaBf = latest.bf + BIA_DXA_OFFSET;
-    const estDxaBfAvg = avgBf + BIA_DXA_OFFSET;
-
-    const wtDelta = latest.wt - DXA.weight;
-    const bfDelta = latest.bf - oldest.bf;
-    const leanEst = latest.wt * (1 - latest.bf / 100);
-
-    const scoreBf = bf => bf <= 15 ? 95 : bf <= 18 ? 88 : bf <= 20 ? 78 : bf <= 23 ? 68 : bf <= 26 ? 55 : 45;
-    const scoreWtTrend = delta => delta <= -15 ? 92 : delta <= -10 ? 85 : delta <= -5 ? 75 : delta <= 0 ? 68 : delta <= 5 ? 55 : 45;
+  // ─── Body Comp — measured DXA takes precedence over BIA estimates ───
+  // The Sep 2 2026 BodySpec DXA supersedes the Hume BIA series, which ends
+  // in March 2026. Estimating body fat from a 6-month-old BIA reading when a
+  // current DXA exists would be strictly worse, so the DXA drives this domain.
+  {
+    const scoreBf   = bf  => bf  <= 15 ? 95 : bf  <= 18 ? 88 : bf  <= 20 ? 78 : bf <= 23 ? 68 : bf <= 26 ? 55 : 45;
     const scoreLean = lbs => lbs >= 170 ? 90 : lbs >= 160 ? 82 : lbs >= 150 ? 75 : lbs >= 140 ? 65 : 55;
+    const scoreWtTrend = d => d <= -15 ? 92 : d <= -10 ? 85 : d <= -5 ? 75 : d <= 0 ? 68 : d <= 5 ? 55 : 45;
 
-    const bfScore = scoreBf(estDxaBfAvg);
-    const wtTrendScore = scoreWtTrend(wtDelta);
-    const leanScore = scoreLean(leanEst);
-    const vatScore = SCORES_NOW.bodyComp.drivers.find(d => d.name.includes("VAT"))?.score || 60;
-    const bmdScore = SCORES_NOW.bodyComp.drivers.find(d => d.name.includes("BMD"))?.score || 99;
+    const bfScore   = scoreBf(DXA_CURRENT.totalFatPct);
+    const leanScore = scoreLean(DXA_CURRENT.totalLeanLbs);
+    const wtScore   = scoreWtTrend(DXA_CURRENT.weight - DXA_BASELINE.weight);
+    // VAT dropped to the lowest-28% band; bone density held at the 75th.
+    const vatScore  = 88;
+    const bmdScore  = 96;
 
-    const bcOverall = Math.round(bfScore * 0.30 + wtTrendScore * 0.20 + leanScore * 0.20 + vatScore * 0.15 + bmdScore * 0.15);
-    SCORES_NOW.bodyComp.score = bcOverall;
-    SCORES_NOW.bodyComp.dataDate = `Hume BIA (latest ${latest.d}) · DXA Jan 23, 2026 (VAT/BMD)`;
-
+    SCORES_NOW.bodyComp.score = Math.round(
+      bfScore * 0.30 + wtScore * 0.20 + leanScore * 0.20 + vatScore * 0.15 + bmdScore * 0.15
+    );
+    SCORES_NOW.bodyComp.dataDate = `DXA · BodySpec ${DXA_CURRENT.date} (GE Lunar)`;
     SCORES_NOW.bodyComp.drivers = [
-      {name:"Body Fat % (est.)",   val:estDxaBf.toFixed(1)+"%",  note:`Hume BIA ${latest.bf.toFixed(1)}% + ${BIA_DXA_OFFSET.toFixed(0)}pt DXA offset — ${latest.d}`, score:bfScore, trend: bfDelta < -1 ? "up" : bfDelta > 1 ? "flag" : "stable"},
-      {name:"Weight",              val:latest.wt.toFixed(1)+" lbs", note:`${wtDelta >= 0 ? "+" : ""}${wtDelta.toFixed(1)} lbs vs DXA baseline (${DXA.weight} lbs)`, score:wtTrendScore, trend: wtDelta < -5 ? "up" : "stable"},
-      {name:"Lean Mass (est.)",    val:leanEst.toFixed(1)+" lbs", note:"Estimated from Hume weight × (1 − BF%)", score:leanScore, trend:"stable"},
-      {name:"VAT (DXA)",           val:DXA.vatArea_cm2+" cm²",  note:"Jan 23, 2026 — target <100 cm²",     score:vatScore, trend:"flag"},
-      {name:"BMD T-score (DXA)",   val:"+"+DXA.bmd.total.tScore, note:"Exceptional — 111th percentile",   score:bmdScore, trend:"up"},
+      {name:"Body Fat % (DXA)", val:DXA_CURRENT.totalFatPct+"%",       note:`Sep '26 — leanest 9% for men 45–51. Was 26.4% in Jan (Hologic).`, score:bfScore,   trend:"up"},
+      {name:"Lean Mass (DXA)",  val:DXA_CURRENT.totalLeanLbs+" lbs",   note:"Sep '26 — up 5.9 lbs through a 25 lb cut. Top 21% for age.",     score:leanScore, trend:"up"},
+      {name:"Weight",           val:DXA_CURRENT.weight+" lbs",         note:`−24.9 lbs vs the Jan pre-Wegovy baseline`,                       score:wtScore,   trend:"up"},
+      {name:"Visceral Fat",     val:DXA_CURRENT.vatLbs+" lbs",         note:"Sep '26 CoreScan — lowest 28%. Units differ from the Jan cm² figure.", score:vatScore, trend:"up"},
+      {name:"Bone Density",     val:DXA_CURRENT.bmdTotal+" g/cm²",     note:"Sep '26 — 75th percentile. Held through the cut.",                score:bmdScore,  trend:"stable"},
     ];
 
     if (SCORES_NOW.metabolic?.drivers) {
       const metBf = SCORES_NOW.metabolic.drivers.find(d => d.name.includes("Body Fat"));
-      if (metBf) { metBf.val = estDxaBf.toFixed(1) + "%"; metBf.note = `Est. from Hume BIA ${latest.bf.toFixed(1)}% + DXA offset — ${latest.d}`; metBf.score = bfScore; }
+      if (metBf) { metBf.val = DXA_CURRENT.totalFatPct + "%"; metBf.note = `Sep '26 DXA — leanest 9% for age`; metBf.score = bfScore; metBf.trend = "up"; }
+      const metVat = SCORES_NOW.metabolic.drivers.find(d => d.name.includes("VAT"));
+      if (metVat) { metVat.val = DXA_CURRENT.vatLbs + " lbs"; metVat.note = "Sep '26 CoreScan — lowest 28%"; metVat.score = vatScore; metVat.trend = "up"; }
     }
   }
 

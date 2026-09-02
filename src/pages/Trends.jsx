@@ -238,7 +238,7 @@ export function Trends(){
           <div style={{fontFamily:FF.s,fontSize:10,color:"rgba(255,255,255,0.40)",marginTop:3}}>Most recent gold-standard body composition measurement</div>
         </div>
         <div style={{padding:"5px 12px",borderRadius:8,background:"rgba(196,96,74,0.18)",border:"1px solid rgba(196,96,74,0.35)"}}>
-          <div style={{fontFamily:FF.m,fontSize:20,fontWeight:700,color:"#E8816A",letterSpacing:"-0.01em"}}>26.4%</div>
+          <div style={{fontFamily:FF.m,fontSize:20,fontWeight:700,color:"#6E8259",letterSpacing:"-0.01em"}}>14.3%</div>
           <div style={{fontFamily:FF.s,fontSize:8,color:"rgba(255,255,255,0.35)",marginTop:1}}>Total Body Fat</div>
         </div>
       </div>

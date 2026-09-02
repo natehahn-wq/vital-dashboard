@@ -19,7 +19,7 @@ export const MEDICATIONS = [
     name: "Oral Wegovy (semaglutide)", dose: "—", freq: "daily", started: "Feb 17, 2026",
     startDate: "2026-02-17",
     indication: "Weight management",
-    note: "Primary driver of the 216 → 189 lb weight loss. Use Feb 17 2026 as the era boundary on weight and lab trends.",
+    note: "Primary driver of the 216 → 191 lb change (DXA-verified Sep 2 2026). Use Feb 17 2026 as the era boundary on weight and lab trends.",
     critical: false,
   },
 ];
@@ -32,9 +32,9 @@ export const SUPPLEMENTS_CURRENT = [
 ];
 
 export const SUPPLEMENTS_STOPPED = [
-  { name:"Vitamin D", stopped:"~Feb 2026", impact:"May 2025 value of 36.5 was ON supplementation. Aug 2026 shows unsupplemented baseline." },
-  { name:"DHEA",      stopped:"~Feb 2026", impact:"Explains the DHEA-S 460 (high) in May 2025. Expect normalization on recheck." },
-  { name:"Omega-3",   stopped:"~Feb 2026", impact:"Expect the AA/EPA ratio to have worsened on the pending panel." },
+  { name:"Vitamin D", stopped:"~Feb 2026", impact:"57 in Aug 2026 off supplement — higher than when supplemented. Recheck at the Feb–Mar trough." },
+  { name:"DHEA",      stopped:"~Feb 2026", impact:"DHEA-S went 460 (on) → 54 (off). Native baseline was 119. Recheck ~Dec 2026." },
+  { name:"Omega-3",   stopped:"~Feb 2026", impact:"Index still 6.8% (optimal) six months off it — diet alone sustains it. No restart." },
 ];
 
 export const ALLERGIES = [
@@ -163,9 +163,9 @@ export const SCREENINGS = [
     note: "57 in August off supplement — that is the seasonal peak. Winter trough is the number that decides restart.",
   },
   {
-    name: "DXA body composition", lastDone: "Jan 2026", nextDue: "~Annual",
-    status: "pending",
-    note: "New BodySpec scan pending — Jan 2026 is the pre-Wegovy baseline.",
+    name: "DXA body composition", lastDone: "Sep 2, 2026", nextDue: "~Sep 2027",
+    status: "current",
+    note: "BodySpec (GE Lunar): 14.3% BF, 155.7 lb lean. Stay on BodySpec so the next comparison is same-platform.",
   },
   {
     name: "VO2max test", lastDone: "Never", nextDue: "Purchased — pending",

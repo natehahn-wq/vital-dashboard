@@ -279,8 +279,8 @@ export const LABS = {
       note:"Overcorrected after stopping the DHEA supplement (~Feb 2026): 460 high → 54 low. Worth discussing a low-dose restart." },
     { name:"% Saturation", val:19, unit:"%",     range:"20–48",  status:"low",
       note:"Marginally low. Ferritin 153 and a clean CBC argue against true iron deficiency — recheck rather than treat." },
-    { name:"BMI",          val:25.6,unit:"",     range:"18.5–24.9",status:"high",
-      note:"At ~189 lb, down from 29.4 at 216 lb. BMI ignores lean mass — DXA is the better read." },
+    { name:"BMI",          val:25.9,unit:"",     range:"18.5–24.9",status:"high", benign:true,
+      note:"Sep '26 DXA: 191.1 lb, down from 216. BMI ignores body composition — at 14.3% body fat and 155.7 lb lean, this is a lean-mass artifact, not adiposity. Not a clinical flag." },
   ],
   // Resolved since the prior panel — kept so the improvement is visible.
   resolved: [
