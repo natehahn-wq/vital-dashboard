@@ -12,12 +12,22 @@ export const STYKU = {
   progress: { days:99, weightDelta:+4.0, bfDelta:-2.8, leanDelta:+8.6, fatDelta:-5.0, circumDelta:-11.0 },
 };
 
-// DXA Scan — January 23, 2026 · Pueblo Radiology (Hologic Horizon W)
-// PRE-WEGOVY BASELINE. Semaglutide started ~Feb 2026; weight is now ~189 lb
-// (−27 lb). These values are historical, not current. New BodySpec DXA pending.
-export const DXA = {
+// ─── DXA scans ───────────────────────────────────────────────────────────
+// DXA_BASELINE = Jan 23 2026, Pueblo Radiology (Hologic Horizon W).
+//   The PRE-WEGOVY baseline. Semaglutide started Feb 17 2026.
+// DXA_CURRENT  = Sep 2 2026, BodySpec (GE Lunar). The current scan.
+// DXA          = current headline values + the Jan regional/BMD detail that
+//   the BodySpec report does not include, each labelled with its provenance.
+//
+// ⚠ The two scans are on different manufacturers. Hologic and GE Lunar carry
+// systematic offsets of roughly 2–3 percentage points of body fat and a few
+// pounds of lean. Read the delta directionally, not to the decimal.
+
+export const DXA_BASELINE = {
   date: "Jan 23, 2026",
-  baselineLabel: "Pre-Wegovy baseline",
+  source: "Pueblo Radiology",
+  platform: "Hologic Horizon W",
+  baselineLabel: "Pre-Wegovy baseline (Jan 2026)",
   isCurrent: false,
   age: 48,
   weight: 216.0,       // lbs
@@ -66,11 +76,81 @@ export const DXA = {
   },
 };
 
+// Sep 2, 2026 · BodySpec (GE Lunar), 11:36 AM — the current scan.
+export const DXA_CURRENT = {
+  date: "Sep 2, 2026",
+  source: "BodySpec",
+  platform: "GE Lunar",
+  isCurrent: true,
+  age: 48,
+  weight: 191.1,
+  height: 72.0,
+  bmi: 25.9,
+
+  totalFatPct:  14.3,
+  totalFatLbs:  27.3,
+  totalLeanLbs: 155.7,
+  totalBMC_lbs: 8.1,
+  bmiLean:      21.1,      // BMI-L, lean-only BMI
+  bmdTotal:     1.44,      // g/cm²
+
+  vatLbs: 1.02,            // CoreScan — lbs, NOT comparable to Hologic cm²
+  rmrDxa: 2177,            // DXA-estimated resting metabolic rate
+
+  // vs BodySpec reference population: 49,000 men, ages 45–51
+  percentiles: {
+    population: "49,000 men, ages 45–51",
+    fatPct:  { label:"leanest 9%",      value:9,  betterIsLower:true  },
+    lean:    { label:"higher than 79%", value:79, betterIsLower:false },
+    bone:    { label:"higher than 75%", value:75, betterIsLower:false },
+    vat:     { label:"lowest 28%",      value:28, betterIsLower:true  },
+  },
+
+  reportUrl: "https://www.bodyspec.com/shared-dexa/1c06ee27f84f4ad0b17ea3dd5b5095af",
+};
+
+// Jan → Sep change. Cross-manufacturer, so directional.
+export const DXA_DELTA = {
+  from: "Jan 23, 2026", to: "Sep 2, 2026",
+  window: "Oral Wegovy started Feb 17, 2026 — this is the recomposition window",
+  weight:  -24.9,
+  fatLbs:  -29.2,
+  leanLbs:  +5.9,
+  fatPct:  -12.1,
+  boneHeld: true,
+  caveats: [
+    "Cross-manufacturer: Jan was Hologic, Sep is GE Lunar. Systematic offsets of ~2–3 percentage points of body fat and a few pounds of lean exist between platforms — read the delta directionally.",
+    "VAT units differ (Hologic cm² vs Lunar CoreScan lbs) and are not numerically comparable. Directionally a large reduction.",
+    "Creatine (~5 g/day) holds 2–4 lbs of water that DXA counts as lean.",
+  ],
+  verdict: "Even fully discounted for all three, the conclusion holds: roughly 25–29 lbs of fat lost with lean mass fully preserved. The typical GLP-1 outcome puts 25–40% of weight lost as lean.",
+  credit: "Training through the cut — 2×/week lifting, protein, creatine — is what preserved the lean mass.",
+};
+
+// DXA — current headline values, with the Jan regional/BMD detail carried
+// forward because the BodySpec report does not break those out. Every
+// carried-forward field is dated via `detailFrom` so nothing reads as current
+// that isn't.
+export const DXA = {
+  ...DXA_CURRENT,
+  detailFrom: "Jan 23, 2026 · Hologic",
+  vatArea_cm2: DXA_BASELINE.vatArea_cm2,
+  vatMass_g:   DXA_BASELINE.vatMass_g,
+  vatVol_cm3:  DXA_BASELINE.vatVol_cm3,
+  android:     DXA_BASELINE.android,
+  gynoid:      DXA_BASELINE.gynoid,
+  androidGynoidRatio: DXA_BASELINE.androidGynoidRatio,
+  regions:     DXA_BASELINE.regions,
+  bmd:         DXA_BASELINE.bmd,
+  totalLeanBMC: +(DXA_CURRENT.totalLeanLbs + DXA_CURRENT.totalBMC_lbs).toFixed(2),
+};
+
 // Scan history across all methods (newest first)
 export const SCAN_HISTORY = [
-  { date:"Jan 23, 2026", source:"DXA",   weight:216.0, fatPct:26.4, fatLbs:56.47, leanLbs:149.81, note:"Gold standard" },
-  { date:"May 23, 2025", source:"Styku", weight:212.0, fatPct:21.1, fatLbs:44.8,  leanLbs:160.3,  note:"3D optical" },
-  { date:"Feb 14, 2025", source:"Styku", weight:208.0, fatPct:23.9, fatLbs:49.8,  leanLbs:151.7,  note:"3D optical" },
+  { date:"Sep 2, 2026",  source:"DXA",   platform:"BodySpec · GE Lunar", weight:191.1, fatPct:14.3, fatLbs:27.3,  leanLbs:155.7,  note:"Current scan", current:true },
+  { date:"Jan 23, 2026", source:"DXA",   platform:"Pueblo · Hologic",    weight:216.0, fatPct:26.4, fatLbs:56.47, leanLbs:149.81, note:"Pre-Wegovy baseline", baseline:true },
+  { date:"May 23, 2025", source:"Styku", platform:"3D optical",          weight:212.0, fatPct:21.1, fatLbs:44.8,  leanLbs:160.3,  note:"3D optical — not comparable to DXA", notComparable:true },
+  { date:"Feb 14, 2025", source:"Styku", platform:"3D optical",          weight:208.0, fatPct:23.9, fatLbs:49.8,  leanLbs:151.7,  note:"3D optical — not comparable to DXA", notComparable:true },
 ];
 
 // Hume Health Pod — daily BIA readings (Dec 2025–Mar 2026)
@@ -128,32 +208,46 @@ export const HUME_DATA=[
 })();
 
 // CardioCoach RMR
-export const RMR = { measured:1858, lifestyle:1300, exercise:232, total:3390, maintenanceLow:1858, maintenanceHigh:3158, weightLossLow:1488, weightLossHigh:1858, comparison:"NORMAL (-8%)", rer:0.85 };
+// RMR from two sources — label which is which; they are not interchangeable.
+export const RMR_SOURCES = [
+  { source:"CardioCoach (measured)", value:1858, date:"2025", method:"Indirect calorimetry — measured", note:"−8% vs predicted" },
+  { source:"BodySpec DXA (estimated)", value:2177, date:"Sep 2, 2026", method:"Estimated from lean mass", note:"Higher because lean mass rose to 155.7 lbs" },
+];
+export const RMR = { measured:1858, dxaEstimated:2177, lifestyle:1300, exercise:232, total:3390, maintenanceLow:1858, maintenanceHigh:3158, weightLossLow:1488, weightLossHigh:1858, comparison:"NORMAL (-8%)", rer:0.85 };
 
 // LATEST — all body comp derived from most recent Hume Pod reading
 const _humeLatest    = HUME_DATA.length > 0 ? HUME_DATA[0] : null;
 const _humeOldest7   = HUME_DATA.length >= 7 ? HUME_DATA[6] : HUME_DATA[HUME_DATA.length-1];
 const _importedStored= (()=>{ try{ return !!localStorage.getItem("vital_hume_imported"); }catch(e){ return false; }})();
 
+// LATEST — the Sep 2 2026 DXA is the authoritative current snapshot. The Hume
+// BIA series ends in March 2026 at ~213 lbs and is now 6 months stale, so it
+// only supplies the short-term weight trend, not the headline numbers.
+const _dxaIsNewer = !_humeLatest || _humeLatest.d < "2026-09-02";
+
 export const LATEST = {
-  weight:       _humeLatest ? _humeLatest.wt : 216,
-  weightDate:   _humeLatest ? _humeLatest.d  : "2026-01-23",
-  weightSource: _importedStored ? "Hume (imported)" : "Hume Pod",
+  weight:       _dxaIsNewer ? DXA_CURRENT.weight : _humeLatest.wt,
+  weightDate:   _dxaIsNewer ? "2026-09-02" : _humeLatest.d,
+  weightSource: _dxaIsNewer ? "DXA · BodySpec" : (_importedStored ? "Hume (imported)" : "Hume Pod"),
   weight7dAgo:  _humeOldest7 ? _humeOldest7.wt : null,
   weight7dDelta:(_humeLatest && _humeOldest7) ? +(_humeLatest.wt - _humeOldest7.wt).toFixed(1) : null,
-  bodyFat:      _humeLatest ? _humeLatest.bf : 13.1,
-  leanMass:     _humeLatest ? +(_humeLatest.wt * (1 - _humeLatest.bf/100)).toFixed(1) : 170.3,
-  fatMass:      _humeLatest ? +(_humeLatest.wt * _humeLatest.bf/100).toFixed(1) : 25.7,
-  bmi:          _humeLatest ? +(_humeLatest.bmi || (_humeLatest.wt / (72*72) * 703)).toFixed(1) : 26.6,
-  bmr:1858, healthRisk:0,
+  bodyFat:      _dxaIsNewer ? DXA_CURRENT.totalFatPct  : _humeLatest.bf,
+  leanMass:     _dxaIsNewer ? DXA_CURRENT.totalLeanLbs : +(_humeLatest.wt * (1 - _humeLatest.bf/100)).toFixed(1),
+  fatMass:      _dxaIsNewer ? DXA_CURRENT.totalFatLbs  : +(_humeLatest.wt * _humeLatest.bf/100).toFixed(1),
+  bmi:          _dxaIsNewer ? DXA_CURRENT.bmi          : +(_humeLatest.bmi || (_humeLatest.wt / (72*72) * 703)).toFixed(1),
+  bmr:1858, bmrDxa:2177, healthRisk:0,
+  humeStale:    _dxaIsNewer && !!_humeLatest,
+  humeLastDate: _humeLatest ? _humeLatest.d : null,
 };
 
 // Multi-method body fat anchors (DXA + Styku = gold standard, Hume = BIA trend)
 export const BF_TREND = [
-  {d:"Feb '25",v:23.9,src:"Styku"},{d:"May '25",v:21.1,src:"Styku"},{d:"Jan '26",v:26.4,src:"DXA"},
+  {d:"Feb '25",v:23.9,src:"Styku"},{d:"May '25",v:21.1,src:"Styku"},
+  {d:"Jan '26",v:26.4,src:"DXA"},{d:"Sep '26",v:14.3,src:"DXA"},
 ];
 export const LM_TREND = [
-  {d:"Feb '25",v:151.7,src:"Styku"},{d:"May '25",v:160.3,src:"Styku"},{d:"Jan '26",v:149.8,src:"DXA"},
+  {d:"Feb '25",v:151.7,src:"Styku"},{d:"May '25",v:160.3,src:"Styku"},
+  {d:"Jan '26",v:149.8,src:"DXA"},{d:"Sep '26",v:155.7,src:"DXA"},
 ];
 // Hume daily weight trend (BIA scale, corrected lbs)
 export const HUME_WT_TREND = HUME_DATA.slice().reverse().map(r=>({d:r.d.slice(5),v:r.wt}));
@@ -169,10 +263,14 @@ export const WEIGHT_LOG=[
   {date:"2025-05-23",weight:212.0,source:"Styku"},
   {date:"2026-01-23",weight:216.0,source:"DXA"},
   {date:"2026-08-25",weight:189.0,source:"Current"},
+  {date:"2026-09-02",weight:191.1,source:"DXA (BodySpec)"},
   ...(HUME_LATEST_WT?[{date:HUME_DATA[0].d,weight:HUME_LATEST_WT,source:"Hume BIA"}]:[]),
 ];
 
 // Current weight — post-Wegovy (started ~Feb 2026). The Jan 2026 DXA is the
 // pre-Wegovy baseline, not a current reading.
-export const CURRENT_WEIGHT = { weight:189.0, date:"Aug 2026", deltaSinceDXA:-27.0 };
-export const DXA_PENDING = { lab:"BodySpec", status:"pending", note:"New DXA scheduled — will replace the Jan 2026 pre-Wegovy baseline" };
+export const CURRENT_WEIGHT = {
+  weight: 191.1, bodyFat: 14.3, leanMass: 155.7, bmi: 25.9,
+  date: "Sep 2, 2026", source: "DXA · BodySpec",
+  deltaSinceBaseline: -24.9,
+};

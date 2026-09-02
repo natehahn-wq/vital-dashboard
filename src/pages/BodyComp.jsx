@@ -6,7 +6,7 @@ import {
   CartesianGrid, XAxis, YAxis, Tooltip,
 } from "recharts";
 import { P, FF, S } from "../lib/theme.js";
-import { HUME_DATA } from "../lib/data/body.js";
+import { HUME_DATA, DXA_CURRENT, DXA_BASELINE, DXA_DELTA, SCAN_HISTORY, RMR_SOURCES } from "../lib/data/body.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 
 const SCAN_CSS = `
@@ -77,6 +77,175 @@ export function BodyComp(){
 
   return(<div style={S.col18}>
     <style>{SCAN_CSS}</style>
+
+    {/* ── Current DXA scan ── */}
+    <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:16,padding:"20px",
+      boxShadow:"0 1px 4px rgba(0,0,0,.05)"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",
+        gap:12,flexWrap:"wrap",marginBottom:16}}>
+        <div>
+          <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",
+            textTransform:"uppercase",marginBottom:4}}>Current Scan · DXA</div>
+          <div style={{fontFamily:FF.r,fontSize:19,fontWeight:600,color:P.text}}>
+            {DXA_CURRENT.date} · {DXA_CURRENT.source}
+          </div>
+          <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,marginTop:2}}>
+            {DXA_CURRENT.platform} · vs {DXA_CURRENT.percentiles.population}
+          </div>
+        </div>
+        <a href={DXA_CURRENT.reportUrl} target="_blank" rel="noopener noreferrer"
+          style={{fontFamily:FF.s,fontSize:10,fontWeight:600,color:P.steel,textDecoration:"none",
+            padding:"6px 12px",borderRadius:7,background:P.steelBg,
+            border:`1px solid ${P.steel}33`,whiteSpace:"nowrap"}}>
+          Full report ↗
+        </a>
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:mob?"repeat(2,1fr)":"repeat(auto-fill,minmax(130px,1fr))",
+        gap:10,marginBottom:16}}>
+        {[
+          {label:"Body Fat",     val:DXA_CURRENT.totalFatPct+"%",       sub:DXA_CURRENT.totalFatLbs+" lbs",       pct:DXA_CURRENT.percentiles.fatPct.label, color:P.sage},
+          {label:"Lean Mass",    val:DXA_CURRENT.totalLeanLbs,          sub:"lbs · BMI-L "+DXA_CURRENT.bmiLean,   pct:DXA_CURRENT.percentiles.lean.label,   color:P.sage},
+          {label:"Total Mass",   val:DXA_CURRENT.weight,                sub:"lbs · BMI "+DXA_CURRENT.bmi,         pct:null,                                  color:P.text},
+          {label:"Visceral Fat", val:DXA_CURRENT.vatLbs,                sub:"lbs (CoreScan)",                     pct:DXA_CURRENT.percentiles.vat.label,     color:P.sage},
+          {label:"Bone Density", val:DXA_CURRENT.bmdTotal,              sub:"g/cm² · "+DXA_CURRENT.totalBMC_lbs+" lbs", pct:DXA_CURRENT.percentiles.bone.label, color:P.steel},
+          {label:"RMR (DXA est.)",val:DXA_CURRENT.rmrDxa.toLocaleString(), sub:"cal/day",                          pct:null,                                  color:P.amber},
+        ].map(({label,val,sub,pct,color})=>(
+          <div key={label} style={{padding:"11px 13px",background:P.panel,borderRadius:11,
+            border:`1px solid ${P.border}`}}>
+            <div style={{fontFamily:FF.s,fontSize:8,color:P.muted,textTransform:"uppercase",
+              letterSpacing:"0.08em",marginBottom:5}}>{label}</div>
+            <div style={{fontFamily:FF.r,fontSize:22,fontWeight:600,color,lineHeight:1,
+              letterSpacing:"-0.01em"}}>{val}</div>
+            <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,marginTop:3}}>{sub}</div>
+            {pct&&<div style={{fontFamily:FF.s,fontSize:8.5,fontWeight:700,color:P.sage,
+              marginTop:4}}>{pct}</div>}
+          </div>
+        ))}
+      </div>
+
+      {/* Delta vs baseline */}
+      <div style={{padding:"14px 16px",borderRadius:12,background:P.sageBg,
+        border:`1px solid ${P.sage}33`}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.sage,
+          letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:4}}>
+          Recomposition verified
+        </div>
+        <div style={{fontFamily:FF.s,fontSize:10,color:P.muted,marginBottom:11}}>
+          {DXA_DELTA.from} → {DXA_DELTA.to} · {DXA_DELTA.window}
+        </div>
+        <div style={{display:"flex",gap:mob?14:26,flexWrap:"wrap",marginBottom:12}}>
+          {[
+            {label:"Total mass", val:DXA_DELTA.weight,  unit:" lbs", good:true},
+            {label:"Fat mass",   val:DXA_DELTA.fatLbs,  unit:" lbs", good:true},
+            {label:"Lean mass",  val:DXA_DELTA.leanLbs, unit:" lbs", good:true},
+            {label:"Body fat",   val:DXA_DELTA.fatPct,  unit:" pts", good:true},
+          ].map(({label,val,unit,good})=>(
+            <div key={label}>
+              <div style={{fontFamily:FF.r,fontSize:23,fontWeight:600,lineHeight:1,
+                color:good?P.sage:P.terra,letterSpacing:"-0.01em"}}>
+                {val>0?"+":""}{val}<span style={{fontFamily:FF.s,fontSize:10,
+                  color:P.muted,fontWeight:400}}>{unit}</span>
+              </div>
+              <div style={{fontFamily:FF.s,fontSize:9.5,color:P.sub,marginTop:3}}>{label}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontFamily:FF.s,fontSize:11,color:P.sub,lineHeight:1.6}}>
+          {DXA_DELTA.verdict}
+        </div>
+        <div style={{fontFamily:FF.s,fontSize:10.5,color:P.muted,lineHeight:1.6,marginTop:6}}>
+          {DXA_DELTA.credit}
+        </div>
+      </div>
+
+      {/* Caveats — required reading alongside the delta */}
+      <div style={{marginTop:12,padding:"12px 14px",borderRadius:11,background:P.amberBg,
+        border:`1px solid ${P.amber}33`}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.amber,
+          letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>
+          Read the delta directionally — three caveats
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:7}}>
+          {DXA_DELTA.caveats.map((c,i)=>(
+            <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start"}}>
+              <span style={{fontFamily:FF.m,fontSize:9,color:P.amber,fontWeight:700,
+                flexShrink:0,lineHeight:1.6}}>{i+1}</span>
+              <span style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,lineHeight:1.6}}>{c}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Phase change */}
+      <div style={{marginTop:12,padding:"12px 14px",borderRadius:11,background:P.panel,
+        border:`1px solid ${P.border}`}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.text,
+          letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:7}}>Phase change</div>
+        <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,lineHeight:1.7}}>
+          Cut complete → transition to maintenance. Retest testosterone ~6–8 weeks after
+          weight stabilises. Next DXA at BodySpec (same platform, so the comparison is
+          clean) in ~12 months, or after any major phase change.
+        </div>
+      </div>
+    </div>
+
+    {/* ── Scan history across methods ── */}
+    <div style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"16px"}}>
+      <div style={{fontFamily:FF.s,fontSize:10,fontWeight:600,letterSpacing:"0.12em",
+        textTransform:"uppercase",color:P.sub,marginBottom:12}}>Scan History</div>
+      <div style={{display:"flex",flexDirection:"column",gap:7}}>
+        {SCAN_HISTORY.map(sc=>(
+          <div key={sc.date} style={{display:"flex",alignItems:"center",gap:11,padding:"10px 13px",
+            background:sc.current?P.sageBg:P.panel,borderRadius:10,
+            border:`1px solid ${sc.current?P.sage+"44":P.border}`}}>
+            <div style={{width:7,height:7,borderRadius:"50%",flexShrink:0,
+              background:sc.current?P.sage:sc.baseline?P.clay:P.muted}}/>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                <span style={{fontFamily:FF.s,fontSize:12,fontWeight:600,color:P.text}}>{sc.date}</span>
+                <span style={{fontFamily:FF.s,fontSize:9.5,color:P.muted}}>{sc.platform}</span>
+                {sc.current&&<span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:P.sage,
+                  background:P.card,padding:"2px 6px",borderRadius:3,letterSpacing:"0.05em"}}>CURRENT</span>}
+                {sc.baseline&&<span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:P.clay,
+                  background:P.card,padding:"2px 6px",borderRadius:3,letterSpacing:"0.05em"}}>PRE-WEGOVY BASELINE</span>}
+                {sc.notComparable&&<span style={{fontFamily:FF.s,fontSize:7.5,fontWeight:700,color:P.muted,
+                  background:P.card,padding:"2px 6px",borderRadius:3,letterSpacing:"0.05em"}}>NOT DXA-COMPARABLE</span>}
+              </div>
+              <div style={{fontFamily:FF.m,fontSize:10,color:P.sub,marginTop:3}}>
+                {sc.weight} lbs · {sc.fatPct}% BF · {sc.fatLbs} lbs fat · {sc.leanLbs} lbs lean
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",marginTop:13,paddingTop:12,
+        borderTop:`1px solid ${P.border}`}}>
+        <div style={{fontFamily:FF.s,fontSize:9,fontWeight:700,color:P.muted,
+          letterSpacing:"0.1em",textTransform:"uppercase",width:"100%"}}>Resting Metabolic Rate</div>
+        {RMR_SOURCES.map(r=>(
+          <div key={r.source}>
+            <div style={{fontFamily:FF.r,fontSize:19,fontWeight:600,color:P.text,lineHeight:1}}>
+              {r.value.toLocaleString()}<span style={{fontFamily:FF.s,fontSize:9,
+                color:P.muted,fontWeight:400,marginLeft:3}}>cal</span>
+            </div>
+            <div style={{fontFamily:FF.s,fontSize:9.5,color:P.sub,marginTop:3}}>{r.source}</div>
+            <div style={{fontFamily:FF.s,fontSize:8.5,color:P.muted,marginTop:1}}>{r.date} · {r.note}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* ── Hume BIA daily tracking (stale — DXA supersedes) ── */}
+    <div style={{padding:"10px 13px",borderRadius:10,background:P.steelBg,
+      border:`1px solid ${P.steel}33`,display:"flex",gap:9,alignItems:"flex-start"}}>
+      <span style={{fontSize:12,lineHeight:1.3,flexShrink:0}}>ℹ</span>
+      <div style={{fontFamily:FF.s,fontSize:10.5,color:P.sub,lineHeight:1.6}}>
+        The daily BIA series below ends March 2026 and predates the cut — it reads ~213 lbs
+        against the Sep DXA's 191.1. Useful for short-term direction only; the DXA above is
+        the current record.
+      </div>
+    </div>
     <div>
       <div style={{fontFamily:FF.s,fontSize:9,color:P.muted,letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:3}}>HUME HEALTH POD · BIA DAILY TRACKING · {humeFirst?.d} → {humeLatest?.d}</div>
       <div style={S.h18}>Daily Body Composition</div>
